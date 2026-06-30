@@ -1,0 +1,30 @@
+{
+	"BUILD_DIR" : "D:/CLion Projects/TheRealCampusBallot/build-audit/TheRealCampusBallot_autogen",
+	"CMAKE_BINARY_DIR" : "D:/CLion Projects/TheRealCampusBallot/build-audit",
+	"CMAKE_CURRENT_BINARY_DIR" : "D:/CLion Projects/TheRealCampusBallot/build-audit",
+	"CMAKE_CURRENT_SOURCE_DIR" : "D:/CLion Projects/TheRealCampusBallot",
+	"CMAKE_SOURCE_DIR" : "D:/CLion Projects/TheRealCampusBallot",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "MinGW Makefiles",
+	"INCLUDE_DIR" : "D:/CLion Projects/TheRealCampusBallot/build-audit/TheRealCampusBallot_autogen/include",
+	"INPUTS" : 
+	[
+		"D:/CLion Projects/TheRealCampusBallot/src/ui/styles/modern.qss",
+		"D:/CLion Projects/TheRealCampusBallot/src/ui/styles/light.qss",
+		"D:/CLion Projects/TheRealCampusBallot/assets/placeholders/candidate-placeholder.svg",
+		"D:/CLion Projects/TheRealCampusBallot/assets/backgrounds/auth-backdrop.svg",
+		"D:/CLion Projects/TheRealCampusBallot/assets/brand/app-mark.svg",
+		"D:/CLion Projects/TheRealCampusBallot/assets/brand/app-logo.svg"
+	],
+	"LOCK_FILE" : "D:/CLion Projects/TheRealCampusBallot/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/AutoRcc_resources_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "--no-zstd", "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "D:/Qt/6.11.1/mingw_64/bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "D:/CLion Projects/TheRealCampusBallot/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/AutoRcc_resources_EWIEGA46WW_Used.txt",
+	"SOURCE" : "D:/CLion Projects/TheRealCampusBallot/resources.qrc",
+	"USE_BETTER_GRAPH" : true,
+	"VERBOSITY" : 0
+}

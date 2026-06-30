@@ -1,0 +1,5 @@
+D:/CLion Projects/TheRealCampusBallot/build-audit/CMakeFiles/TheRealCampusBallot.dir
+D:/CLion Projects/TheRealCampusBallot/build-audit/CMakeFiles/edit_cache.dir
+D:/CLion Projects/TheRealCampusBallot/build-audit/CMakeFiles/rebuild_cache.dir
+D:/CLion Projects/TheRealCampusBallot/build-audit/CMakeFiles/TheRealCampusBallot_autogen_timestamp_deps.dir
+D:/CLion Projects/TheRealCampusBallot/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir
