@@ -1,6 +1,8 @@
 #include "SetupWizard.h"
 #include "src/core/SystemManager.h"
 #include "src/ui/components/ToastNotification.h"
+#include "src/security/HashProvider.h" // Include HashProvider
+#include "src/modules/auth/RBACManager.h" // Include RBACManager for roles
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
@@ -20,6 +22,7 @@
 #include <QFile>
 #include <QApplication>
 #include <QPixmap>
+#include <QUuid> // Include QUuid for user ID
 
 namespace Ballot::UI {
 
@@ -106,8 +109,8 @@ void SetupWizard::setupUi() {
 }
 
 void SetupWizard::nextStep() {
-    if (m_currentIndex == 1) {
-        // Validate storage selection
+    // Page-specific validation and navigation logic
+    if (m_currentIndex == 1) { // Storage Selection Page
         int id = m_storageGroup->checkedId();
         if (id < 0) {
             ToastNotification::show(this, "Please select a storage provider", ToastNotification::Warning);
@@ -117,20 +120,46 @@ void SetupWizard::nextStep() {
         if (rb) {
             QString selected = rb->text();
             if (selected == "Firebase") {
-                m_currentIndex = 2; // Skip local config
-                m_pages->setCurrentIndex(m_currentIndex);
-                updateNavigation();
-                return;
-            } else {
+                m_config["storage_type"] = "firebase";
+                m_currentIndex = 2; // Go to Firebase Config
+            } else { // Local Device, PostgreSQL, MySQL, etc.
                 m_config["storage_type"] = selected.toLower().replace(" ", "_");
-                m_currentIndex = 3; // Skip firebase config
-                m_pages->setCurrentIndex(m_currentIndex);
-                updateNavigation();
-                return;
+                m_currentIndex = 3; // Go to Local Config (or other specific config page if implemented)
             }
+        }
+    } else if (m_currentIndex == 2) { // Firebase Config Page
+        if (m_firebaseApiKey.isEmpty() || m_firebaseProjectId.isEmpty()) {
+            ToastNotification::show(this, "Please upload a valid Firebase configuration file", ToastNotification::Warning);
+            return;
+        }
+    } else if (m_currentIndex == 4) { // Admin Account Page
+        if (!m_adminNameEdit || m_adminNameEdit->text().isEmpty()) {
+            ToastNotification::show(this, "Please enter admin name", ToastNotification::Warning);
+            return;
+        }
+        if (!m_adminEmailEdit || m_adminEmailEdit->text().isEmpty()) {
+            ToastNotification::show(this, "Please enter admin email", ToastNotification::Warning);
+            return;
+        }
+        if (!m_adminPasswordEdit || m_adminPasswordEdit->text().isEmpty()) {
+            ToastNotification::show(this, "Please enter admin password", ToastNotification::Warning);
+            return;
+        }
+        if (!m_adminConfirmEdit || m_adminConfirmEdit->text().isEmpty()) {
+            ToastNotification::show(this, "Please confirm admin password", ToastNotification::Warning);
+            return;
+        }
+        if (m_adminPasswordEdit->text() != m_adminConfirmEdit->text()) {
+            ToastNotification::show(this, "Passwords do not match", ToastNotification::Warning);
+            return;
+        }
+        if (m_adminPasswordEdit->text().length() < 8) {
+            ToastNotification::show(this, "Password must be at least 8 characters long", ToastNotification::Warning);
+            return;
         }
     }
 
+    // Default navigation
     if (m_currentIndex < m_pages->count() - 1) {
         m_currentIndex++;
         m_pages->setCurrentIndex(m_currentIndex);
@@ -142,14 +171,41 @@ void SetupWizard::nextStep() {
 
 void SetupWizard::prevStep() {
     if (m_currentIndex > 0) {
-        m_currentIndex--;
+        // Custom back navigation for skipped pages
+        if (m_currentIndex == 2 && m_config.value("storage_type").toString() == "firebase") {
+            m_currentIndex = 1; // From Firebase Config back to Storage Selection
+        } else if (m_currentIndex == 3 && m_config.value("storage_type").toString() != "firebase") { // Assuming local config is at index 3
+            m_currentIndex = 1; // From Local Config back to Storage Selection
+        } else {
+            m_currentIndex--;
+        }
         m_pages->setCurrentIndex(m_currentIndex);
         updateNavigation();
     }
 }
 
 void SetupWizard::handleFinish() {
-    m_config["db_path"] = "ballot.db";
+    // Collect admin account details
+    if (m_adminNameEdit && m_adminEmailEdit && m_adminPasswordEdit) {
+        QString name = m_adminNameEdit->text();
+        QString email = m_adminEmailEdit->text();
+        QString password = m_adminPasswordEdit->text();
+
+        // Generate salt and hash the password
+        QByteArray salt = Security::HashProvider::generateSalt();
+        QByteArray hashedPassword = Security::HashProvider::argon2Hash(password, salt);
+        QByteArray combinedHash = salt + hashedPassword; // Combine salt and hash
+
+        m_config["admin_name"] = name;
+        m_config["admin_email"] = email;
+        m_config["admin_password_hash"] = QString(combinedHash.toHex()); // Store combined hash as hex string
+    }
+
+    // Ensure db_path is set for local storage if not already set by browse button
+    if (m_config.value("storage_type").toString() == "local_device" && !m_config.contains("db_path")) {
+        m_config["db_path"] = "ballot.db";
+    }
+
     emit setupCompleted(m_config);
     close();
 }
@@ -157,6 +213,8 @@ void SetupWizard::handleFinish() {
 void SetupWizard::updateNavigation() {
     m_backButton->setEnabled(m_currentIndex > 0);
     m_nextButton->setText(m_currentIndex == m_pages->count() - 1 ? "Finish" : "Next");
+    // The total number of steps should be dynamic if pages are skipped.
+    // For now, let's assume 6 steps as per original design, but this might need adjustment.
     m_stepIndicator->setText(QString("Step %1 of %2").arg(m_currentIndex + 1).arg(m_pages->count()));
 }
 
@@ -207,8 +265,9 @@ QWidget* SetupWizard::createStorageSelectionPage() {
 
     m_storageGroup = new QButtonGroup(page);
 
-    QStringList options = {"Local Device", "Firebase", "PostgreSQL", "MySQL", "SQL Server", "Custom Server", "REST API"};
-    QStringList icons = {"LOCAL", "FIRE", "PG", "MYSQL", "SQL", "HOST", "API"};
+    // SQLite is the only storage provider currently implemented by SystemManager.
+    QStringList options = {"Local Device"};
+    QStringList icons = {"LOCAL"};
 
     auto *grid = new QGridLayout();
     grid->setSpacing(12);
@@ -246,32 +305,10 @@ QWidget* SetupWizard::createStorageSelectionPage() {
         m_storageGroup->addButton(rb, i);
         cardLayout->addWidget(rb, 0, Qt::AlignRight);
 
-        // Make the whole card clickable
-        card->installEventFilter(this);
-        connect(rb, &QRadioButton::toggled, card, [card, rb, options, i]() {
-            if (rb->isChecked()) {
-                card->setStyleSheet(QString(R"(
-                    QFrame#storageCard {
-                        background-color: rgba(0, 120, 212, 0.15);
-                        border: 2px solid #0078d4;
-                        border-radius: 12px;
-                        padding: 12px;
-                    }
-                )"));
-            } else {
-                card->setStyleSheet(R"(
-                    QFrame#storageCard {
-                        background-color: #25253a;
-                        border: 1px solid #3d3d5c;
-                        border-radius: 12px;
-                        padding: 12px;
-                    }
-                    QFrame#storageCard:hover {
-                        border-color: #5a5a7a;
-                    }
-                )");
-            }
-        });
+        // Make the whole card clickable by connecting a lambda to the card's mouse press event
+        // This is a more robust way than customContextMenuRequested
+        card->installEventFilter(this); // Install event filter to capture mouse clicks on the card
+        // The eventFilter method will handle the click to toggle the radio button
 
         grid->addWidget(card, i / 3, i % 3);
     }
@@ -280,6 +317,23 @@ QWidget* SetupWizard::createStorageSelectionPage() {
     layout->addStretch();
     return page;
 }
+
+// Event filter to make QFrame clickable for radio buttons
+bool SetupWizard::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QFrame* card = qobject_cast<QFrame*>(obj);
+        if (card && card->objectName() == "storageCard") {
+            // Find the radio button within this card
+            QRadioButton* rb = card->findChild<QRadioButton*>();
+            if (rb) {
+                rb->setChecked(true);
+                return true; // Event handled
+            }
+        }
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
 
 QWidget* SetupWizard::createFirebaseConfigPage() {
     auto *page = new QWidget(this);
@@ -330,20 +384,29 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
     statusLabel->setAlignment(Qt::AlignCenter);
     uploadLayout->addWidget(statusLabel);
 
-    uploadFrame->setCursor(Qt::PointingHandCursor);
+    // Use a QPushButton directly for upload functionality
+    auto *uploadButton = new QPushButton("Upload JSON File", uploadFrame);
+    uploadButton->setStyleSheet(R"(
+        QPushButton {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 10px 24px;
+        }
+        QPushButton:hover { background-color: #1a8ae8; }
+        QPushButton:pressed { background-color: #006cbd; }
+    )");
+    uploadLayout->addWidget(uploadButton, 0, Qt::AlignCenter);
 
-    // Use a clickable button overlay instead of event filter for simplicity
-    auto *uploadBtn = new QPushButton(uploadFrame);
-    uploadBtn->setGeometry(uploadFrame->rect());
-    uploadBtn->setStyleSheet("background: transparent; border: none; cursor: pointer;");
-    uploadBtn->setCursor(Qt::PointingHandCursor);
-    uploadBtn->raise();
 
-    connect(uploadBtn, &QPushButton::clicked, this, [this, statusLabel]() {
+    connect(uploadButton, &QPushButton::clicked, this, [this, statusLabel]() {
         QString path = QFileDialog::getOpenFileName(this, "Select Firebase Config", "", "JSON Files (*.json)");
         if (!path.isEmpty()) {
             if (processFirebaseConfig(path)) {
-                statusLabel->setText("Configuration loaded successfully");
+                statusLabel->setText("Configuration loaded successfully: " + QFileInfo(path).fileName());
                 statusLabel->setStyleSheet("font-size: 13px; color: #4caf50; background: transparent;");
             } else {
                 statusLabel->setText("Invalid Firebase configuration file");
@@ -503,27 +566,23 @@ QWidget* SetupWizard::createAdminAccountPage() {
     auto *formLayout = new QFormLayout(formGroup);
     formLayout->setSpacing(16);
 
-    auto *nameEdit = new QLineEdit(formGroup);
-    nameEdit->setPlaceholderText("Enter full name");
-    nameEdit->setObjectName("adminName");
-    formLayout->addRow("Name:", nameEdit);
+    m_adminNameEdit = new QLineEdit(formGroup);
+    m_adminNameEdit->setPlaceholderText("Enter full name");
+    formLayout->addRow("Name:", m_adminNameEdit);
 
-    auto *emailEdit = new QLineEdit(formGroup);
-    emailEdit->setPlaceholderText("Enter email address");
-    emailEdit->setObjectName("adminEmail");
-    formLayout->addRow("Email:", emailEdit);
+    m_adminEmailEdit = new QLineEdit(formGroup);
+    m_adminEmailEdit->setPlaceholderText("Enter email address");
+    formLayout->addRow("Email:", m_adminEmailEdit);
 
-    auto *passEdit = new QLineEdit(formGroup);
-    passEdit->setPlaceholderText("Enter password (min 8 characters)");
-    passEdit->setEchoMode(QLineEdit::Password);
-    passEdit->setObjectName("adminPassword");
-    formLayout->addRow("Password:", passEdit);
+    m_adminPasswordEdit = new QLineEdit(formGroup);
+    m_adminPasswordEdit->setPlaceholderText("Enter password (min 8 characters)");
+    m_adminPasswordEdit->setEchoMode(QLineEdit::Password);
+    formLayout->addRow("Password:", m_adminPasswordEdit);
 
-    auto *confirmEdit = new QLineEdit(formGroup);
-    confirmEdit->setPlaceholderText("Confirm password");
-    confirmEdit->setEchoMode(QLineEdit::Password);
-    confirmEdit->setObjectName("adminConfirm");
-    formLayout->addRow("Confirm:", confirmEdit);
+    m_adminConfirmEdit = new QLineEdit(formGroup);
+    m_adminConfirmEdit->setPlaceholderText("Confirm password");
+    m_adminConfirmEdit->setEchoMode(QLineEdit::Password);
+    formLayout->addRow("Confirm:", m_adminConfirmEdit);
 
     layout->addWidget(formGroup);
     layout->addStretch();

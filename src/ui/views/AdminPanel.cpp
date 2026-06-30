@@ -1,8 +1,10 @@
 #include "AdminPanel.h"
 #include "src/core/SystemManager.h"
 #include "src/modules/election/ElectionManager.h"
+#include "src/modules/auth/AuthManager.h"
 #include "src/modules/backup/BackupManager.h"
 #include "src/modules/plugin/PluginManager.h"
+#include "src/ui/components/ToastNotification.h" // Include ToastNotification
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QScrollArea>
@@ -11,6 +13,7 @@
 #include <QUuid>
 #include <QMessageBox>
 #include <QLocale>
+#include <QInputDialog> // For creating new election
 
 namespace Ballot::UI {
 
@@ -85,28 +88,130 @@ void AdminPanel::setupUi() {
     outerLayout->setContentsMargins(0, 0, 0, 0);
     outerLayout->addWidget(scrollArea);
 
+    // Connect buttons
     connect(m_createElectionBtn, &QPushButton::clicked, this, [this]() {
-        Core::Election election;
-        election.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        election.title = "New Election " + QDateTime::currentDateTime().toString("yyyy-MM-dd");
-        election.startDate = QDateTime::currentDateTime();
-        election.endDate = QDateTime::currentDateTime().addDays(7);
-        election.state = Core::VotingState::Idle;
-        election.isActive = true;
-        election.createdBy = "admin";
+        bool ok;
+        QString text = QInputDialog::getText(this, tr("Create New Election"),
+                                             tr("Election Title:"), QLineEdit::Normal,
+                                             "New Election", &ok);
+        if (ok && !text.isEmpty()) {
+            Core::Election election;
+            election.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+            election.title = text;
+            election.description = "Description for " + text;
+            election.startDate = QDateTime::currentDateTime();
+            election.endDate = QDateTime::currentDateTime().addDays(7);
+            election.state = Core::VotingState::Idle;
+            election.isActive = false;
+            election.createdBy = Auth::AuthManager::instance().currentUserId(); // Use current user ID
 
-        if (Election::ElectionManager::instance().createElection(election)) {
-            refreshData();
+            if (Election::ElectionManager::instance().createElection(election)) {
+                ToastNotification::show(this, "Election '" + election.title + "' created successfully.", ToastNotification::Success);
+                refreshData();
+            } else {
+                ToastNotification::show(this, "Failed to create election.", ToastNotification::Error);
+            }
         }
     });
 
     connect(m_deleteElectionBtn, &QPushButton::clicked, this, [this]() {
-        auto selected = m_electionsTable->selectedItems();
-        if (selected.isEmpty()) return;
-        int row = selected.first()->row();
-        QString id = m_electionsTable->item(row, 0)->data(Qt::UserRole).toString();
-        if (Election::ElectionManager::instance().deleteElection(id)) {
-            refreshData();
+        auto selectedItems = m_electionsTable->selectedItems();
+        if (selectedItems.isEmpty()) {
+            ToastNotification::show(this, "Please select an election to delete.", ToastNotification::Warning);
+            return;
+        }
+        int row = selectedItems.first()->row();
+        QString electionId = m_electionsTable->item(row, 0)->data(Qt::UserRole).toString();
+        QString electionTitle = m_electionsTable->item(row, 0)->text();
+
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Confirm Deletion",
+                                      "Are you sure you want to delete election '" + electionTitle + "'?\nThis action cannot be undone.",
+                                      QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            if (Election::ElectionManager::instance().deleteElection(electionId)) {
+                ToastNotification::show(this, "Election '" + electionTitle + "' deleted successfully.", ToastNotification::Success);
+                refreshData();
+            } else {
+                ToastNotification::show(this, "Failed to delete election '" + electionTitle + "'.", ToastNotification::Error);
+            }
+        }
+    });
+
+    connect(m_manageCandidatesBtn, &QPushButton::clicked, this, [this]() {
+        auto selectedItems = m_electionsTable->selectedItems();
+        if (selectedItems.isEmpty()) {
+            ToastNotification::show(this, "Please select an election to manage candidates for.", ToastNotification::Warning);
+            return;
+        }
+        int row = selectedItems.first()->row();
+        QString electionId = m_electionsTable->item(row, 0)->data(Qt::UserRole).toString();
+        QString electionTitle = m_electionsTable->item(row, 0)->text();
+
+        auto candidates = Election::ElectionManager::instance().getCandidates(electionId);
+        QStringList actions = {"Add candidate"};
+        if (!candidates.isEmpty()) actions << "Edit candidate" << "Delete candidate";
+
+        bool ok = false;
+        const QString action = QInputDialog::getItem(this, "Manage Candidates - " + electionTitle,
+                                                      "Action:", actions, 0, false, &ok);
+        if (!ok) return;
+
+        if (action == "Add candidate") {
+            const QString name = QInputDialog::getText(this, "Add Candidate", "Candidate name:", QLineEdit::Normal, {}, &ok).trimmed();
+            if (!ok || name.isEmpty()) return;
+            const QString party = QInputDialog::getText(this, "Add Candidate", "Party / group:", QLineEdit::Normal, {}, &ok).trimmed();
+            if (!ok) return;
+            const QString manifesto = QInputDialog::getMultiLineText(this, "Add Candidate", "Manifesto:", {}, &ok).trimmed();
+            if (!ok) return;
+
+            Core::Candidate candidate;
+            candidate.electionId = electionId;
+            candidate.name = name;
+            candidate.party = party;
+            candidate.manifesto = manifesto;
+            candidate.isApproved = true;
+            if (Election::ElectionManager::instance().addCandidate(candidate)) {
+                ToastNotification::show(this, "Candidate added successfully.", ToastNotification::Success);
+            } else {
+                ToastNotification::show(this, "Failed to add candidate.", ToastNotification::Error);
+            }
+            return;
+        }
+
+        QStringList candidateLabels;
+        for (const auto& candidate : candidates) {
+            candidateLabels << QString("%1 (%2)").arg(candidate.name, candidate.id.left(8));
+        }
+        const QString selected = QInputDialog::getItem(this, action, "Candidate:", candidateLabels, 0, false, &ok);
+        if (!ok) return;
+        const int candidateIndex = candidateLabels.indexOf(selected);
+        if (candidateIndex < 0) return;
+        Core::Candidate candidate = candidates.at(candidateIndex);
+
+        if (action == "Edit candidate") {
+            const QString name = QInputDialog::getText(this, action, "Candidate name:", QLineEdit::Normal, candidate.name, &ok).trimmed();
+            if (!ok || name.isEmpty()) return;
+            const QString party = QInputDialog::getText(this, action, "Party / group:", QLineEdit::Normal, candidate.party, &ok).trimmed();
+            if (!ok) return;
+            const QString manifesto = QInputDialog::getMultiLineText(this, action, "Manifesto:", candidate.manifesto, &ok).trimmed();
+            if (!ok) return;
+            candidate.name = name;
+            candidate.party = party;
+            candidate.manifesto = manifesto;
+            if (Election::ElectionManager::instance().updateCandidate(candidate)) {
+                ToastNotification::show(this, "Candidate updated successfully.", ToastNotification::Success);
+            } else {
+                ToastNotification::show(this, "Failed to update candidate.", ToastNotification::Error);
+            }
+        } else if (QMessageBox::question(this, "Delete Candidate",
+                                          "Delete '" + candidate.name + "'?",
+                                          QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+            if (Election::ElectionManager::instance().deleteCandidate(candidate.id)) {
+                ToastNotification::show(this, "Candidate deleted successfully.", ToastNotification::Success);
+            } else {
+                ToastNotification::show(this, "Failed to delete candidate.", ToastNotification::Error);
+            }
         }
     });
 
@@ -137,7 +242,7 @@ void AdminPanel::refreshData() {
     for (int i = 0; i < elections.size(); ++i) {
         const auto& e = elections[i];
         auto* titleItem = new QTableWidgetItem(e.title);
-        titleItem->setData(Qt::UserRole, e.id);
+        titleItem->setData(Qt::UserRole, e.id); // Store election ID in UserRole
         m_electionsTable->setItem(i, 0, titleItem);
         m_electionsTable->setItem(i, 1, new QTableWidgetItem(e.startDate.toString("yyyy-MM-dd HH:mm")));
         m_electionsTable->setItem(i, 2, new QTableWidgetItem(e.endDate.toString("yyyy-MM-dd HH:mm")));

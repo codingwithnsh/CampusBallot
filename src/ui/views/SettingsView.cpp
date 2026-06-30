@@ -58,7 +58,8 @@ void SettingsView::setupUi() {
     storageLayout->setSpacing(12);
 
     m_storageCombo = new QComboBox(storageGroup);
-    m_storageCombo->addItems({"SQLite", "Firebase", "PostgreSQL", "MySQL", "SQL Server", "REST API", "Custom Server"});
+    m_storageCombo->addItems({"Local Device", "Firebase", "PostgreSQL", "MySQL", "SQL Server", "REST API", "Custom Server"});
+    m_storageCombo->setEnabled(false); // Make it non-editable as changing storage dynamically is complex
     storageLayout->addRow("Storage Provider:", m_storageCombo);
 
     mainLayout->addWidget(storageGroup);
@@ -131,9 +132,27 @@ void SettingsView::setupUi() {
 }
 
 void SettingsView::loadSettings() {
-    auto settings = Core::SystemManager::instance().settings();
+    Core::SystemSettings settings = Core::SystemManager::instance().settings();
     m_themeCombo->setCurrentText(settings.theme == "dark" ? "Dark" : "Light");
-    m_languageCombo->setCurrentText(settings.language == "en" ? "English" : settings.language);
+
+    // Map language code to display text
+    if (settings.language == "en") m_languageCombo->setCurrentText("English");
+    else if (settings.language == "es") m_languageCombo->setCurrentText("Spanish");
+    else if (settings.language == "fr") m_languageCombo->setCurrentText("French");
+    else if (settings.language == "ar") m_languageCombo->setCurrentText("Arabic");
+    else if (settings.language == "hi") m_languageCombo->setCurrentText("Hindi");
+    else m_languageCombo->setCurrentText("English"); // Default
+
+    // Load storage type
+    auto* storage = Core::SystemManager::instance().storage();
+    if (storage) {
+        QString providerName = storage->providerName();
+        if (providerName == "SQLite") m_storageCombo->setCurrentText("Local Device");
+        else m_storageCombo->setCurrentText(providerName);
+    } else {
+        m_storageCombo->setCurrentText("Unknown");
+    }
+
     m_sessionTimeoutSpin->setValue(settings.sessionTimeoutMinutes);
     m_backupIntervalSpin->setValue(settings.backupIntervalHours);
     m_autoBackupCheck->setChecked(settings.autoBackupEnabled);
@@ -143,9 +162,18 @@ void SettingsView::loadSettings() {
 }
 
 void SettingsView::saveSettings() {
-    Core::SystemSettings settings;
+    Core::SystemSettings settings = Core::SystemManager::instance().settings(); // Get current settings to modify
+
     settings.theme = m_themeCombo->currentText().toLower();
-    settings.language = m_languageCombo->currentIndex() == 0 ? "en" : "es";
+
+    // Map display text to language code
+    if (m_languageCombo->currentText() == "English") settings.language = "en";
+    else if (m_languageCombo->currentText() == "Spanish") settings.language = "es";
+    else if (m_languageCombo->currentText() == "French") settings.language = "fr";
+    else if (m_languageCombo->currentText() == "Arabic") settings.language = "ar";
+    else if (m_languageCombo->currentText() == "Hindi") settings.language = "hi";
+    else settings.language = "en"; // Default
+
     settings.sessionTimeoutMinutes = m_sessionTimeoutSpin->value();
     settings.backupIntervalHours = m_backupIntervalSpin->value();
     settings.autoBackupEnabled = m_autoBackupCheck->isChecked();
@@ -153,25 +181,11 @@ void SettingsView::saveSettings() {
     settings.encryptionEnabled = m_encryptionCheck->isChecked();
     settings.tamperDetection = m_tamperCheck->isChecked();
 
-    auto* storage = Core::SystemManager::instance().storage();
-    if (storage) {
-        storage->updateSystemSettings(settings);
-    }
-
-    // Apply theme
-    if (settings.theme == "light") {
-        QFile styleFile(":/src/ui/styles/light.qss");
-        if (styleFile.open(QFile::ReadOnly)) {
-            qApp->setStyleSheet(QString::fromUtf8(styleFile.readAll()));
-        }
+    if (Core::SystemManager::instance().updateSettings(settings)) {
+        ToastNotification::show(this, "Settings saved successfully", ToastNotification::Success);
     } else {
-        QFile styleFile(":/src/ui/styles/modern.qss");
-        if (styleFile.open(QFile::ReadOnly)) {
-            qApp->setStyleSheet(QString::fromUtf8(styleFile.readAll()));
-        }
+        ToastNotification::show(this, "Failed to save settings", ToastNotification::Error);
     }
-
-    ToastNotification::show(this, "Settings saved successfully", ToastNotification::Success);
 }
 
 } // namespace Ballot::UI

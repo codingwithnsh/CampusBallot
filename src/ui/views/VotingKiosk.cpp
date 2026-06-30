@@ -1,5 +1,7 @@
 #include "VotingKiosk.h"
 #include "src/core/SystemManager.h"
+#include "src/ui/components/ToastNotification.h" // For error messages
+#include "src/modules/election/ElectionManager.h" // For casting votes
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -8,6 +10,7 @@
 #include <QFrame>
 #include <QGraphicsDropShadowEffect>
 #include <QApplication>
+#include <QDebug> // For debugging
 
 namespace Ballot::UI {
 
@@ -16,9 +19,9 @@ VotingKiosk::VotingKiosk(QWidget *parent) : QWidget(parent) {
 
     m_stateTimer = new QTimer(this);
     connect(m_stateTimer, &QTimer::timeout, this, &VotingKiosk::updateVotingState);
-    m_stateTimer->start(2000);
+    m_stateTimer->start(2000); // Check voting state every 2 seconds
 
-    updateVotingState();
+    updateVotingState(); // Initial check
 }
 
 void VotingKiosk::setupUi() {
@@ -43,6 +46,7 @@ void VotingKiosk::setupUi() {
     closeBtn->setStyleSheet("font-size: 20px; color: #9a9ab0; background: transparent; border: none; padding: 8px;");
     closeBtn->setCursor(Qt::PointingHandCursor);
     connect(closeBtn, &QPushButton::clicked, this, [this]() {
+        resetKiosk(); // Reset kiosk state on close
         auto* mw = window();
         if (mw) {
             mw->showNormal();
@@ -56,37 +60,53 @@ void VotingKiosk::setupUi() {
     // Pages
     m_pages = new QStackedWidget(this);
     m_pages->setStyleSheet("background-color: #1a1a2e;");
-    m_pages->addWidget(createWaitingPage());
-    m_pages->addWidget(createScanIdPage());
-    m_pages->addWidget(createVerifyPhotoPage());
-    m_pages->addWidget(createChooseCandidatePage());
-    m_pages->addWidget(createConfirmVotePage());
-    m_pages->addWidget(createSuccessPage());
+    m_pages->addWidget(createWaitingPage()); // Index 0
+    m_pages->addWidget(createScanIdPage()); // Index 1
+    m_pages->addWidget(createVerifyPhotoPage()); // Index 2
+    m_pages->addWidget(createChooseCandidatePage()); // Index 3
+    m_pages->addWidget(createConfirmVotePage()); // Index 4
+    m_pages->addWidget(createSuccessPage()); // Index 5
 
     layout->addWidget(m_pages, 1);
 }
 
 void VotingKiosk::updateVotingState() {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return;
+    if (!storage) {
+        qWarning() << "VotingKiosk: Storage not available.";
+        return;
+    }
 
     auto settings = storage->getSystemSettings();
-    if (!settings) return;
+    if (!settings) {
+        qWarning() << "VotingKiosk: System settings not available.";
+        return;
+    }
 
-    if (settings->votingStatus == Core::VotingState::Voting) {
-        if (m_pages->currentIndex() == 0) {
+    // Get the active election
+    m_activeElection = Election::ElectionManager::instance().getActiveElection();
+
+    if (m_activeElection && m_activeElection->state == Core::VotingState::Voting) {
+        if (m_pages->currentIndex() == 0) { // If currently on waiting page, transition to scan ID
             m_currentStep = 1;
             m_pages->setCurrentIndex(1);
+            loadCandidates(); // Load candidates when voting starts
         }
     } else {
+        // If voting is not in progress, always show the waiting page
         m_currentStep = 0;
         m_pages->setCurrentIndex(0);
-        auto *label = m_pages->widget(0)->findChild<QLabel*>("statusMsg");
+        QLabel *label = m_pages->widget(0)->findChild<QLabel*>("statusMsg");
         if (label) {
-            if (settings->votingStatus == Core::VotingState::Idle)
-                label->setText("Voting has not started yet.\nPlease wait for the session to begin.");
-            else
-                label->setText("Voting has ended.\nResults will be announced soon.");
+            if (!m_activeElection) {
+                label->setText("No election is currently configured or active.\nPlease contact an administrator.");
+            } else if (m_activeElection->state == Core::VotingState::Idle) {
+                label->setText("Voting has not started yet for '" + m_activeElection->title + "'.\nPlease wait for the session to begin.");
+            } else if (m_activeElection->state == Core::VotingState::Ended) {
+                label->setText("Voting for '" + m_activeElection->title + "' has ended.\nResults will be announced soon.");
+            } else if (m_activeElection->state == Core::VotingState::Paused) {
+                label->setText("Voting for '" + m_activeElection->title + "' is currently paused.\nPlease wait for it to resume.");
+            }
         }
     }
 }
@@ -95,8 +115,185 @@ void VotingKiosk::nextStep() {
     if (m_currentStep < m_pages->count() - 1) {
         m_currentStep++;
         m_pages->setCurrentIndex(m_currentStep);
+        // Special handling for candidate page to ensure candidates are loaded
+        if (m_currentStep == 3) {
+            loadCandidates();
+        }
+        // Special handling for confirm vote page to update candidate name
+        if (m_currentStep == 4 && m_candidateNameLabel && m_selectedCandidate) {
+            m_candidateNameLabel->setText(m_selectedCandidate->name);
+        }
     }
 }
+
+void VotingKiosk::prevStep() {
+    if (m_currentStep > 0) {
+        m_currentStep--;
+        m_pages->setCurrentIndex(m_currentStep);
+    }
+}
+
+void VotingKiosk::resetKiosk() {
+    m_currentStep = 0;
+    m_currentVoter.reset();
+    m_selectedCandidate.reset();
+    m_availableCandidates.clear();
+    m_activeElection.reset();
+    if (m_idInputEdit) m_idInputEdit->clear(); // Clear ID input
+    m_pages->setCurrentIndex(0); // Go back to waiting page
+    updateVotingState(); // Re-evaluate state in case voting has already started
+}
+
+void VotingKiosk::processScanId(const QString& admissionNumber) {
+    if (admissionNumber.isEmpty()) {
+        ToastNotification::show(this, "Please enter an admission number.", ToastNotification::Warning);
+        return;
+    }
+
+    auto* storage = Core::SystemManager::instance().storage();
+    if (!storage) {
+        ToastNotification::show(this, "System storage not available.", ToastNotification::Error);
+        return;
+    }
+
+    if (!m_activeElection) {
+        ToastNotification::show(this, "No active election to vote in.", ToastNotification::Warning);
+        resetKiosk();
+        return;
+    }
+
+    std::optional<Core::Student> student = storage->getStudentByAdmission(admissionNumber);
+
+    if (!student) {
+        ToastNotification::show(this, "Invalid admission number or student not found.", ToastNotification::Error);
+        if (m_idInputEdit) m_idInputEdit->clear();
+        return;
+    }
+
+    // Check if student has already voted in this election
+    if (storage->hasStudentVoted(student->id, m_activeElection->id)) {
+        ToastNotification::show(this, "You have already voted in this election.", ToastNotification::Warning);
+        if (m_idInputEdit) m_idInputEdit->clear();
+        return;
+    }
+
+    m_currentVoter = student;
+    ToastNotification::show(this, "Student verified: " + student->name, ToastNotification::Success);
+    nextStep();
+}
+
+void VotingKiosk::loadCandidates() {
+    m_availableCandidates.clear();
+    if (!m_activeElection) {
+        qWarning() << "No active election to load candidates for.";
+        return;
+    }
+
+    auto* storage = Core::SystemManager::instance().storage();
+    if (!storage) {
+        qWarning() << "Storage not available to load candidates.";
+        return;
+    }
+
+    m_availableCandidates = storage->getCandidates(m_activeElection->id);
+
+    // Clear existing candidate cards from the grid layout
+    if (m_candidatesGrid) {
+        QLayoutItem *item;
+        while((item = m_candidatesGrid->takeAt(0)) != nullptr) {
+            delete item->widget();
+            delete item;
+        }
+
+        // Repopulate the grid with new candidates
+        int row = 0;
+        int col = 0;
+        for (const auto& candidate : m_availableCandidates) {
+            auto *card = new QFrame(); // Parent is the content widget of the scroll area
+            card->setCursor(Qt::PointingHandCursor);
+            card->setStyleSheet(R"(
+                QFrame {
+                    background-color: #25253a;
+                    border: 2px solid #3d3d5c;
+                    border-radius: 16px;
+                }
+                QFrame:hover {
+                    border-color: #0078d4;
+                    background-color: rgba(0, 120, 212, 0.08);
+                }
+            )");
+
+            auto *shadow = new QGraphicsDropShadowEffect(card);
+            shadow->setBlurRadius(20);
+            shadow->setColor(QColor(0, 0, 0, 40));
+            shadow->setOffset(0, 4);
+            card->setGraphicsEffect(shadow);
+
+            auto *vbox = new QVBoxLayout(card);
+            vbox->setContentsMargins(16, 16, 16, 16);
+            vbox->setSpacing(8);
+
+            // Photo placeholder (can be replaced with actual image later)
+            auto *photo = new QFrame(card);
+            photo->setFixedSize(120, 120);
+            photo->setStyleSheet("background-color: #555; border-radius: 60px;"); // Generic color
+            vbox->addWidget(photo, 0, Qt::AlignCenter);
+
+            auto *name = new QLabel(candidate.name, card);
+            name->setStyleSheet("font-size: 20px; font-weight: 700; color: #ffffff; background: transparent;");
+            name->setAlignment(Qt::AlignCenter);
+            vbox->addWidget(name);
+
+            auto *party = new QLabel(candidate.party, card);
+            party->setStyleSheet("font-size: 13px; color: #9a9ab0; background: transparent;");
+            party->setAlignment(Qt::AlignCenter);
+            vbox->addWidget(party);
+
+            vbox->addStretch();
+
+            auto *selectBtn = new QPushButton("Select", card);
+            selectBtn->setStyleSheet("background-color: #0078d4; color: white; font-size: 16px; font-weight: 600; border-radius: 8px; padding: 10px;");
+            selectBtn->setCursor(Qt::PointingHandCursor);
+            vbox->addWidget(selectBtn);
+
+            connect(selectBtn, &QPushButton::clicked, this, [this, candidate]() {
+                m_selectedCandidate = candidate;
+                nextStep();
+            });
+
+            m_candidatesGrid->addWidget(card, row, col);
+            col++;
+            if (col >= 3) { // 3 candidates per row
+                col = 0;
+                row++;
+            }
+        }
+        m_candidatesGrid->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, 3); // Add stretch
+    }
+}
+
+void VotingKiosk::confirmVote() {
+    if (!m_currentVoter || !m_selectedCandidate || !m_activeElection) {
+        ToastNotification::show(this, "Error: Missing voter, candidate, or election information.", ToastNotification::Error);
+        resetKiosk();
+        return;
+    }
+
+    bool success = Election::ElectionManager::instance().castVote(
+        m_activeElection->id,
+        m_currentVoter->id,
+        m_selectedCandidate->id
+    );
+
+    if (success) {
+        ToastNotification::show(this, "Vote successfully recorded!", ToastNotification::Success);
+        nextStep(); // Go to success page
+    } else {
+        ToastNotification::show(this, "Failed to record vote. Please try again.", ToastNotification::Error);
+        resetKiosk(); // Go back to start
+    }
+}
+
 
 QWidget* VotingKiosk::createWaitingPage() {
     auto *page = new QWidget(this);
@@ -148,21 +345,26 @@ QWidget* VotingKiosk::createScanIdPage() {
     desc->setAlignment(Qt::AlignCenter);
     layout->addWidget(desc);
 
-    auto *idInput = new QLineEdit(page);
-    idInput->setPlaceholderText("Enter admission number or scan ID...");
-    idInput->setFixedWidth(400);
-    idInput->setFixedHeight(50);
-    idInput->setStyleSheet("font-size: 18px; text-align: center;");
-    layout->addWidget(idInput, 0, Qt::AlignCenter);
+    m_idInputEdit = new QLineEdit(page); // Assign to member variable
+    m_idInputEdit->setPlaceholderText("Enter admission number or scan ID...");
+    m_idInputEdit->setFixedHeight(50); // Set fixed height for consistency
+    m_idInputEdit->setStyleSheet("font-size: 18px; text-align: center;");
+    layout->addWidget(m_idInputEdit, 0, Qt::AlignCenter);
 
     layout->addSpacing(20);
 
     auto *btn = new QPushButton("Continue →", page);
-    btn->setFixedSize(300, 60);
+    btn->setFixedHeight(60); // Set fixed height for consistency
     btn->setStyleSheet("font-size: 22px; font-weight: 600; border-radius: 12px;");
     layout->addWidget(btn, 0, Qt::AlignCenter);
 
-    connect(btn, &QPushButton::clicked, this, &VotingKiosk::nextStep);
+    connect(btn, &QPushButton::clicked, this, [this]() {
+        processScanId(m_idInputEdit->text().trimmed());
+    });
+    connect(m_idInputEdit, &QLineEdit::returnPressed, this, [this]() {
+        processScanId(m_idInputEdit->text().trimmed());
+    });
+
 
     layout->addStretch();
     return page;
@@ -193,7 +395,7 @@ QWidget* VotingKiosk::createVerifyPhotoPage() {
 
     // Camera placeholder
     auto *cameraFrame = new QFrame(page);
-    cameraFrame->setFixedSize(320, 240);
+    cameraFrame->setFixedSize(320, 240); // Keep fixed size for camera feed for now
     cameraFrame->setStyleSheet("background-color: #000000; border: 2px solid #0078d4; border-radius: 12px;");
     auto *camLayout = new QVBoxLayout(cameraFrame);
     auto *camIcon = new QLabel("📷", cameraFrame);
@@ -207,10 +409,10 @@ QWidget* VotingKiosk::createVerifyPhotoPage() {
     auto *btnLayout = new QHBoxLayout();
     auto *cancelBtn = new QPushButton("← Back", page);
     cancelBtn->setObjectName("ghostButton");
-    cancelBtn->setFixedSize(200, 60);
+    cancelBtn->setFixedHeight(60);
     cancelBtn->setStyleSheet("font-size: 18px; border-radius: 12px;");
     auto *verifyBtn = new QPushButton("✓ Verify Identity", page);
-    verifyBtn->setFixedSize(300, 60);
+    verifyBtn->setFixedHeight(60);
     verifyBtn->setStyleSheet("background-color: #2e7d32; font-size: 20px; font-weight: 600; border-radius: 12px; color: white;");
 
     btnLayout->addStretch();
@@ -220,6 +422,7 @@ QWidget* VotingKiosk::createVerifyPhotoPage() {
     layout->addLayout(btnLayout);
 
     connect(verifyBtn, &QPushButton::clicked, this, &VotingKiosk::nextStep);
+    connect(cancelBtn, &QPushButton::clicked, this, &VotingKiosk::prevStep); // Go back to scan ID
 
     layout->addStretch();
     return page;
@@ -244,69 +447,12 @@ QWidget* VotingKiosk::createChooseCandidatePage() {
 
     auto *content = new QWidget();
     content->setStyleSheet("background: transparent;");
-    auto *grid = new QGridLayout(content);
-    grid->setSpacing(16);
+    m_candidatesGrid = new QGridLayout(content); // Assign to member variable
+    m_candidatesGrid->setSpacing(16);
+    m_candidatesGrid->setAlignment(Qt::AlignTop | Qt::AlignHCenter); // Align candidates to top and center
 
-    QStringList names = {"Alice Johnson", "Bob Smith", "Carol Davis", "David Wilson", "Eve Martinez", "Frank Brown"};
-    QStringList parties = {"Progressive Party", "Unity Coalition", "Forward Alliance", "People's Choice", "Reform Front", "Action Party"};
-
-    for (int i = 0; i < 6; ++i) {
-        auto *card = new QFrame(content);
-        card->setFixedSize(280, 340);
-        card->setCursor(Qt::PointingHandCursor);
-        card->setStyleSheet(R"(
-            QFrame {
-                background-color: #25253a;
-                border: 2px solid #3d3d5c;
-                border-radius: 16px;
-            }
-            QFrame:hover {
-                border-color: #0078d4;
-                background-color: rgba(0, 120, 212, 0.08);
-            }
-        )");
-
-        auto *shadow = new QGraphicsDropShadowEffect(card);
-        shadow->setBlurRadius(20);
-        shadow->setColor(QColor(0, 0, 0, 40));
-        shadow->setOffset(0, 4);
-        card->setGraphicsEffect(shadow);
-
-        auto *vbox = new QVBoxLayout(card);
-        vbox->setContentsMargins(16, 16, 16, 16);
-        vbox->setSpacing(8);
-
-        // Photo placeholder
-        auto *photo = new QFrame(card);
-        photo->setFixedSize(120, 120);
-        photo->setStyleSheet(QString("background-color: %1; border-radius: 60px;")
-            .arg(i == 0 ? "#0078d4" : i == 1 ? "#2e7d32" : i == 2 ? "#7b1fa2" : i == 3 ? "#f57c00" : i == 4 ? "#c62828" : "#00695c"));
-        vbox->addWidget(photo, 0, Qt::AlignCenter);
-
-        auto *name = new QLabel(names[i], card);
-        name->setStyleSheet("font-size: 20px; font-weight: 700; color: #ffffff; background: transparent;");
-        name->setAlignment(Qt::AlignCenter);
-        vbox->addWidget(name);
-
-        auto *party = new QLabel(parties[i], card);
-        party->setStyleSheet("font-size: 13px; color: #9a9ab0; background: transparent;");
-        party->setAlignment(Qt::AlignCenter);
-        vbox->addWidget(party);
-
-        vbox->addStretch();
-
-        auto *voteBtn = new QPushButton("Select", card);
-        voteBtn->setStyleSheet("background-color: #0078d4; color: white; font-size: 16px; font-weight: 600; border-radius: 8px; padding: 10px;");
-        voteBtn->setCursor(Qt::PointingHandCursor);
-        vbox->addWidget(voteBtn);
-
-        connect(voteBtn, &QPushButton::clicked, this, [this, names, i]() {
-            m_selectedCandidate = names[i];
-            nextStep();
-        });
-
-        grid->addWidget(card, i / 3, i % 3);
-    }
+    // Candidates will be loaded dynamically by loadCandidates() when this page is shown
+    // For now, ensure the grid is created.
 
     scroll->setWidget(content);
     layout->addWidget(scroll, 1);
@@ -337,10 +483,10 @@ QWidget* VotingKiosk::createConfirmVotePage() {
     warning->setAlignment(Qt::AlignCenter);
     layout->addWidget(warning);
 
-    auto *candidateLabel = new QLabel(m_selectedCandidate.isEmpty() ? "Candidate Name" : m_selectedCandidate, page);
-    candidateLabel->setStyleSheet("font-size: 40px; font-weight: 700; color: #0078d4; background: transparent;");
-    candidateLabel->setAlignment(Qt::AlignCenter);
-    layout->addWidget(candidateLabel);
+    m_candidateNameLabel = new QLabel("Candidate Name", page); // Assign to member variable
+    m_candidateNameLabel->setStyleSheet("font-size: 40px; font-weight: 700; color: #0078d4; background: transparent;");
+    m_candidateNameLabel->setAlignment(Qt::AlignCenter);
+    layout->addWidget(m_candidateNameLabel);
 
     auto *notice = new QLabel("This action cannot be undone.\nYour vote will be encrypted and recorded securely.", page);
     notice->setStyleSheet("font-size: 16px; color: #ffb300; line-height: 1.5; background: transparent;");
@@ -352,11 +498,11 @@ QWidget* VotingKiosk::createConfirmVotePage() {
     auto *btnLayout = new QHBoxLayout();
     auto *cancelBtn = new QPushButton("← Cancel", page);
     cancelBtn->setObjectName("ghostButton");
-    cancelBtn->setFixedSize(250, 64);
+    cancelBtn->setFixedHeight(64);
     cancelBtn->setStyleSheet("font-size: 20px; border-radius: 12px;");
     auto *confirmBtn = new QPushButton("✓ Confirm Vote", page);
+    confirmBtn->setFixedHeight(64);
     confirmBtn->setStyleSheet("background-color: #2e7d32; color: white; font-size: 22px; font-weight: 700; border-radius: 12px;");
-    confirmBtn->setFixedSize(300, 64);
 
     btnLayout->addStretch();
     btnLayout->addWidget(cancelBtn);
@@ -365,11 +511,8 @@ QWidget* VotingKiosk::createConfirmVotePage() {
     btnLayout->addStretch();
     layout->addLayout(btnLayout);
 
-    connect(confirmBtn, &QPushButton::clicked, this, &VotingKiosk::nextStep);
-    connect(cancelBtn, &QPushButton::clicked, this, [this]() {
-        m_currentStep = 1;
-        m_pages->setCurrentIndex(1);
-    });
+    connect(confirmBtn, &QPushButton::clicked, this, &VotingKiosk::confirmVote); // Connect to confirmVote
+    connect(cancelBtn, &QPushButton::clicked, this, &VotingKiosk::resetKiosk); // Reset kiosk on cancel
 
     layout->addStretch();
     return page;
@@ -400,10 +543,11 @@ QWidget* VotingKiosk::createSuccessPage() {
     layout->addStretch(1);
 
     auto *btn = new QPushButton("Return to Dashboard", page);
-    btn->setFixedSize(350, 64);
+    btn->setFixedHeight(64);
     btn->setStyleSheet("font-size: 20px; font-weight: 600; border-radius: 12px;");
     layout->addWidget(btn, 0, Qt::AlignCenter);
     connect(btn, &QPushButton::clicked, this, [this]() {
+        resetKiosk(); // Reset kiosk state
         auto* mw = window();
         if (mw) {
             mw->showNormal();
@@ -422,28 +566,36 @@ QWidget* VotingKiosk::createStepIndicator(int current, int total) {
     layout->setSpacing(8);
 
     for (int i = 1; i <= total; ++i) {
-        auto *step = new QFrame(widget);
-        step->setFixedSize(i == current ? 32 : 12, 12);
-        step->setStyleSheet(QString(
-            "background-color: %1; border-radius: %2px;"
-        ).arg(i <= current ? "#0078d4" : "#3d3d5c")
-         .arg(i == current ? "16" : "6"));
+        // Dot indicator
+        auto *dot = new QFrame(widget);
+        dot->setFixedSize(12, 12);
+        dot->setStyleSheet(QString(
+            "background-color: %1; border-radius: 6px;"
+        ).arg(i <= current ? "#0078d4" : "#3d3d5c"));
+        layout->addWidget(dot);
 
-        if (i == current) {
-            auto *label = new QLabel(QString("Step %1 of %2").arg(current).arg(total), widget);
-            label->setStyleSheet("font-size: 14px; color: #0078d4; font-weight: 600; margin-left: 8px; background: transparent;");
-            layout->addWidget(label);
+        // Line separator (except after the last dot)
+        if (i < total) {
+            auto *line = new QFrame(widget);
+            line->setFixedSize(30, 2);
+            line->setStyleSheet(QString("background-color: %1;").arg(i < current ? "#0078d4" : "#3d3d5c"));
+            layout->addWidget(line);
         }
-
-        layout->addWidget(step);
     }
+
+    // Current step text label
+    auto *label = new QLabel(QString("Step %1 of %2").arg(current).arg(total), widget);
+    label->setStyleSheet("font-size: 14px; color: #0078d4; font-weight: 600; margin-left: 8px; background: transparent;");
+    layout->addWidget(label);
 
     return widget;
 }
 
 void VotingKiosk::start() {
+    resetKiosk(); // Ensure kiosk is reset before starting
     m_currentStep = 1;
     m_pages->setCurrentIndex(1);
+    updateVotingState(); // Re-evaluate state in case voting has already started
 }
 
 } // namespace Ballot::UI

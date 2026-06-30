@@ -36,6 +36,11 @@ void BackupManager::initialize() {
             }
         }
     }
+    m_initialized = true; // Set initialized flag
+}
+
+bool BackupManager::isInitialized() const {
+    return m_initialized;
 }
 
 bool BackupManager::createBackup(const QString& name) {

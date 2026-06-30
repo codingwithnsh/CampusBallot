@@ -4,6 +4,7 @@
 #include <QStackedWidget>
 #include <memory>
 #include "src/ui/components/Sidebar.h"
+#include "SetupWizard.h" // Include SetupWizard header
 
 namespace Ballot::ViewModels { class DashboardViewModel; class AuthViewModel; class ResultsViewModel; }
 
@@ -15,7 +16,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override = default;
 
-    void switchToView(const QString& viewId);
+    Q_INVOKABLE void switchToView(const QString& viewId);
     void setUserAuthenticated(const QString& userName, const QString& role);
 
 private:
@@ -32,6 +33,7 @@ private:
     class AdminPanel *m_adminPanel;
     class UserManagementView *m_userManagement;
     class SettingsView *m_settingsView;
+    class SetupWizard *m_setupWizard; // Add SetupWizard member
 
     // ViewModels
     class ViewModels::DashboardViewModel *m_dashboardViewModel;

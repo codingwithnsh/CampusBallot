@@ -15,7 +15,12 @@ class DashboardViewModel : public QObject {
     Q_PROPERTY(double turnout READ turnout NOTIFY turnoutChanged)
     Q_PROPERTY(bool isMaster READ isMaster NOTIFY roleChanged)
     Q_PROPERTY(QString votingStatus READ votingStatus NOTIFY votingStatusChanged)
-    Q_PROPERTY(QString currentElection READ currentElection NOTIFY electionChanged)
+    Q_PROPERTY(QString currentElectionTitle READ currentElectionTitle NOTIFY currentElectionTitleChanged) // Changed from currentElection
+    Q_PROPERTY(QString dbStatus READ dbStatus NOTIFY dbStatusChanged)
+    Q_PROPERTY(QString storageType READ storageType NOTIFY storageTypeChanged)
+    Q_PROPERTY(QString serverStatus READ serverStatus NOTIFY serverStatusChanged)
+    Q_PROPERTY(QString auditStatus READ auditStatus NOTIFY auditStatusChanged)
+    Q_PROPERTY(QString backupStatus READ backupStatus NOTIFY backupStatusChanged)
 
 public:
     explicit DashboardViewModel(Core::IStorageProvider* storage, QObject *parent = nullptr);
@@ -26,7 +31,13 @@ public:
     double turnout() const;
     bool isMaster() const;
     QString votingStatus() const;
-    QString currentElection() const { return m_currentElection; }
+    QString currentElectionTitle() const { return m_currentElectionTitle; } // Changed from currentElection
+    QString dbStatus() const { return m_dbStatus; }
+    QString storageType() const { return m_storageType; }
+    QString serverStatus() const { return m_serverStatus; }
+    QString auditStatus() const { return m_auditStatus; }
+    QString backupStatus() const { return m_backupStatus; }
+
 
     void refresh();
     void startVoting();
@@ -38,15 +49,27 @@ signals:
     void turnoutChanged();
     void roleChanged();
     void votingStatusChanged();
-    void electionChanged();
+    void currentElectionTitleChanged(); // Changed from electionChanged
+    void dbStatusChanged();
+    void storageTypeChanged();
+    void serverStatusChanged();
+    void auditStatusChanged();
+    void backupStatusChanged();
     void errorOccurred(const QString& error);
 
 private:
     Core::IStorageProvider* m_storage;
     int m_totalStudents = 0;
     int m_votesCast = 0;
-    QString m_currentElection;
+    QString m_currentElectionTitle; // Changed from m_currentElection
     Core::VotingState m_status = Core::VotingState::Idle;
+
+    // New member variables for system health
+    QString m_dbStatus;
+    QString m_storageType;
+    QString m_serverStatus;
+    QString m_auditStatus;
+    QString m_backupStatus;
 };
 
 } // namespace Ballot::ViewModels

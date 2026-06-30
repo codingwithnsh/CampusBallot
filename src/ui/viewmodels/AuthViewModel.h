@@ -19,7 +19,7 @@ public:
     QString currentUser() const;
     QString currentRole() const;
 
-    void login(const QString& email, const QString& password);
+    void login(const QString& email, const QString& password, const QString& authType); // Modified login method
     void logout();
 
 signals:

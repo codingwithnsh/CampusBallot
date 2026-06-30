@@ -27,12 +27,20 @@ QString AuthViewModel::currentRole() const {
     return Auth::RBACManager::instance().roleToString(user.role);
 }
 
-void AuthViewModel::login(const QString& email, const QString& password) {
+void AuthViewModel::login(const QString& email, const QString& password, const QString& authType) {
     if (email.isEmpty() || password.isEmpty()) {
         emit loginError("Please enter email and password");
         return;
     }
-    Auth::AuthManager::instance().login(email, password);
+
+    if (authType == "Local") {
+        Auth::AuthManager::instance().login(email, password);
+    } else if (authType == "Firebase") {
+        // Placeholder for Firebase authentication
+        emit loginError("Firebase authentication is not yet implemented.");
+    } else {
+        emit loginError("Unknown authentication type.");
+    }
 }
 
 void AuthViewModel::logout() {

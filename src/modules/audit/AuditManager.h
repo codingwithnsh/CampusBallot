@@ -24,6 +24,7 @@ public:
     bool verifyLogIntegrity() const;
     void enableImmutability(bool enable);
     bool isImmutable() const;
+    bool isInitialized() const;
 
 signals:
     void logAdded(const Core::AuditLogEntry& entry);
@@ -31,11 +32,12 @@ signals:
 
 private:
     AuditManager();
-    void addToChain(const Core::AuditLogEntry& entry);
-    QByteArray calculateEntryHash(const Core::AuditLogEntry& entry) const;
+    void addToChain(Core::AuditLogEntry& entry);
+    QByteArray calculateEntryHash(const Core::AuditLogEntry& entry, const QByteArray& previousHash) const;
 
     bool m_immutable = true;
     QByteArray m_chainHash;
+    bool m_initialized = false; // New member variable
 };
 
 } // namespace Ballot::Audit

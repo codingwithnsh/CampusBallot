@@ -7,6 +7,7 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QJsonObject>
+#include <QLineEdit> // Include QLineEdit header
 
 namespace Ballot::UI {
 
@@ -14,6 +15,7 @@ class SetupWizard : public QWidget {
     Q_OBJECT
 public:
     explicit SetupWizard(QWidget *parent = nullptr);
+    bool eventFilter(QObject *obj, QEvent *event) override; // Declare eventFilter
 
 signals:
     void setupCompleted(const QVariantMap& config);
@@ -47,6 +49,12 @@ private:
     QString m_firebaseProjectId;
     QString m_firebaseDbUrl;
     QJsonObject m_firebaseConfig;
+
+    // Admin Account fields
+    QLineEdit *m_adminNameEdit = nullptr;
+    QLineEdit *m_adminEmailEdit = nullptr;
+    QLineEdit *m_adminPasswordEdit = nullptr;
+    QLineEdit *m_adminConfirmEdit = nullptr;
 };
 
 } // namespace Ballot::UI

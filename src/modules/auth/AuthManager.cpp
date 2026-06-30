@@ -59,7 +59,7 @@ bool AuthManager::login(const QString& username, const QString& password) {
         return false;
     }
 
-    QByteArray storedHash = QByteArray::fromHex(user->digitalSignature);
+    const QByteArray storedHash = user->digitalSignature;
     QByteArray salt = storedHash.left(16);
     QByteArray hash = storedHash.mid(16);
 

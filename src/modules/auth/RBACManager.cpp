@@ -141,11 +141,15 @@ QStringList RBACManager::getAllPermissions() const {
 Core::UserRole RBACManager::roleFromString(const QString& role) const {
     static const QHash<QString, Core::UserRole> map = {
         {"super_administrator", Core::UserRole::SuperAdministrator},
+        {"super administrator", Core::UserRole::SuperAdministrator},
         {"election_administrator", Core::UserRole::ElectionAdministrator},
+        {"election administrator", Core::UserRole::ElectionAdministrator},
         {"teacher", Core::UserRole::Teacher},
         {"student_volunteer", Core::UserRole::StudentVolunteer},
+        {"student volunteer", Core::UserRole::StudentVolunteer},
         {"observer", Core::UserRole::Observer},
-        {"result_auditor", Core::UserRole::ResultAuditor}
+        {"result_auditor", Core::UserRole::ResultAuditor},
+        {"result auditor", Core::UserRole::ResultAuditor}
     };
     return map.value(role.toLower(), Core::UserRole::Observer);
 }

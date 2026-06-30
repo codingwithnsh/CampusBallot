@@ -20,6 +20,7 @@ public:
     double turnout() const { return m_turnout; }
     QList<Core::ElectionResult> results() const { return m_results; }
     Core::Election currentElection() const { return m_election; }
+    QString currentElectionId() const;
     int totalVotes() const { return m_totalVotes; }
 
     void refresh();
@@ -31,7 +32,7 @@ public:
 signals:
     void resultsChanged();
     void exportCompleted(const QString& path);
-    void exportError(const QString& error);
+    void errorOccurred(const QString& error);
 
 private:
     Core::IStorageProvider* m_storage;

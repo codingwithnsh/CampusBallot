@@ -47,9 +47,14 @@ bool SystemManager::initialize(const QVariantMap& config) {
 bool SystemManager::initializeStorage(const QVariantMap& config) {
     QString providerType = config.value("storage_type", "sqlite").toString();
 
-    if (providerType == "sqlite") {
+    // Correctly handle "local_device" as SQLite
+    if (providerType == "sqlite" || providerType == "local_device") {
         m_storage = std::make_unique<Storage::SQLiteStorageProvider>();
     }
+    // Add other storage providers here if they exist (e.g., Firebase)
+    // else if (providerType == "firebase") {
+    //     m_storage = std::make_unique<Storage::FirebaseStorageProvider>();
+    // }
 
     if (!m_storage) return false;
 
@@ -70,6 +75,19 @@ bool SystemManager::shutdown() {
 IStorageProvider* SystemManager::storage() const { return m_storage.get(); }
 
 SystemSettings SystemManager::settings() const { return m_settings; }
+
+bool SystemManager::updateSettings(const SystemSettings& settings) {
+    if (!m_storage || !m_storage->updateSystemSettings(settings)) return false;
+    const bool themeChangedValue = m_settings.theme != settings.theme;
+    const bool accentChangedValue = m_settings.accentColor != settings.accentColor;
+    m_settings = settings;
+    Audit::AuditManager::instance().enableImmutability(settings.auditAllActions);
+    Backup::BackupManager::instance().setAutoBackup(settings.autoBackupEnabled, settings.backupIntervalHours);
+    if (themeChangedValue) emit themeChanged(settings.theme);
+    if (accentChangedValue) emit accentColorChanged(settings.accentColor);
+    emit settingsChanged();
+    return true;
+}
 
 bool SystemManager::isMaster() const { return m_settings.masterMachineId == m_machineId; }
 

@@ -26,6 +26,7 @@ public:
 
     bool exportBackup(const QString& backupId, const QString& targetPath);
     bool importBackup(const QString& filePath);
+    bool isInitialized() const;
 
 signals:
     void backupStarted(const QString& backupId);
@@ -43,6 +44,7 @@ private:
     QTimer* m_autoBackupTimer;
     bool m_autoBackupEnabled = true;
     int m_backupIntervalHours = 24;
+    bool m_initialized = false; // New member variable
 };
 
 } // namespace Ballot::Backup

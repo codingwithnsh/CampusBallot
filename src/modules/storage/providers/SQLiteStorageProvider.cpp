@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QUuid>
 #include <QDateTime>
+#include <QSet>
 
 namespace Ballot::Storage {
 
@@ -53,21 +54,24 @@ bool SQLiteStorageProvider::initSchema() {
         return true;
     };
 
-    exec(R"(CREATE TABLE IF NOT EXISTS elections (
+    bool ok = true;
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS elections (
         id TEXT PRIMARY KEY, title TEXT, description TEXT,
         start_date DATETIME, end_date DATETIME, state INTEGER DEFAULT 0,
         is_active INTEGER DEFAULT 0, created_by TEXT, created_at DATETIME,
+        eligible_classes TEXT, eligible_departments TEXT,
+        max_votes_per_student INTEGER DEFAULT 1,
         require_verification INTEGER DEFAULT 1
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS candidates (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS candidates (
         id TEXT PRIMARY KEY, election_id TEXT, name TEXT, manifesto TEXT,
         party TEXT, class_name TEXT, section TEXT, symbol TEXT,
         video_url TEXT, is_approved INTEGER DEFAULT 0, registered_at DATETIME,
         FOREIGN KEY(election_id) REFERENCES elections(id)
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS students (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS students (
         id TEXT PRIMARY KEY, name TEXT, admission_number TEXT UNIQUE,
         roll_number TEXT, class_name TEXT, section TEXT, age INTEGER,
         gender TEXT, email TEXT, phone TEXT, parent_name TEXT,
@@ -76,7 +80,7 @@ bool SQLiteStorageProvider::initSchema() {
         registered_at DATETIME
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS votes (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS votes (
         id TEXT PRIMARY KEY, election_id TEXT, student_id TEXT,
         candidate_id_encrypted TEXT, vote_hash BLOB, digital_signature BLOB,
         timestamp DATETIME, machine_id TEXT, is_audited INTEGER DEFAULT 0,
@@ -84,54 +88,66 @@ bool SQLiteStorageProvider::initSchema() {
         UNIQUE(student_id, election_id)
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS users (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY, name TEXT, department TEXT, class_name TEXT,
         section TEXT, phone TEXT, email TEXT UNIQUE, role INTEGER DEFAULT 4,
         permissions TEXT, digital_signature BLOB, is_active INTEGER DEFAULT 1,
         created_at DATETIME, last_login DATETIME
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS audit_logs (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS audit_logs (
         id TEXT PRIMARY KEY, timestamp DATETIME, user_id TEXT, user_name TEXT,
         action INTEGER, details TEXT, ip_address TEXT, machine_id TEXT,
         hash BLOB, is_immutable INTEGER DEFAULT 1
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS machines (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS machines (
         id TEXT PRIMARY KEY, name TEXT, is_master INTEGER DEFAULT 0,
         last_seen DATETIME, ip_address TEXT, os_version TEXT,
         app_version TEXT, is_online INTEGER DEFAULT 0
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS system_settings (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS system_settings (
         key TEXT PRIMARY KEY, value TEXT
     ))");
 
-    exec(R"(CREATE TABLE IF NOT EXISTS backups (
+    ok &= exec(R"(CREATE TABLE IF NOT EXISTS backups (
         id TEXT PRIMARY KEY, name TEXT, created_at DATETIME,
         size_bytes INTEGER, type TEXT, checksum BLOB,
         storage_path TEXT, is_encrypted INTEGER DEFAULT 1
     ))");
 
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('voting_status', '0')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('master_machine_id', '')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('allow_results_preview', '0')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('auto_backup_enabled', '1')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('backup_interval_hours', '24')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('session_timeout_minutes', '30')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('theme', 'dark')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('accent_color', '#0078d4')");
-    exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('language', 'en')");
+    // Migrate databases created by earlier releases.
+    QSet<QString> electionColumns;
+    if (query.exec("PRAGMA table_info(elections)")) {
+        while (query.next()) electionColumns.insert(query.value("name").toString());
+    }
+    if (!electionColumns.contains("eligible_classes")) ok &= exec("ALTER TABLE elections ADD COLUMN eligible_classes TEXT");
+    if (!electionColumns.contains("eligible_departments")) ok &= exec("ALTER TABLE elections ADD COLUMN eligible_departments TEXT");
+    if (!electionColumns.contains("max_votes_per_student")) ok &= exec("ALTER TABLE elections ADD COLUMN max_votes_per_student INTEGER DEFAULT 1");
 
-    return true;
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('voting_status', '0')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('master_machine_id', '')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('allow_results_preview', '0')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('auto_backup_enabled', '1')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('backup_interval_hours', '24')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('session_timeout_minutes', '30')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('audit_all_actions', '1')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('encryption_enabled', '1')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('tamper_detection', '1')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('theme', 'dark')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('accent_color', '#0078d4')");
+    ok &= exec("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('language', 'en')");
+
+    return ok;
 }
 
 // ---- Election Management ----
 
 bool SQLiteStorageProvider::createElection(const Core::Election& election) {
     QSqlQuery query(m_db);
-    query.prepare(R"(INSERT INTO elections (id, title, description, start_date, end_date, state, is_active, created_by, created_at, require_verification)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?))");
+    query.prepare(R"(INSERT INTO elections (id, title, description, start_date, end_date, state, is_active, created_by, created_at, eligible_classes, eligible_departments, max_votes_per_student, require_verification)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?))");
     query.addBindValue(election.id);
     query.addBindValue(election.title);
     query.addBindValue(election.description);
@@ -141,37 +157,43 @@ bool SQLiteStorageProvider::createElection(const Core::Election& election) {
     query.addBindValue(election.isActive ? 1 : 0);
     query.addBindValue(election.createdBy);
     query.addBindValue(election.createdAt);
+    query.addBindValue(election.eligibleClasses.join(","));
+    query.addBindValue(election.eligibleDepartments.join(","));
+    query.addBindValue(election.maxVotesPerStudent);
     query.addBindValue(election.requireVerification ? 1 : 0);
     return query.exec();
 }
 
 bool SQLiteStorageProvider::updateElection(const Core::Election& election) {
     QSqlQuery query(m_db);
-    query.prepare(R"(UPDATE elections SET title=?, description=?, start_date=?, end_date=?, state=?, is_active=?, require_verification=? WHERE id=?)");
+    query.prepare(R"(UPDATE elections SET title=?, description=?, start_date=?, end_date=?, state=?, is_active=?, eligible_classes=?, eligible_departments=?, max_votes_per_student=?, require_verification=? WHERE id=?)");
     query.addBindValue(election.title);
     query.addBindValue(election.description);
     query.addBindValue(election.startDate);
     query.addBindValue(election.endDate);
     query.addBindValue(static_cast<int>(election.state));
     query.addBindValue(election.isActive ? 1 : 0);
+    query.addBindValue(election.eligibleClasses.join(","));
+    query.addBindValue(election.eligibleDepartments.join(","));
+    query.addBindValue(election.maxVotesPerStudent);
     query.addBindValue(election.requireVerification ? 1 : 0);
     query.addBindValue(election.id);
     return query.exec();
 }
 
 bool SQLiteStorageProvider::deleteElection(const QString& id) {
+    if (!m_db.transaction()) return false;
     QSqlQuery query(m_db);
-    query.prepare("DELETE FROM elections WHERE id=?");
-    query.addBindValue(id);
-    if (!query.exec()) return false;
-    // Cascade cleanup
-    query.prepare("DELETE FROM candidates WHERE election_id=?");
-    query.addBindValue(id);
-    query.exec();
     query.prepare("DELETE FROM votes WHERE election_id=?");
     query.addBindValue(id);
-    query.exec();
-    return true;
+    if (!query.exec()) { m_db.rollback(); return false; }
+    query.prepare("DELETE FROM candidates WHERE election_id=?");
+    query.addBindValue(id);
+    if (!query.exec()) { m_db.rollback(); return false; }
+    query.prepare("DELETE FROM elections WHERE id=?");
+    query.addBindValue(id);
+    if (!query.exec()) { m_db.rollback(); return false; }
+    return m_db.commit();
 }
 
 std::optional<Core::Election> SQLiteStorageProvider::getElection(const QString& id) {
@@ -189,6 +211,9 @@ std::optional<Core::Election> SQLiteStorageProvider::getElection(const QString& 
         e.isActive = query.value("is_active").toBool();
         e.createdBy = query.value("created_by").toString();
         e.createdAt = query.value("created_at").toDateTime();
+        e.eligibleClasses = query.value("eligible_classes").toString().split(",", Qt::SkipEmptyParts);
+        e.eligibleDepartments = query.value("eligible_departments").toString().split(",", Qt::SkipEmptyParts);
+        e.maxVotesPerStudent = query.value("max_votes_per_student").toInt();
         e.requireVerification = query.value("require_verification").toBool();
         return e;
     }
@@ -209,6 +234,9 @@ QList<Core::Election> SQLiteStorageProvider::getElections() {
         e.isActive = query.value("is_active").toBool();
         e.createdBy = query.value("created_by").toString();
         e.createdAt = query.value("created_at").toDateTime();
+        e.eligibleClasses = query.value("eligible_classes").toString().split(",", Qt::SkipEmptyParts);
+        e.eligibleDepartments = query.value("eligible_departments").toString().split(",", Qt::SkipEmptyParts);
+        e.maxVotesPerStudent = query.value("max_votes_per_student").toInt();
         e.requireVerification = query.value("require_verification").toBool();
         list.append(e);
     }
@@ -415,13 +443,11 @@ QList<Core::Student> SQLiteStorageProvider::getEligibleVoters(const QString& ele
     if (!election) return list;
 
     QSqlQuery query(m_db);
-    if (!election->eligibleClasses.isEmpty()) {
-        // Filter by eligible classes
-        query.prepare("SELECT * FROM students WHERE has_voted=0 AND class_name IN (?) ORDER BY name");
-        query.addBindValue(election->eligibleClasses.join(","));
-    } else {
-        query.prepare("SELECT * FROM students WHERE has_voted=0 ORDER BY name");
-    }
+    QStringList conditions = {"NOT EXISTS (SELECT 1 FROM votes WHERE votes.student_id=students.id AND votes.election_id=?)"};
+    if (!election->eligibleClasses.isEmpty()) conditions << "instr(',' || ? || ',', ',' || class_name || ',') > 0";
+    query.prepare("SELECT * FROM students WHERE " + conditions.join(" AND ") + " ORDER BY name");
+    query.addBindValue(electionId);
+    if (!election->eligibleClasses.isEmpty()) query.addBindValue(election->eligibleClasses.join(","));
     if (query.exec()) {
         while (query.next()) list.append(parseStudent(query));
     }
@@ -463,7 +489,7 @@ bool SQLiteStorageProvider::createUser(const Core::User& user) {
 
 bool SQLiteStorageProvider::updateUser(const Core::User& user) {
     QSqlQuery query(m_db);
-    query.prepare(R"(UPDATE users SET name=?, department=?, class_name=?, section=?, phone=?, email=?, role=?, permissions=?, is_active=? WHERE id=?)");
+    query.prepare(R"(UPDATE users SET name=?, department=?, class_name=?, section=?, phone=?, email=?, role=?, permissions=?, digital_signature=?, is_active=? WHERE id=?)");
     query.addBindValue(user.name);
     query.addBindValue(user.department);
     query.addBindValue(user.className);
@@ -472,6 +498,7 @@ bool SQLiteStorageProvider::updateUser(const Core::User& user) {
     query.addBindValue(user.email);
     query.addBindValue(static_cast<int>(user.role));
     query.addBindValue(user.permissions.join(","));
+    query.addBindValue(user.digitalSignature);
     query.addBindValue(user.isActive ? 1 : 0);
     query.addBindValue(user.id);
     return query.exec();
@@ -739,6 +766,9 @@ std::optional<Core::SystemSettings> SQLiteStorageProvider::getSystemSettings() {
         else if (key == "auto_backup_enabled") settings.autoBackupEnabled = (value == "1");
         else if (key == "backup_interval_hours") settings.backupIntervalHours = value.toInt();
         else if (key == "session_timeout_minutes") settings.sessionTimeoutMinutes = value.toInt();
+        else if (key == "audit_all_actions") settings.auditAllActions = (value == "1");
+        else if (key == "encryption_enabled") settings.encryptionEnabled = (value == "1");
+        else if (key == "tamper_detection") settings.tamperDetection = (value == "1");
         else if (key == "theme") settings.theme = value;
         else if (key == "accent_color") settings.accentColor = value;
         else if (key == "language") settings.language = value;
@@ -761,6 +791,9 @@ bool SQLiteStorageProvider::updateSystemSettings(const Core::SystemSettings& set
     ok &= set("auto_backup_enabled", settings.autoBackupEnabled ? "1" : "0");
     ok &= set("backup_interval_hours", QString::number(settings.backupIntervalHours));
     ok &= set("session_timeout_minutes", QString::number(settings.sessionTimeoutMinutes));
+    ok &= set("audit_all_actions", settings.auditAllActions ? "1" : "0");
+    ok &= set("encryption_enabled", settings.encryptionEnabled ? "1" : "0");
+    ok &= set("tamper_detection", settings.tamperDetection ? "1" : "0");
     ok &= set("theme", settings.theme);
     ok &= set("accent_color", settings.accentColor);
     ok &= set("language", settings.language);

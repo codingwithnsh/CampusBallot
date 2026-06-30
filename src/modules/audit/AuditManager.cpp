@@ -24,7 +24,14 @@ void AuditManager::initialize() {
         if (settings) {
             m_immutable = settings->auditAllActions;
         }
+        const auto logs = storage->getAuditLogs();
+        if (!logs.isEmpty()) m_chainHash = logs.first().hash;
     }
+    m_initialized = true; // Set initialized flag
+}
+
+bool AuditManager::isInitialized() const {
+    return m_initialized;
 }
 
 void AuditManager::log(Core::AuditAction action, const QString& details, const QString& userId) {
@@ -123,13 +130,11 @@ bool AuditManager::exportLogs(const QString& filePath, const QString& format) {
 bool AuditManager::verifyLogIntegrity() const {
     auto logs = getLogs();
     QByteArray previousHash;
-    for (const auto& log : logs) {
+    for (auto it = logs.crbegin(); it != logs.crend(); ++it) {
+        const auto& log = *it;
         if (log.isImmutable && !log.hash.isEmpty()) {
-            QByteArray computed = calculateEntryHash(log);
+            QByteArray computed = calculateEntryHash(log, previousHash);
             if (computed != log.hash) return false;
-            if (!previousHash.isEmpty()) {
-                // Verify chain continuity
-            }
             previousHash = log.hash;
         }
     }
@@ -144,14 +149,13 @@ bool AuditManager::isImmutable() const {
     return m_immutable;
 }
 
-void AuditManager::addToChain(const Core::AuditLogEntry& entry) {
+void AuditManager::addToChain(Core::AuditLogEntry& entry) {
     if (!m_immutable) return;
-    Core::AuditLogEntry e = entry;
-    e.hash = calculateEntryHash(e);
-    m_chainHash = e.hash;
+    entry.hash = calculateEntryHash(entry, m_chainHash);
+    m_chainHash = entry.hash;
 }
 
-QByteArray AuditManager::calculateEntryHash(const Core::AuditLogEntry& entry) const {
+QByteArray AuditManager::calculateEntryHash(const Core::AuditLogEntry& entry, const QByteArray& previousHash) const {
     QByteArray data;
     data.append(entry.id.toUtf8());
     data.append(entry.timestamp.toString(Qt::ISODate).toUtf8());
@@ -159,7 +163,7 @@ QByteArray AuditManager::calculateEntryHash(const Core::AuditLogEntry& entry) co
     data.append(QByteArray::number(static_cast<int>(entry.action)));
     data.append(entry.details.toUtf8());
     data.append(entry.machineId.toUtf8());
-    data.append(m_chainHash);
+    data.append(previousHash);
     return Security::HashProvider::sha256(data);
 }
 

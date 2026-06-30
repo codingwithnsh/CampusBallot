@@ -8,8 +8,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "D:/Qt/6.11.1/mingw_64")
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network Charts Svg)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network Charts Svg PrintSupport)
 
 set(SOURCES
     main.cpp
@@ -103,6 +102,7 @@ target_link_libraries(TheRealCampusBallot PRIVATE
     Qt6::Network
     Qt6::Charts
     Qt6::Svg
+    Qt6::PrintSupport
 )
 
 if(WIN32)

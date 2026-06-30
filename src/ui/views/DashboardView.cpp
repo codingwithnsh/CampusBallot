@@ -8,6 +8,7 @@
 #include <QScrollArea>
 #include <QGraphicsDropShadowEffect>
 #include <QLocale>
+#include "src/ui/components/ToastNotification.h"
 
 namespace Ballot::UI {
 
@@ -27,6 +28,15 @@ void DashboardView::setViewModel(ViewModels::DashboardViewModel* vm) {
         connect(m_viewModel, &ViewModels::DashboardViewModel::votingStatusChanged, this, &DashboardView::updateUi);
         connect(m_viewModel, &ViewModels::DashboardViewModel::roleChanged, this, &DashboardView::updateUi);
         connect(m_viewModel, &ViewModels::DashboardViewModel::totalStudentsChanged, this, &DashboardView::updateUi);
+        connect(m_viewModel, &ViewModels::DashboardViewModel::currentElectionTitleChanged, this, &DashboardView::updateUi); // New connection
+        connect(m_viewModel, &ViewModels::DashboardViewModel::dbStatusChanged, this, &DashboardView::updateUi); // New connection
+        connect(m_viewModel, &ViewModels::DashboardViewModel::storageTypeChanged, this, &DashboardView::updateUi); // New connection
+        connect(m_viewModel, &ViewModels::DashboardViewModel::serverStatusChanged, this, &DashboardView::updateUi); // New connection
+        connect(m_viewModel, &ViewModels::DashboardViewModel::auditStatusChanged, this, &DashboardView::updateUi); // New connection
+        connect(m_viewModel, &ViewModels::DashboardViewModel::backupStatusChanged, this, &DashboardView::updateUi); // New connection
+        connect(m_viewModel, &ViewModels::DashboardViewModel::errorOccurred, this, [this](const QString& error) {
+            ToastNotification::show(this, error, ToastNotification::Error);
+        });
         updateUi();
     }
 }
@@ -100,6 +110,20 @@ void DashboardView::setupUi() {
     auto *outerLayout = new QVBoxLayout(this);
     outerLayout->setContentsMargins(0, 0, 0, 0);
     outerLayout->addWidget(scrollArea);
+
+    // Connect buttons once in setupUi
+    connect(m_startVotingBtn, &QPushButton::clicked, this, [this]() {
+        if (m_viewModel) m_viewModel->startVoting();
+    });
+    connect(m_endVotingBtn, &QPushButton::clicked, this, [this]() {
+        if (m_viewModel) m_viewModel->endVoting();
+    });
+    connect(m_kioskBtn, &QPushButton::clicked, this, [this]() {
+        auto* mw = window();
+        if (mw) {
+            QMetaObject::invokeMethod(mw, "switchToView", Qt::QueuedConnection, Q_ARG(QString, "voting"));
+        }
+    });
 }
 
 QWidget* DashboardView::createSystemHealthSection() {
@@ -127,11 +151,11 @@ QWidget* DashboardView::createSystemHealthSection() {
         return item;
     };
 
-    grid->addWidget(createHealthItem("Database Status", m_dbStatus, "● Connected", "#4caf50"), 0, 0);
-    grid->addWidget(createHealthItem("Storage Type", m_storageType, "SQLite", "#e0e0e0"), 0, 1);
-    grid->addWidget(createHealthItem("Server Status", m_serverStatus, "● Online", "#4caf50"), 0, 2);
-    grid->addWidget(createHealthItem("Audit Status", m_auditStatus, "● Active", "#4caf50"), 1, 0);
-    grid->addWidget(createHealthItem("Backup Status", m_backupStatus, "● Active", "#4caf50"), 1, 1);
+    grid->addWidget(createHealthItem("Database Status", m_dbStatus, "● Disconnected", "#f44336"), 0, 0); // Default to disconnected
+    grid->addWidget(createHealthItem("Storage Type", m_storageType, "Unknown", "#e0e0e0"), 0, 1);
+    grid->addWidget(createHealthItem("Server Status", m_serverStatus, "● Offline", "#f44336"), 0, 2); // Default to offline
+    grid->addWidget(createHealthItem("Audit Status", m_auditStatus, "● Inactive", "#f44336"), 1, 0); // Default to inactive
+    grid->addWidget(createHealthItem("Backup Status", m_backupStatus, "● Inactive", "#f44336"), 1, 1); // Default to inactive
 
     layout->addLayout(grid);
     return section;
@@ -182,18 +206,18 @@ void DashboardView::updateUi() {
     m_startVotingBtn->setVisible(isAdmin);
     m_endVotingBtn->setVisible(isAdmin);
 
-    QString status = m_viewModel->votingStatus();
-    m_statusLabel->setText("● " + status);
+    QString votingStatus = m_viewModel->votingStatus();
+    m_statusLabel->setText("● " + votingStatus);
 
-    if (status == "In Progress") {
+    if (votingStatus == "In Progress") {
         m_statusLabel->setStyleSheet("background-color: #1b5e20; color: #a5d6a7; font-weight: 600; font-size: 14px; padding: 8px 20px; border-radius: 20px;");
         m_startVotingBtn->setEnabled(false);
         m_endVotingBtn->setEnabled(true);
-    } else if (status == "Not Started") {
+    } else if (votingStatus == "Not Started") {
         m_statusLabel->setStyleSheet("background-color: #2d2d44; color: #ffb300; font-weight: 600; font-size: 14px; padding: 8px 20px; border-radius: 20px;");
         m_startVotingBtn->setEnabled(true);
         m_endVotingBtn->setEnabled(false);
-    } else {
+    } else { // Ended or other states
         m_statusLabel->setStyleSheet("background-color: #b71c1c; color: #ef9a9a; font-weight: 600; font-size: 14px; padding: 8px 20px; border-radius: 20px;");
         m_startVotingBtn->setEnabled(false);
         m_endVotingBtn->setEnabled(false);
@@ -204,20 +228,23 @@ void DashboardView::updateUi() {
     m_remainingCard->setValue(QLocale().toString(m_viewModel->totalStudents() - m_viewModel->votesCast()));
     m_turnoutCard->setValue(QString::number(m_viewModel->turnout(), 'f', 1) + "%");
 
-    m_electionTitle->setText("Current Election: " + status);
+    // Update election title
+    m_electionTitle->setText("Current Election: " + m_viewModel->currentElectionTitle());
 
-    connect(m_startVotingBtn, &QPushButton::clicked, this, [this]() {
-        if (m_viewModel) m_viewModel->startVoting();
-    });
-    connect(m_endVotingBtn, &QPushButton::clicked, this, [this]() {
-        if (m_viewModel) m_viewModel->endVoting();
-    });
-    connect(m_kioskBtn, &QPushButton::clicked, this, [this]() {
-        auto* mw = window();
-        if (mw) {
-            QMetaObject::invokeMethod(mw, "switchToView", Qt::QueuedConnection, Q_ARG(QString, "voting"));
-        }
-    });
+    // Update system health statuses
+    m_dbStatus->setText(m_viewModel->dbStatus());
+    m_dbStatus->setStyleSheet(QString("font-size: 16px; font-weight: 600; color: %1; background: transparent;").arg(m_viewModel->dbStatus().contains("Connected") ? "#4caf50" : "#f44336"));
+
+    m_storageType->setText(m_viewModel->storageType());
+
+    m_serverStatus->setText(m_viewModel->serverStatus());
+    m_serverStatus->setStyleSheet(QString("font-size: 16px; font-weight: 600; color: %1; background: transparent;").arg(m_viewModel->serverStatus().contains("Online") ? "#4caf50" : "#f44336"));
+
+    m_auditStatus->setText(m_viewModel->auditStatus());
+    m_auditStatus->setStyleSheet(QString("font-size: 16px; font-weight: 600; color: %1; background: transparent;").arg(m_viewModel->auditStatus().contains("Active") ? "#4caf50" : "#f44336"));
+
+    m_backupStatus->setText(m_viewModel->backupStatus());
+    m_backupStatus->setStyleSheet(QString("font-size: 16px; font-weight: 600; color: %1; background: transparent;").arg(m_viewModel->backupStatus().contains("Active") ? "#4caf50" : "#f44336"));
 }
 
 } // namespace Ballot::UI

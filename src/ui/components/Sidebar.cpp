@@ -186,6 +186,10 @@ void Sidebar::setItemBadge(const QString& id, int count) {
     }
 }
 
+void Sidebar::setItemVisible(const QString& id, bool visible) {
+    if (m_buttons.contains(id)) m_buttons[id]->setVisible(visible);
+}
+
 void Sidebar::setUserInfo(const QString& name, const QString& role, const QPixmap& avatar) {
     m_userName->setText(name);
     m_userRole->setText(role);

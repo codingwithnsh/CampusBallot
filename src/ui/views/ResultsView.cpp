@@ -1,4 +1,5 @@
 #include "ResultsView.h"
+#include "src/ui/components/ToastNotification.h" // Include ToastNotification
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -18,8 +19,12 @@ void ResultsView::setViewModel(ViewModels::ResultsViewModel* vm) {
     if (vm) {
         connect(vm, &ViewModels::ResultsViewModel::resultsChanged, this, &ResultsView::updateUi);
         connect(vm, &ViewModels::ResultsViewModel::exportCompleted, this, [this](const QString& path) {
-            // Toast notification would go here
+            ToastNotification::show(this, "Results exported to: " + path, ToastNotification::Success);
         });
+        connect(vm, &ViewModels::ResultsViewModel::errorOccurred, this, [this](const QString& error) {
+            ToastNotification::show(this, error, ToastNotification::Error);
+        });
+        updateUi(); // Initial UI update when view model is set
     }
 }
 
@@ -121,6 +126,10 @@ void ResultsView::setupUi() {
         QString path = QFileDialog::getSaveFileName(this, "Export JSON", "results.json", "JSON (*.json)");
         if (!path.isEmpty() && m_viewModel) m_viewModel->exportResults(path, "json");
     });
+    connect(m_exportPdfBtn, &QPushButton::clicked, this, [this]() {
+        QString path = QFileDialog::getSaveFileName(this, "Export PDF", "results.pdf", "PDF (*.pdf)");
+        if (!path.isEmpty() && m_viewModel) m_viewModel->exportResults(path, "pdf");
+    });
 
     exportLayout->addWidget(m_exportCsvBtn);
     exportLayout->addWidget(m_exportJsonBtn);
@@ -147,12 +156,26 @@ void ResultsView::setupUi() {
 void ResultsView::updateUi() {
     if (!m_viewModel) return;
 
-    // Update election selector
+    // Store current election ID to re-select it after updating the list
+    QString currentElectionId = m_viewModel->currentElectionId();
+
     m_electionSelector->blockSignals(true);
     m_electionSelector->clear();
     auto elections = m_viewModel->getElections();
-    for (const auto& e : elections) {
+    int currentIndex = -1;
+    for (int i = 0; i < elections.size(); ++i) {
+        const auto& e = elections[i];
         m_electionSelector->addItem(e.title, e.id);
+        if (e.id == currentElectionId) {
+            currentIndex = i;
+        }
+    }
+    if (currentIndex != -1) {
+        m_electionSelector->setCurrentIndex(currentIndex);
+    } else if (!elections.isEmpty()) {
+        // If current election not found (e.g., deleted), select the first one
+        m_electionSelector->setCurrentIndex(0);
+        m_viewModel->setElection(elections.first().id);
     }
     m_electionSelector->blockSignals(false);
 

@@ -17,14 +17,16 @@ enum class UserRole {
     Teacher,
     StudentVolunteer,
     Observer,
-    ResultAuditor
+    ResultAuditor,
+    Count
 };
 
 enum class VotingState {
     Idle,
     Voting,
     Ended,
-    Paused
+    Paused,
+    Unknown
 };
 
 enum class StorageProviderType {
@@ -61,7 +63,14 @@ enum class AuditAction {
     SystemUpdate,
     TamperDetected,
     IntegrityCheckPassed,
-    IntegrityCheckFailed
+    IntegrityCheckFailed,
+    ElectionStarted,
+    ElectionEnded,
+    ElectionPaused,
+    CandidateAdded,
+    CandidateModified,
+    CandidateDeleted,
+    VoteCast
 };
 
 struct User {

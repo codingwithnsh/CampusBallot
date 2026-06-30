@@ -25,6 +25,7 @@ public:
 
     IStorageProvider* storage() const;
     SystemSettings settings() const;
+    bool updateSettings(const SystemSettings& settings);
     bool isMaster() const;
     QString machineId() const;
     QString machineName() const;

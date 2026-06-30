@@ -42,7 +42,8 @@ void LoginView::setupUi() {
 
     auto *loginCard = new QFrame(this);
     loginCard->setObjectName("loginCard");
-    loginCard->setFixedSize(440, 590);
+    // Removed fixed size to allow layout to manage it, or set a minimum size if desired
+    loginCard->setMinimumSize(440, 500); // Set a minimum size instead of fixed
     loginCard->setStyleSheet(R"(
         QFrame#loginCard {
             background-color: rgba(18, 27, 46, 238);
@@ -83,6 +84,50 @@ void LoginView::setupUi() {
 
     layout->addSpacing(16);
 
+    // Auth Type Selector
+    auto *authTypeLabel = new QLabel("Authentication Type", loginCard);
+    authTypeLabel->setStyleSheet("font-size: 13px; font-weight: 600; color: #e0e0e0; background: transparent;");
+    layout->addWidget(authTypeLabel);
+
+    m_authTypeComboBox = new QComboBox(loginCard);
+    m_authTypeComboBox->addItem("Local");
+    m_authTypeComboBox->addItem("Firebase");
+    m_authTypeComboBox->setFixedHeight(44); // Consistent height with buttons
+    m_authTypeComboBox->setStyleSheet(R"(
+        QComboBox {
+            background-color: #374151;
+            color: #ffffff;
+            border: 1px solid #4b5563;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 15px;
+            min-height: 24px;
+        }
+        QComboBox::drop-down {
+            border: 0px;
+        }
+        QComboBox::down-arrow {
+            width: 16px;
+            height: 16px;
+        }
+        QComboBox:hover {
+            border: 1px solid #6b7280;
+        }
+        QComboBox:on {
+            border: 1px solid #38bdf8;
+        }
+        QComboBox QAbstractItemView {
+            background-color: #374151;
+            color: #ffffff;
+            selection-background-color: #38bdf8;
+            border: 1px solid #4b5563;
+            border-radius: 8px;
+        }
+    )");
+    layout->addWidget(m_authTypeComboBox);
+
+    layout->addSpacing(16); // Increased spacing for better separation
+
     // Email
     auto *emailLabel = new QLabel("Email", loginCard);
     emailLabel->setStyleSheet("font-size: 13px; font-weight: 600; color: #e0e0e0; background: transparent;");
@@ -90,6 +135,7 @@ void LoginView::setupUi() {
 
     m_emailEdit = new QLineEdit(loginCard);
     m_emailEdit->setPlaceholderText("Enter your email");
+    m_emailEdit->setFixedHeight(44); // Set fixed height
     layout->addWidget(m_emailEdit);
 
     layout->addSpacing(8);
@@ -102,6 +148,7 @@ void LoginView::setupUi() {
     m_passwordEdit = new QLineEdit(loginCard);
     m_passwordEdit->setPlaceholderText("Enter your password");
     m_passwordEdit->setEchoMode(QLineEdit::Password);
+    m_passwordEdit->setFixedHeight(44); // Set fixed height
     layout->addWidget(m_passwordEdit);
 
     auto *recoveryLayout = new QHBoxLayout();
@@ -170,8 +217,29 @@ void LoginView::setupUi() {
     )");
     layout->addWidget(m_loginButton);
 
+    // Sign Up button
+    m_signupButton = new QPushButton("Sign Up", loginCard);
+    m_signupButton->setFixedHeight(44);
+    m_signupButton->setStyleSheet(R"(
+        QPushButton {
+            background-color: #4CAF50; /* Green color for sign up */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        QPushButton:hover { background-color: #66BB6A; }
+        QPushButton:pressed { background-color: #388E3C; }
+    )");
+    layout->addWidget(m_signupButton);
+
     connect(m_loginButton, &QPushButton::clicked, this, [this]() {
-        emit loginRequested(m_emailEdit->text(), m_passwordEdit->text());
+        emit loginRequested(m_emailEdit->text(), m_passwordEdit->text(), m_authTypeComboBox->currentText());
+    });
+
+    connect(m_signupButton, &QPushButton::clicked, this, [this]() {
+        emit signupRequested();
     });
 
     connect(m_passwordEdit, &QLineEdit::returnPressed, m_loginButton, &QPushButton::click);

@@ -36,6 +36,7 @@ public:
     void addItem(const QString& id, const QString& text, const QString& icon = "");
     void setActiveItem(const QString& id);
     void setItemBadge(const QString& id, int count);
+    void setItemVisible(const QString& id, bool visible);
     void setUserInfo(const QString& name, const QString& role, const QPixmap& avatar = QPixmap());
 
 signals:
