@@ -1,0 +1,3584 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26200 - AMD64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompiler.cmake:63 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:69 (_cmake_find_compiler)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER"
+    description: "CXX compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: false
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "c++"
+      - "g++"
+      - "cl"
+      - "bcc"
+      - "icx"
+      - "clang++"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/c++.com"
+      - "C:/Windows/System32/c++.exe"
+      - "C:/Windows/System32/c++"
+      - "C:/Windows/System32/g++.com"
+      - "C:/Windows/System32/g++.exe"
+      - "C:/Windows/System32/g++"
+      - "C:/Windows/System32/cl.com"
+      - "C:/Windows/System32/cl.exe"
+      - "C:/Windows/System32/cl"
+      - "C:/Windows/System32/bcc.com"
+      - "C:/Windows/System32/bcc.exe"
+      - "C:/Windows/System32/bcc"
+      - "C:/Windows/System32/icx.com"
+      - "C:/Windows/System32/icx.exe"
+      - "C:/Windows/System32/icx"
+      - "C:/Windows/System32/clang++.com"
+      - "C:/Windows/System32/clang++.exe"
+      - "C:/Windows/System32/clang++"
+      - "C:/Windows/c++.com"
+      - "C:/Windows/c++.exe"
+      - "C:/Windows/c++"
+      - "C:/Windows/g++.com"
+      - "C:/Windows/g++.exe"
+      - "C:/Windows/g++"
+      - "C:/Windows/cl.com"
+      - "C:/Windows/cl.exe"
+      - "C:/Windows/cl"
+      - "C:/Windows/bcc.com"
+      - "C:/Windows/bcc.exe"
+      - "C:/Windows/bcc"
+      - "C:/Windows/icx.com"
+      - "C:/Windows/icx.exe"
+      - "C:/Windows/icx"
+      - "C:/Windows/clang++.com"
+      - "C:/Windows/clang++.exe"
+      - "C:/Windows/clang++"
+      - "C:/Windows/System32/wbem/c++.com"
+      - "C:/Windows/System32/wbem/c++.exe"
+      - "C:/Windows/System32/wbem/c++"
+      - "C:/Windows/System32/wbem/g++.com"
+      - "C:/Windows/System32/wbem/g++.exe"
+      - "C:/Windows/System32/wbem/g++"
+      - "C:/Windows/System32/wbem/cl.com"
+      - "C:/Windows/System32/wbem/cl.exe"
+      - "C:/Windows/System32/wbem/cl"
+      - "C:/Windows/System32/wbem/bcc.com"
+      - "C:/Windows/System32/wbem/bcc.exe"
+      - "C:/Windows/System32/wbem/bcc"
+      - "C:/Windows/System32/wbem/icx.com"
+      - "C:/Windows/System32/wbem/icx.exe"
+      - "C:/Windows/System32/wbem/icx"
+      - "C:/Windows/System32/wbem/clang++.com"
+      - "C:/Windows/System32/wbem/clang++.exe"
+      - "C:/Windows/System32/wbem/clang++"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/c++.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/c++.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/c++"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/g++.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/g++.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/g++"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/cl.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/cl.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/cl"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/bcc.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/bcc.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/bcc"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/icx.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/icx.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/icx"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/clang++.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/clang++.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/clang++"
+      - "C:/Windows/System32/OpenSSH/c++.com"
+      - "C:/Windows/System32/OpenSSH/c++.exe"
+      - "C:/Windows/System32/OpenSSH/c++"
+      - "C:/Windows/System32/OpenSSH/g++.com"
+      - "C:/Windows/System32/OpenSSH/g++.exe"
+      - "C:/Windows/System32/OpenSSH/g++"
+      - "C:/Windows/System32/OpenSSH/cl.com"
+      - "C:/Windows/System32/OpenSSH/cl.exe"
+      - "C:/Windows/System32/OpenSSH/cl"
+      - "C:/Windows/System32/OpenSSH/bcc.com"
+      - "C:/Windows/System32/OpenSSH/bcc.exe"
+      - "C:/Windows/System32/OpenSSH/bcc"
+      - "C:/Windows/System32/OpenSSH/icx.com"
+      - "C:/Windows/System32/OpenSSH/icx.exe"
+      - "C:/Windows/System32/OpenSSH/icx"
+      - "C:/Windows/System32/OpenSSH/clang++.com"
+      - "C:/Windows/System32/OpenSSH/clang++.exe"
+      - "C:/Windows/System32/OpenSSH/clang++"
+      - "C:/Program Files/Git/cmd/c++.com"
+      - "C:/Program Files/Git/cmd/c++.exe"
+      - "C:/Program Files/Git/cmd/c++"
+      - "C:/Program Files/Git/cmd/g++.com"
+      - "C:/Program Files/Git/cmd/g++.exe"
+      - "C:/Program Files/Git/cmd/g++"
+      - "C:/Program Files/Git/cmd/cl.com"
+      - "C:/Program Files/Git/cmd/cl.exe"
+      - "C:/Program Files/Git/cmd/cl"
+      - "C:/Program Files/Git/cmd/bcc.com"
+      - "C:/Program Files/Git/cmd/bcc.exe"
+      - "C:/Program Files/Git/cmd/bcc"
+      - "C:/Program Files/Git/cmd/icx.com"
+      - "C:/Program Files/Git/cmd/icx.exe"
+      - "C:/Program Files/Git/cmd/icx"
+      - "C:/Program Files/Git/cmd/clang++.com"
+      - "C:/Program Files/Git/cmd/clang++.exe"
+      - "C:/Program Files/Git/cmd/clang++"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/c++.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/c++.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/c++"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/g++.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/g++.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/g++"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/cl.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/cl.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/cl"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/bcc.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/bcc.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/bcc"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/icx.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/icx.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/icx"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/clang++.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/clang++.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/clang++"
+      - "D:/PyCharm/PyCharm 2026.1/bin/c++.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/c++.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/c++"
+      - "D:/PyCharm/PyCharm 2026.1/bin/g++.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/g++.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/g++"
+      - "D:/PyCharm/PyCharm 2026.1/bin/cl.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/cl.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/cl"
+      - "D:/PyCharm/PyCharm 2026.1/bin/bcc.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/bcc.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/bcc"
+      - "D:/PyCharm/PyCharm 2026.1/bin/icx.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/icx.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/icx"
+      - "D:/PyCharm/PyCharm 2026.1/bin/clang++.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/clang++.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/clang++"
+      - "C:/Users/naman/AppData/Local/Python/bin/c++.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/c++.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/c++"
+      - "C:/Users/naman/AppData/Local/Python/bin/g++.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/g++.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/g++"
+      - "C:/Users/naman/AppData/Local/Python/bin/cl.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/cl.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/cl"
+      - "C:/Users/naman/AppData/Local/Python/bin/bcc.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/bcc.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/bcc"
+      - "C:/Users/naman/AppData/Local/Python/bin/icx.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/icx.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/icx"
+      - "C:/Users/naman/AppData/Local/Python/bin/clang++.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/clang++.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/clang++"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/c++.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/c++.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/c++"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/g++.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/g++.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/g++"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/cl.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/cl.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/cl"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/bcc.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/bcc.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/bcc"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/icx.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/icx.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/icx"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/clang++.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/clang++.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/clang++"
+      - "D:/Clion/CLion 2026.1/bin/c++.com"
+      - "D:/Clion/CLion 2026.1/bin/c++.exe"
+      - "D:/Clion/CLion 2026.1/bin/c++"
+      - "D:/Clion/CLion 2026.1/bin/g++.com"
+      - "D:/Clion/CLion 2026.1/bin/g++.exe"
+      - "D:/Clion/CLion 2026.1/bin/g++"
+      - "D:/Clion/CLion 2026.1/bin/cl.com"
+      - "D:/Clion/CLion 2026.1/bin/cl.exe"
+      - "D:/Clion/CLion 2026.1/bin/cl"
+      - "D:/Clion/CLion 2026.1/bin/bcc.com"
+      - "D:/Clion/CLion 2026.1/bin/bcc.exe"
+      - "D:/Clion/CLion 2026.1/bin/bcc"
+      - "D:/Clion/CLion 2026.1/bin/icx.com"
+      - "D:/Clion/CLion 2026.1/bin/icx.exe"
+      - "D:/Clion/CLion 2026.1/bin/icx"
+      - "D:/Clion/CLion 2026.1/bin/clang++.com"
+      - "D:/Clion/CLion 2026.1/bin/clang++.exe"
+      - "D:/Clion/CLion 2026.1/bin/clang++"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/c++.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/c++.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/c++"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/g++.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/g++.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/g++"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/cl.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/cl.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/cl"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/bcc.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/bcc.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/bcc"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/icx.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/icx.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/icx"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/clang++.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/clang++.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/clang++"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/c++.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/c++.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/c++"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/g++.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/g++.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/g++"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/cl.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/cl.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/cl"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/bcc.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/bcc.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/bcc"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/icx.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/icx.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/icx"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/clang++.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/clang++.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/clang++"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/c++.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/c++.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/c++"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/g++.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/g++.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/g++"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/cl.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/cl.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/cl"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/bcc.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/bcc.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/bcc"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/icx.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/icx.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/icx"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/clang++.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/clang++.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/clang++"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/c++.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/c++.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/c++"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/g++.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/g++.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/g++"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/cl.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/cl.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/cl"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/bcc.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/bcc.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/bcc"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/icx.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/icx.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/icx"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/clang++.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/clang++.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/clang++"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/c++.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/c++.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/c++"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/g++.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/g++.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/g++"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/cl.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/cl.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/cl"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/bcc.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/bcc.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/bcc"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/icx.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/icx.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/icx"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/clang++.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/clang++.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/clang++"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --c++ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --ec++ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --target=arm-arm-none-eabi;-mcpu=cortex-m3 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c;-I__does_not_exist__ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --c++ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --ec++ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --target=arm-arm-none-eabi;-mcpu=cortex-m3 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: CMAKE_CXX_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c;-I__does_not_exist__ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/ar.com"
+      - "C:/Windows/System32/ar.exe"
+      - "C:/Windows/System32/ar"
+      - "C:/Windows/ar.com"
+      - "C:/Windows/ar.exe"
+      - "C:/Windows/ar"
+      - "C:/Windows/System32/wbem/ar.com"
+      - "C:/Windows/System32/wbem/ar.exe"
+      - "C:/Windows/System32/wbem/ar"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ar.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ar.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ar"
+      - "C:/Windows/System32/OpenSSH/ar.com"
+      - "C:/Windows/System32/OpenSSH/ar.exe"
+      - "C:/Windows/System32/OpenSSH/ar"
+      - "C:/Program Files/Git/cmd/ar.com"
+      - "C:/Program Files/Git/cmd/ar.exe"
+      - "C:/Program Files/Git/cmd/ar"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ar.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ar.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ar"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ar.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ar.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ar"
+      - "C:/Users/naman/AppData/Local/Python/bin/ar.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/ar.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/ar"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ar.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ar.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ar"
+      - "D:/Clion/CLion 2026.1/bin/ar.com"
+      - "D:/Clion/CLion 2026.1/bin/ar.exe"
+      - "D:/Clion/CLion 2026.1/bin/ar"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ar.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ar.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ar"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ar.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ar.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ar"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ar.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ar.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ar"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ar.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ar.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ar"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ar.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ar.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ar"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ranlib"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/ranlib.com"
+      - "C:/Windows/System32/ranlib.exe"
+      - "C:/Windows/System32/ranlib"
+      - "C:/Windows/ranlib.com"
+      - "C:/Windows/ranlib.exe"
+      - "C:/Windows/ranlib"
+      - "C:/Windows/System32/wbem/ranlib.com"
+      - "C:/Windows/System32/wbem/ranlib.exe"
+      - "C:/Windows/System32/wbem/ranlib"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ranlib.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ranlib.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ranlib"
+      - "C:/Windows/System32/OpenSSH/ranlib.com"
+      - "C:/Windows/System32/OpenSSH/ranlib.exe"
+      - "C:/Windows/System32/OpenSSH/ranlib"
+      - "C:/Program Files/Git/cmd/ranlib.com"
+      - "C:/Program Files/Git/cmd/ranlib.exe"
+      - "C:/Program Files/Git/cmd/ranlib"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ranlib.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ranlib.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ranlib"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ranlib.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ranlib.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ranlib"
+      - "C:/Users/naman/AppData/Local/Python/bin/ranlib.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/ranlib.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/ranlib"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ranlib.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ranlib.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ranlib"
+      - "D:/Clion/CLion 2026.1/bin/ranlib.com"
+      - "D:/Clion/CLion 2026.1/bin/ranlib.exe"
+      - "D:/Clion/CLion 2026.1/bin/ranlib"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ranlib.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ranlib.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ranlib"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ranlib.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ranlib.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ranlib"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ranlib.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ranlib.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ranlib"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ranlib.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ranlib.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ranlib"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ranlib.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ranlib.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ranlib"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/strip.com"
+      - "C:/Windows/System32/strip.exe"
+      - "C:/Windows/System32/strip"
+      - "C:/Windows/strip.com"
+      - "C:/Windows/strip.exe"
+      - "C:/Windows/strip"
+      - "C:/Windows/System32/wbem/strip.com"
+      - "C:/Windows/System32/wbem/strip.exe"
+      - "C:/Windows/System32/wbem/strip"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/strip.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/strip.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/strip"
+      - "C:/Windows/System32/OpenSSH/strip.com"
+      - "C:/Windows/System32/OpenSSH/strip.exe"
+      - "C:/Windows/System32/OpenSSH/strip"
+      - "C:/Program Files/Git/cmd/strip.com"
+      - "C:/Program Files/Git/cmd/strip.exe"
+      - "C:/Program Files/Git/cmd/strip"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/strip.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/strip.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/strip"
+      - "D:/PyCharm/PyCharm 2026.1/bin/strip.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/strip.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/strip"
+      - "C:/Users/naman/AppData/Local/Python/bin/strip.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/strip.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/strip"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/strip.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/strip.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/strip"
+      - "D:/Clion/CLion 2026.1/bin/strip.com"
+      - "D:/Clion/CLion 2026.1/bin/strip.exe"
+      - "D:/Clion/CLion 2026.1/bin/strip"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/strip.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/strip.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/strip"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/strip.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/strip.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/strip"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/strip.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/strip.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/strip"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/strip.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/strip.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/strip"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/strip.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/strip.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/strip"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/ld.com"
+      - "C:/Windows/System32/ld.exe"
+      - "C:/Windows/System32/ld"
+      - "C:/Windows/ld.com"
+      - "C:/Windows/ld.exe"
+      - "C:/Windows/ld"
+      - "C:/Windows/System32/wbem/ld.com"
+      - "C:/Windows/System32/wbem/ld.exe"
+      - "C:/Windows/System32/wbem/ld"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ld.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ld.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ld"
+      - "C:/Windows/System32/OpenSSH/ld.com"
+      - "C:/Windows/System32/OpenSSH/ld.exe"
+      - "C:/Windows/System32/OpenSSH/ld"
+      - "C:/Program Files/Git/cmd/ld.com"
+      - "C:/Program Files/Git/cmd/ld.exe"
+      - "C:/Program Files/Git/cmd/ld"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ld.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ld.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/ld"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ld.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ld.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/ld"
+      - "C:/Users/naman/AppData/Local/Python/bin/ld.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/ld.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/ld"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ld.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ld.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/ld"
+      - "D:/Clion/CLion 2026.1/bin/ld.com"
+      - "D:/Clion/CLion 2026.1/bin/ld.exe"
+      - "D:/Clion/CLion 2026.1/bin/ld"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ld.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ld.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/ld"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ld.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ld.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/ld"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ld.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ld.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/ld"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ld.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ld.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/ld"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ld.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ld.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/ld"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/nm.com"
+      - "C:/Windows/System32/nm.exe"
+      - "C:/Windows/System32/nm"
+      - "C:/Windows/nm.com"
+      - "C:/Windows/nm.exe"
+      - "C:/Windows/nm"
+      - "C:/Windows/System32/wbem/nm.com"
+      - "C:/Windows/System32/wbem/nm.exe"
+      - "C:/Windows/System32/wbem/nm"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/nm.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/nm.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/nm"
+      - "C:/Windows/System32/OpenSSH/nm.com"
+      - "C:/Windows/System32/OpenSSH/nm.exe"
+      - "C:/Windows/System32/OpenSSH/nm"
+      - "C:/Program Files/Git/cmd/nm.com"
+      - "C:/Program Files/Git/cmd/nm.exe"
+      - "C:/Program Files/Git/cmd/nm"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/nm.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/nm.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/nm"
+      - "D:/PyCharm/PyCharm 2026.1/bin/nm.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/nm.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/nm"
+      - "C:/Users/naman/AppData/Local/Python/bin/nm.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/nm.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/nm"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/nm.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/nm.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/nm"
+      - "D:/Clion/CLion 2026.1/bin/nm.com"
+      - "D:/Clion/CLion 2026.1/bin/nm.exe"
+      - "D:/Clion/CLion 2026.1/bin/nm"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/nm.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/nm.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/nm"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/nm.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/nm.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/nm"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/nm.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/nm.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/nm"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/nm.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/nm.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/nm"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/nm.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/nm.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/nm"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/objdump.com"
+      - "C:/Windows/System32/objdump.exe"
+      - "C:/Windows/System32/objdump"
+      - "C:/Windows/objdump.com"
+      - "C:/Windows/objdump.exe"
+      - "C:/Windows/objdump"
+      - "C:/Windows/System32/wbem/objdump.com"
+      - "C:/Windows/System32/wbem/objdump.exe"
+      - "C:/Windows/System32/wbem/objdump"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/objdump.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/objdump.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/objdump"
+      - "C:/Windows/System32/OpenSSH/objdump.com"
+      - "C:/Windows/System32/OpenSSH/objdump.exe"
+      - "C:/Windows/System32/OpenSSH/objdump"
+      - "C:/Program Files/Git/cmd/objdump.com"
+      - "C:/Program Files/Git/cmd/objdump.exe"
+      - "C:/Program Files/Git/cmd/objdump"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/objdump.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/objdump.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/objdump"
+      - "D:/PyCharm/PyCharm 2026.1/bin/objdump.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/objdump.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/objdump"
+      - "C:/Users/naman/AppData/Local/Python/bin/objdump.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/objdump.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/objdump"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/objdump.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/objdump.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/objdump"
+      - "D:/Clion/CLion 2026.1/bin/objdump.com"
+      - "D:/Clion/CLion 2026.1/bin/objdump.exe"
+      - "D:/Clion/CLion 2026.1/bin/objdump"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/objdump.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/objdump.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/objdump"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/objdump.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/objdump.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/objdump"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/objdump.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/objdump.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/objdump"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/objdump.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/objdump.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/objdump"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/objdump.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/objdump.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/objdump"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/objcopy.com"
+      - "C:/Windows/System32/objcopy.exe"
+      - "C:/Windows/System32/objcopy"
+      - "C:/Windows/objcopy.com"
+      - "C:/Windows/objcopy.exe"
+      - "C:/Windows/objcopy"
+      - "C:/Windows/System32/wbem/objcopy.com"
+      - "C:/Windows/System32/wbem/objcopy.exe"
+      - "C:/Windows/System32/wbem/objcopy"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/objcopy.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/objcopy.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/objcopy"
+      - "C:/Windows/System32/OpenSSH/objcopy.com"
+      - "C:/Windows/System32/OpenSSH/objcopy.exe"
+      - "C:/Windows/System32/OpenSSH/objcopy"
+      - "C:/Program Files/Git/cmd/objcopy.com"
+      - "C:/Program Files/Git/cmd/objcopy.exe"
+      - "C:/Program Files/Git/cmd/objcopy"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/objcopy.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/objcopy.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/objcopy"
+      - "D:/PyCharm/PyCharm 2026.1/bin/objcopy.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/objcopy.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/objcopy"
+      - "C:/Users/naman/AppData/Local/Python/bin/objcopy.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/objcopy.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/objcopy"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/objcopy.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/objcopy.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/objcopy"
+      - "D:/Clion/CLion 2026.1/bin/objcopy.com"
+      - "D:/Clion/CLion 2026.1/bin/objcopy.exe"
+      - "D:/Clion/CLion 2026.1/bin/objcopy"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/objcopy.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/objcopy.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/objcopy"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/objcopy.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/objcopy.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/objcopy"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/objcopy.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/objcopy.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/objcopy"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/objcopy.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/objcopy.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/objcopy"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/objcopy.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/objcopy.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/objcopy"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/readelf.com"
+      - "C:/Windows/System32/readelf.exe"
+      - "C:/Windows/System32/readelf"
+      - "C:/Windows/readelf.com"
+      - "C:/Windows/readelf.exe"
+      - "C:/Windows/readelf"
+      - "C:/Windows/System32/wbem/readelf.com"
+      - "C:/Windows/System32/wbem/readelf.exe"
+      - "C:/Windows/System32/wbem/readelf"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/readelf.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/readelf.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/readelf"
+      - "C:/Windows/System32/OpenSSH/readelf.com"
+      - "C:/Windows/System32/OpenSSH/readelf.exe"
+      - "C:/Windows/System32/OpenSSH/readelf"
+      - "C:/Program Files/Git/cmd/readelf.com"
+      - "C:/Program Files/Git/cmd/readelf.exe"
+      - "C:/Program Files/Git/cmd/readelf"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/readelf.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/readelf.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/readelf"
+      - "D:/PyCharm/PyCharm 2026.1/bin/readelf.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/readelf.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/readelf"
+      - "C:/Users/naman/AppData/Local/Python/bin/readelf.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/readelf.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/readelf"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/readelf.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/readelf.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/readelf"
+      - "D:/Clion/CLion 2026.1/bin/readelf.com"
+      - "D:/Clion/CLion 2026.1/bin/readelf.exe"
+      - "D:/Clion/CLion 2026.1/bin/readelf"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/readelf.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/readelf.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/readelf"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/readelf.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/readelf.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/readelf"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/readelf.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/readelf.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/readelf"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/readelf.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/readelf.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/readelf"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/readelf.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/readelf.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/readelf"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/dlltool.com"
+      - "C:/Windows/System32/dlltool.exe"
+      - "C:/Windows/System32/dlltool"
+      - "C:/Windows/dlltool.com"
+      - "C:/Windows/dlltool.exe"
+      - "C:/Windows/dlltool"
+      - "C:/Windows/System32/wbem/dlltool.com"
+      - "C:/Windows/System32/wbem/dlltool.exe"
+      - "C:/Windows/System32/wbem/dlltool"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/dlltool.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/dlltool.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/dlltool"
+      - "C:/Windows/System32/OpenSSH/dlltool.com"
+      - "C:/Windows/System32/OpenSSH/dlltool.exe"
+      - "C:/Windows/System32/OpenSSH/dlltool"
+      - "C:/Program Files/Git/cmd/dlltool.com"
+      - "C:/Program Files/Git/cmd/dlltool.exe"
+      - "C:/Program Files/Git/cmd/dlltool"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/dlltool.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/dlltool.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/dlltool"
+      - "D:/PyCharm/PyCharm 2026.1/bin/dlltool.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/dlltool.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/dlltool"
+      - "C:/Users/naman/AppData/Local/Python/bin/dlltool.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/dlltool.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/dlltool"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/dlltool.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/dlltool.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/dlltool"
+      - "D:/Clion/CLion 2026.1/bin/dlltool.com"
+      - "D:/Clion/CLion 2026.1/bin/dlltool.exe"
+      - "D:/Clion/CLion 2026.1/bin/dlltool"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/dlltool.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/dlltool.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/dlltool"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/dlltool.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/dlltool.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/dlltool"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/dlltool.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/dlltool.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/dlltool"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/dlltool.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/dlltool.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/dlltool"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/dlltool.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/dlltool.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/addr2line.com"
+      - "C:/Windows/System32/addr2line.exe"
+      - "C:/Windows/System32/addr2line"
+      - "C:/Windows/addr2line.com"
+      - "C:/Windows/addr2line.exe"
+      - "C:/Windows/addr2line"
+      - "C:/Windows/System32/wbem/addr2line.com"
+      - "C:/Windows/System32/wbem/addr2line.exe"
+      - "C:/Windows/System32/wbem/addr2line"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/addr2line.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/addr2line.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/addr2line"
+      - "C:/Windows/System32/OpenSSH/addr2line.com"
+      - "C:/Windows/System32/OpenSSH/addr2line.exe"
+      - "C:/Windows/System32/OpenSSH/addr2line"
+      - "C:/Program Files/Git/cmd/addr2line.com"
+      - "C:/Program Files/Git/cmd/addr2line.exe"
+      - "C:/Program Files/Git/cmd/addr2line"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/addr2line.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/addr2line.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/addr2line"
+      - "D:/PyCharm/PyCharm 2026.1/bin/addr2line.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/addr2line.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/addr2line"
+      - "C:/Users/naman/AppData/Local/Python/bin/addr2line.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/addr2line.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/addr2line"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/addr2line.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/addr2line.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/addr2line"
+      - "D:/Clion/CLion 2026.1/bin/addr2line.com"
+      - "D:/Clion/CLion 2026.1/bin/addr2line.exe"
+      - "D:/Clion/CLion 2026.1/bin/addr2line"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/addr2line.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/addr2line.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/addr2line"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/addr2line.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/addr2line.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/addr2line"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/addr2line.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/addr2line.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/addr2line"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/addr2line.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/addr2line.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/addr2line"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/addr2line.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/addr2line.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/addr2line"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "C:/Windows/System32/tapi.com"
+      - "C:/Windows/System32/tapi.exe"
+      - "C:/Windows/System32/tapi"
+      - "C:/Windows/tapi.com"
+      - "C:/Windows/tapi.exe"
+      - "C:/Windows/tapi"
+      - "C:/Windows/System32/wbem/tapi.com"
+      - "C:/Windows/System32/wbem/tapi.exe"
+      - "C:/Windows/System32/wbem/tapi"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/tapi.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/tapi.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/tapi"
+      - "C:/Windows/System32/OpenSSH/tapi.com"
+      - "C:/Windows/System32/OpenSSH/tapi.exe"
+      - "C:/Windows/System32/OpenSSH/tapi"
+      - "C:/Program Files/Git/cmd/tapi.com"
+      - "C:/Program Files/Git/cmd/tapi.exe"
+      - "C:/Program Files/Git/cmd/tapi"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/tapi.com"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/tapi.exe"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/tapi"
+      - "D:/PyCharm/PyCharm 2026.1/bin/tapi.com"
+      - "D:/PyCharm/PyCharm 2026.1/bin/tapi.exe"
+      - "D:/PyCharm/PyCharm 2026.1/bin/tapi"
+      - "C:/Users/naman/AppData/Local/Python/bin/tapi.com"
+      - "C:/Users/naman/AppData/Local/Python/bin/tapi.exe"
+      - "C:/Users/naman/AppData/Local/Python/bin/tapi"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/tapi.com"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/tapi.exe"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/tapi"
+      - "D:/Clion/CLion 2026.1/bin/tapi.com"
+      - "D:/Clion/CLion 2026.1/bin/tapi.exe"
+      - "D:/Clion/CLion 2026.1/bin/tapi"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/tapi.com"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/tapi.exe"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/tapi"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/tapi.com"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/tapi.exe"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/tapi"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/tapi.com"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/tapi.exe"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/tapi"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/tapi.com"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/tapi.exe"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/tapi"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/tapi.com"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/tapi.exe"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+...
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      1
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      1
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: --c++ 
+      
+      The output was:
+      1
+      g++.exe: error: unrecognized command-line option '--c++'
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: --ec++ 
+      
+      The output was:
+      1
+      g++.exe: error: unrecognized command-line option '--ec++'; did you mean '-Weffc++'?
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: --target=arm-arm-none-eabi;-mcpu=cortex-m3 
+      
+      The output was:
+      1
+      g++.exe: warning: '-mcpu=' is deprecated; use '-mtune=' or '-march=' instead
+      g++.exe: error: unrecognized command-line option '--target=arm-arm-none-eabi'
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: -c;-I__does_not_exist__ 
+      
+      The output was:
+      1
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      1
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      1
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: --c++ 
+      
+      The output was:
+      1
+      g++.exe: error: unrecognized command-line option '--c++'
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: --ec++ 
+      
+      The output was:
+      1
+      g++.exe: error: unrecognized command-line option '--ec++'; did you mean '-Weffc++'?
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: --target=arm-arm-none-eabi;-mcpu=cortex-m3 
+      
+      The output was:
+      1
+      g++.exe: warning: '-mcpu=' is deprecated; use '-mtune=' or '-march=' instead
+      g++.exe: error: unrecognized command-line option '--target=arm-arm-none-eabi'
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/"
+    found: "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe 
+      Build flags: 
+      Id flags: -c;-I__does_not_exist__ 
+      
+      The output was:
+      1
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:1303 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:86 (CMAKE_DETERMINE_COMPILER_ID_VENDOR)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Checking whether the CXX compiler is IAR using "" did not match "IAR .+ Compiler":
+      g++.exe: fatal error: no input files
+      compilation terminated.
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:1303 (message)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:86 (CMAKE_DETERMINE_COMPILER_ID_VENDOR)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Checking whether the CXX compiler is IAR using "" did not match "IAR .+ Compiler":
+      g++.exe: fatal error: no input files
+      compilation terminated.
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/ar.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/ar.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/strip.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/strip.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/ld.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/ld.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/nm.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/nm.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/objdump.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/objdump.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/objcopy.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/objcopy.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/readelf.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/readelf.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/dlltool.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/dlltool.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Users/naman/AppData/Local/Microsoft/WindowsApps/"
+      - "D:/PyCharm/PyCharm 2026.1/bin/"
+      - "C:/Users/naman/AppData/Local/Python/bin/"
+      - "D:/IntelliJ IDEA/IntelliJ IDEA 2026.1/bin/"
+      - "D:/Clion/CLion 2026.1/bin/"
+      - "D:/WebStorm/WebStorm 2026.1.1/bin/"
+      - "C:/Users/naman/AppData/Local/JetBrains/Toolbox/scripts/"
+      - "D:/PyCharm/PyCharm 2026.1.2/bin/"
+      - "D:/IDE/Antigravity IDE/Antigravity/bin/"
+      - "C:/Users/naman/AppData/Local/Programs/Antigravity IDE/bin/"
+    searched_directories:
+      - "D:/Clion/CLion 2026.1/bin/mingw/bin/addr2line.com"
+    found: "D:/Clion/CLion 2026.1/bin/mingw/bin/addr2line.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Users\\naman\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "D:\\Pycharm\\PyCharm 2026.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Python\\bin"
+        - "D:\\IntelliJ IDEA\\IntelliJ IDEA 2026.1\\bin"
+        - "D:\\Clion\\CLion 2026.1\\bin"
+        - "D:\\WebStorm\\WebStorm 2026.1.1\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\JetBrains\\Toolbox\\scripts"
+        - "D:\\PyCharm\\PyCharm 2026.1.2\\bin"
+        - "D:\\IDE\\Antigravity IDE\\Antigravity\\bin"
+        - "C:\\Users\\naman\\AppData\\Local\\Programs\\Antigravity IDE\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/TheRealCampusBallot"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-hl0viz"
+      binary: "D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-hl0viz"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: ""
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-hl0viz'
+        
+        Run Build Command(s): "D:/Clion/CLion 2026.1/bin/cmake/win/x64/bin/cmake.exe" -E env VERBOSE=1 "D:/Clion/CLion 2026.1/bin/mingw/bin/mingw32-make.exe" -f Makefile cmTC_af8d1/fast
+        D:/Clion/CLion 2026.1/bin/mingw/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_af8d1.dir\\build.make CMakeFiles/cmTC_af8d1.dir/build
+        mingw32-make[1]: Entering directory 'D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-hl0viz'
+        Building CXX object CMakeFiles/cmTC_af8d1.dir/CMakeCXXCompilerABI.cpp.obj
+        "D:\\Clion\\CLion 2026.1\\bin\\mingw\\bin\\g++.exe"    -o CMakeFiles\\cmTC_af8d1.dir\\CMakeCXXCompilerABI.cpp.obj -c "D:\\Clion\\CLion 2026.1\\bin\\cmake\\win\\x64\\share\\cmake-4.2\\Modules\\CMakeCXXCompilerABI.cpp"
+        mingw32-make[1]: *** [CMakeFiles\\cmTC_af8d1.dir\\build.make:80: CMakeFiles/cmTC_af8d1.dir/CMakeCXXCompilerABI.cpp.obj] Error 1
+        mingw32-make[1]: Leaving directory 'D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-hl0viz'
+        mingw32-make: *** [Makefile:133: cmTC_af8d1/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/Clion/CLion 2026.1/bin/cmake/win/x64/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:56 (try_compile)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Check for working CXX compiler: D:/Clion/CLion 2026.1/bin/mingw/bin/g++.exe"
+    directories:
+      source: "D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-vxg49o"
+      binary: "D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-vxg49o"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: ""
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_COMPILER_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-vxg49o'
+        
+        Run Build Command(s): "D:/Clion/CLion 2026.1/bin/cmake/win/x64/bin/cmake.exe" -E env VERBOSE=1 "D:/Clion/CLion 2026.1/bin/mingw/bin/mingw32-make.exe" -f Makefile cmTC_50e69/fast
+        D:/Clion/CLion 2026.1/bin/mingw/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_50e69.dir\\build.make CMakeFiles/cmTC_50e69.dir/build
+        mingw32-make[1]: Entering directory 'D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-vxg49o'
+        Building CXX object CMakeFiles/cmTC_50e69.dir/testCXXCompiler.cxx.obj
+        "D:\\Clion\\CLion 2026.1\\bin\\mingw\\bin\\g++.exe"    -o CMakeFiles\\cmTC_50e69.dir\\testCXXCompiler.cxx.obj -c "D:\\CLion Projects\\TheRealCampusBallot\\cmake-build-debug2\\CMakeFiles\\CMakeScratch\\TryCompile-vxg49o\\testCXXCompiler.cxx"
+        mingw32-make[1]: *** [CMakeFiles\\cmTC_50e69.dir\\build.make:80: CMakeFiles/cmTC_50e69.dir/testCXXCompiler.cxx.obj] Error 1
+        mingw32-make[1]: Leaving directory 'D:/CLion Projects/TheRealCampusBallot/cmake-build-debug2/CMakeFiles/CMakeScratch/TryCompile-vxg49o'
+        mingw32-make: *** [Makefile:133: cmTC_50e69/fast] Error 2
+        
+      exitCode: 2
+...
