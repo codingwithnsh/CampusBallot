@@ -2,6 +2,7 @@
 #include "src/core/SystemManager.h"
 #include "src/ui/components/ToastNotification.h" // For error messages
 #include "src/modules/election/ElectionManager.h" // For casting votes
+#include "src/modules/storage/TestAdmissionStorage.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -11,6 +12,8 @@
 #include <QGraphicsDropShadowEffect>
 #include <QApplication>
 #include <QDebug> // For debugging
+#include <QCheckBox>
+#include <QUuid>
 
 namespace Ballot::UI {
 
@@ -22,6 +25,14 @@ VotingKiosk::VotingKiosk(QWidget *parent) : QWidget(parent) {
     m_stateTimer->start(2000); // Check voting state every 2 seconds
 
     updateVotingState(); // Initial check
+}
+
+void VotingKiosk::setTestMode(bool enabled) {
+    m_testMode = enabled;
+    Storage::TestAdmissionStorage::instance().setTestMode(enabled);
+    if (m_testModeCheck) {
+        m_testModeCheck->setChecked(enabled);
+    }
 }
 
 void VotingKiosk::setupUi() {
@@ -162,6 +173,29 @@ void VotingKiosk::processScanId(const QString& admissionNumber) {
         return;
     }
 
+    // Check test mode first
+    if (m_testMode) {
+        auto& testStorage = Storage::TestAdmissionStorage::instance();
+        if (testStorage.hasVoted(admissionNumber)) {
+            ToastNotification::show(this, "This admission number has already voted in test mode.", ToastNotification::Warning);
+            if (m_idInputEdit) m_idInputEdit->clear();
+            return;
+        }
+        
+        // Create a mock student for test mode
+        Core::Student student;
+        student.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        student.name = "Test Student (" + admissionNumber + ")";
+        student.admissionNumber = admissionNumber;
+        student.hasVoted = false;
+        student.isVerified = true;
+        
+        m_currentVoter = student;
+        ToastNotification::show(this, "Test student verified: " + student.name, ToastNotification::Success);
+        nextStep();
+        return;
+    }
+
     std::optional<Core::Student> student = storage->getStudentByAdmission(admissionNumber);
 
     if (!student) {
@@ -279,6 +313,14 @@ void VotingKiosk::confirmVote() {
         return;
     }
 
+    // In test mode, mark admission number as voted locally
+    if (m_testMode) {
+        Storage::TestAdmissionStorage::instance().markAsVoted(m_currentVoter->admissionNumber);
+        ToastNotification::show(this, "Test vote successfully recorded!", ToastNotification::Success);
+        nextStep(); // Go to success page
+        return;
+    }
+
     bool success = Election::ElectionManager::instance().castVote(
         m_activeElection->id,
         m_currentVoter->id,
@@ -350,6 +392,13 @@ QWidget* VotingKiosk::createScanIdPage() {
     m_idInputEdit->setFixedHeight(50); // Set fixed height for consistency
     m_idInputEdit->setStyleSheet("font-size: 18px; text-align: center;");
     layout->addWidget(m_idInputEdit, 0, Qt::AlignCenter);
+
+    // Test mode checkbox
+    m_testModeCheck = new QCheckBox("🧪 Test Mode (Local File Storage)", page);
+    m_testModeCheck->setStyleSheet("font-size: 14px; color: #9a9ab0; background: transparent;");
+    m_testModeCheck->setToolTip("Enable test mode to use local file storage for admission numbers instead of database");
+    connect(m_testModeCheck, &QCheckBox::toggled, this, &VotingKiosk::setTestMode);
+    layout->addWidget(m_testModeCheck, 0, Qt::AlignCenter);
 
     layout->addSpacing(20);
 

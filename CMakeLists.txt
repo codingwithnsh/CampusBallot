@@ -18,6 +18,7 @@ set(SOURCES
     src/security/DigitalSignature.cpp
     src/security/TamperDetector.cpp
     src/modules/storage/providers/SQLiteStorageProvider.cpp
+    src/modules/storage/TestAdmissionStorage.cpp
     src/modules/auth/AuthManager.cpp
     src/modules/auth/RBACManager.cpp
     src/modules/audit/AuditManager.cpp
@@ -43,6 +44,7 @@ set(SOURCES
     src/ui/views/AdminPanel.cpp
     src/ui/views/UserManagementView.cpp
     src/ui/views/SettingsView.cpp
+    src/ui/dialogs/CandidateFormDialog.cpp
 )
 
 set(HEADERS
@@ -57,6 +59,7 @@ set(HEADERS
     src/security/TamperDetector.h
     src/modules/storage/interfaces/IStorageProvider.h
     src/modules/storage/providers/SQLiteStorageProvider.h
+    src/modules/storage/TestAdmissionStorage.h
     src/modules/auth/IAuthProvider.h
     src/modules/auth/AuthManager.h
     src/modules/auth/RBACManager.h
@@ -84,6 +87,7 @@ set(HEADERS
     src/ui/views/AdminPanel.h
     src/ui/views/UserManagementView.h
     src/ui/views/SettingsView.h
+    src/ui/dialogs/CandidateFormDialog.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

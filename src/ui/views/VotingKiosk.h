@@ -7,9 +7,11 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QTimer>
-#include <optional> // For std::optional
-#include "src/core/Models.h" // For Core::Student, Core::Candidate
-#include "src/modules/election/ElectionManager.h" // For ElectionManager
+#include <QCheckBox>
+#include <optional>
+#include "src/core/Models.h"
+#include "src/modules/election/ElectionManager.h"
+#include "src/modules/storage/TestAdmissionStorage.h"
 
 namespace Ballot::UI {
 
@@ -19,12 +21,13 @@ public:
     explicit VotingKiosk(QWidget *parent = nullptr);
     void start();
     void updateVotingState();
+    void setTestMode(bool enabled);
 
 private:
     void setupUi();
     void nextStep();
-    void prevStep(); // Added for back navigation
-    void resetKiosk(); // Added to reset state after voting or cancellation
+    void prevStep();
+    void resetKiosk();
 
     // Page creation methods
     QWidget* createWaitingPage();
@@ -50,10 +53,12 @@ private:
     QList<Core::Candidate> m_availableCandidates;
     std::optional<Core::Election> m_activeElection;
 
-    // UI elements that need to be updated dynamically
-    QLabel* m_candidateNameLabel = nullptr; // For confirm vote page
-    QLineEdit* m_idInputEdit = nullptr; // For scan ID page
-    QGridLayout* m_candidatesGrid = nullptr; // For choose candidate page
+    // UI elements
+    QLabel* m_candidateNameLabel = nullptr;
+    QLineEdit* m_idInputEdit = nullptr;
+    QGridLayout* m_candidatesGrid = nullptr;
+    QCheckBox* m_testModeCheck = nullptr;
+    bool m_testMode = false;
 };
 
 } // namespace Ballot::UI

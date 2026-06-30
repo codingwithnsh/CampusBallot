@@ -4,7 +4,8 @@
 #include "src/modules/auth/AuthManager.h"
 #include "src/modules/backup/BackupManager.h"
 #include "src/modules/plugin/PluginManager.h"
-#include "src/ui/components/ToastNotification.h" // Include ToastNotification
+#include "src/ui/components/ToastNotification.h"
+#include "src/ui/dialogs/CandidateFormDialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QScrollArea>
@@ -13,7 +14,7 @@
 #include <QUuid>
 #include <QMessageBox>
 #include <QLocale>
-#include <QInputDialog> // For creating new election
+#include <QInputDialog>
 
 namespace Ballot::UI {
 
@@ -158,24 +159,22 @@ void AdminPanel::setupUi() {
         if (!ok) return;
 
         if (action == "Add candidate") {
-            const QString name = QInputDialog::getText(this, "Add Candidate", "Candidate name:", QLineEdit::Normal, {}, &ok).trimmed();
-            if (!ok || name.isEmpty()) return;
-            const QString party = QInputDialog::getText(this, "Add Candidate", "Party / group:", QLineEdit::Normal, {}, &ok).trimmed();
-            if (!ok) return;
-            const QString manifesto = QInputDialog::getMultiLineText(this, "Add Candidate", "Manifesto:", {}, &ok).trimmed();
-            if (!ok) return;
-
-            Core::Candidate candidate;
-            candidate.electionId = electionId;
-            candidate.name = name;
-            candidate.party = party;
-            candidate.manifesto = manifesto;
-            candidate.isApproved = true;
-            if (Election::ElectionManager::instance().addCandidate(candidate)) {
-                ToastNotification::show(this, "Candidate added successfully.", ToastNotification::Success);
-            } else {
-                ToastNotification::show(this, "Failed to add candidate.", ToastNotification::Error);
-            }
+            // Use the new CandidateFormDialog
+            CandidateFormDialog dialog(this);
+            dialog.setWindowTitle("Add Candidate - " + electionTitle);
+            
+            // Pre-set election ID
+            connect(&dialog, &CandidateFormDialog::candidateSaved, this, [this, electionId](const Core::Candidate& candidate) {
+                Core::Candidate c = candidate;
+                c.electionId = electionId;
+                if (Election::ElectionManager::instance().addCandidate(c)) {
+                    ToastNotification::show(this, "Candidate added successfully.", ToastNotification::Success);
+                } else {
+                    ToastNotification::show(this, "Failed to add candidate.", ToastNotification::Error);
+                }
+            });
+            
+            dialog.exec();
             return;
         }
 
@@ -190,20 +189,19 @@ void AdminPanel::setupUi() {
         Core::Candidate candidate = candidates.at(candidateIndex);
 
         if (action == "Edit candidate") {
-            const QString name = QInputDialog::getText(this, action, "Candidate name:", QLineEdit::Normal, candidate.name, &ok).trimmed();
-            if (!ok || name.isEmpty()) return;
-            const QString party = QInputDialog::getText(this, action, "Party / group:", QLineEdit::Normal, candidate.party, &ok).trimmed();
-            if (!ok) return;
-            const QString manifesto = QInputDialog::getMultiLineText(this, action, "Manifesto:", candidate.manifesto, &ok).trimmed();
-            if (!ok) return;
-            candidate.name = name;
-            candidate.party = party;
-            candidate.manifesto = manifesto;
-            if (Election::ElectionManager::instance().updateCandidate(candidate)) {
-                ToastNotification::show(this, "Candidate updated successfully.", ToastNotification::Success);
-            } else {
-                ToastNotification::show(this, "Failed to update candidate.", ToastNotification::Error);
-            }
+            // Use the new CandidateFormDialog for editing
+            CandidateFormDialog dialog(candidate, this);
+            dialog.setWindowTitle("Edit Candidate - " + electionTitle);
+            
+            connect(&dialog, &CandidateFormDialog::candidateSaved, this, [this](const Core::Candidate& updatedCandidate) {
+                if (Election::ElectionManager::instance().updateCandidate(updatedCandidate)) {
+                    ToastNotification::show(this, "Candidate updated successfully.", ToastNotification::Success);
+                } else {
+                    ToastNotification::show(this, "Failed to update candidate.", ToastNotification::Error);
+                }
+            });
+            
+            dialog.exec();
         } else if (QMessageBox::question(this, "Delete Candidate",
                                           "Delete '" + candidate.name + "'?",
                                           QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
