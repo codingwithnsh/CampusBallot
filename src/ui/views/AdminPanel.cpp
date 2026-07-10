@@ -3,6 +3,7 @@
 #include "src/modules/election/ElectionManager.h"
 #include "src/modules/election/VoteManager.h" // For getting vote counts
 #include "src/modules/auth/AuthManager.h"
+#include "src/modules/auth/RBACManager.h"
 #include "src/modules/backup/BackupManager.h"
 #include "src/modules/plugin/PluginManager.h"
 #include "src/modules/audit/AuditManager.h" // For audit logging
@@ -20,12 +21,46 @@
 #include <QInputDialog>
 #include <QDateTime>
 #include <QDebug> // For logging
+#include <QWizard>
+#include <QWizardPage>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QTextEdit>
+#include <QDateTimeEdit>
+#include <QSpinBox>
+#include <QCheckBox>
 
 namespace Ballot::UI {
+
+namespace {
+
+QStringList splitCsvValues(const QString& value) {
+    QStringList result;
+    const auto parts = value.split(',', Qt::SkipEmptyParts);
+    for (const QString& part : parts) {
+        const QString normalized = part.trimmed();
+        if (!normalized.isEmpty() && !result.contains(normalized, Qt::CaseInsensitive)) {
+            result.append(normalized);
+        }
+    }
+    return result;
+}
+
+QString buildEligibilitySummary(const QStringList& classes, const QStringList& departments) {
+    QStringList lines;
+    lines << QString("Eligible classes: %1").arg(classes.isEmpty() ? "All classes" : classes.join(", "));
+    lines << QString("Eligible departments: %1").arg(departments.isEmpty() ? "All departments" : departments.join(", "));
+    return lines.join('\n');
+}
+
+} // namespace
 
 AdminPanel::AdminPanel(QWidget *parent) : QWidget(parent) {
     setupUi();
     // Connect to signals that might require data refresh
+    connect(&Auth::AuthManager::instance(), &Auth::AuthManager::authStateChanged, this, &AdminPanel::updateActionAvailability);
+    connect(&Auth::AuthManager::instance(), &Auth::AuthManager::loginSuccessful, this, [this](const QString&) { updateActionAvailability(); });
+    connect(&Auth::AuthManager::instance(), &Auth::AuthManager::logoutOccurred, this, &AdminPanel::updateActionAvailability);
     connect(&Election::ElectionManager::instance(), &Election::ElectionManager::electionCreated, this, &AdminPanel::refreshData);
     connect(&Election::ElectionManager::instance(), &Election::ElectionManager::electionUpdated, this, &AdminPanel::refreshData);
     connect(&Election::ElectionManager::instance(), &Election::ElectionManager::electionDeleted, this, &AdminPanel::refreshData);
@@ -139,38 +174,16 @@ void AdminPanel::setupUi() {
     outerLayout->addWidget(scrollArea);
 
     // --- Connect Buttons ---
-    connect(m_createElectionBtn, &QPushButton::clicked, this, [this]() {
-        qInfo() << "AdminPanel: Create Election button clicked.";
-        bool ok;
-        QString title = QInputDialog::getText(this, tr("Create New Election"),
-                                             tr("Election Title:"), QLineEdit::Normal,
-                                             "New Election", &ok);
-        if (ok && !title.isEmpty()) {
-            Core::Election election;
-            // ID and createdAt will be set by ElectionManager
-            election.title = title;
-            election.description = "Description for " + title;
-            election.startDate = QDateTime::currentDateTime();
-            election.endDate = QDateTime::currentDateTime().addDays(7); // Default to 7 days duration
-            election.state = Core::VotingState::Idle;
-            election.isActive = false;
-            election.createdBy = Auth::AuthManager::instance().currentUserId();
-
-            if (Election::ElectionManager::instance().createElection(election)) {
-                ToastNotification::show(this, "Election '" + election.title + "' created successfully.", ToastNotification::Success);
-                refreshData();
-                Audit::AuditManager::instance().log(Core::AuditAction::ElectionCreated, QString("Election '%1' created.").arg(election.title), Auth::AuthManager::instance().currentUserId());
-            } else {
-                ToastNotification::show(this, "Failed to create election.", ToastNotification::Error);
-                Audit::AuditManager::instance().log(Core::AuditAction::ElectionCreated, QString("Failed to create election '%1'.").arg(election.title), Auth::AuthManager::instance().currentUserId());
-            }
-        } else {
-            qDebug() << "AdminPanel: Create Election cancelled or empty title provided.";
-        }
-    });
+    connect(m_createElectionBtn, &QPushButton::clicked, this, &AdminPanel::showCreateElectionWizard);
 
     connect(m_deleteElectionBtn, &QPushButton::clicked, this, [this]() {
         qInfo() << "AdminPanel: Delete Selected button clicked.";
+        if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_ELECTION_DELETE)) {
+            ToastNotification::show(this, "You do not have permission to delete elections.", ToastNotification::Error);
+            Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, "Denied election deletion from admin panel.", Auth::AuthManager::instance().currentUserId());
+            return;
+        }
+
         auto selectedItems = m_electionsTable->selectedItems();
         if (selectedItems.isEmpty()) {
             ToastNotification::show(this, "Please select an election to delete.", ToastNotification::Warning);
@@ -179,6 +192,17 @@ void AdminPanel::setupUi() {
         int row = selectedItems.first()->row();
         QString electionId = m_electionsTable->item(row, 0)->data(Qt::UserRole).toString();
         QString electionTitle = m_electionsTable->item(row, 0)->text();
+
+        const auto election = Election::ElectionManager::instance().getElection(electionId);
+        if (!election) {
+            ToastNotification::show(this, "Election not found. Refreshing list.", ToastNotification::Error);
+            refreshData();
+            return;
+        }
+        if (election->state == Core::VotingState::Voting) {
+            ToastNotification::show(this, "End or pause the election before deleting it.", ToastNotification::Warning);
+            return;
+        }
 
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, "Confirm Deletion",
@@ -200,6 +224,12 @@ void AdminPanel::setupUi() {
 
     connect(m_manageCandidatesBtn, &QPushButton::clicked, this, [this]() {
         qInfo() << "AdminPanel: Manage Candidates button clicked.";
+        if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_CANDIDATE_MANAGE)) {
+            ToastNotification::show(this, "You do not have permission to manage candidates.", ToastNotification::Error);
+            Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, "Denied candidate management from admin panel.", Auth::AuthManager::instance().currentUserId());
+            return;
+        }
+
         auto selectedItems = m_electionsTable->selectedItems();
         if (selectedItems.isEmpty()) {
             ToastNotification::show(this, "Please select an election to manage candidates for.", ToastNotification::Warning);
@@ -289,6 +319,162 @@ void AdminPanel::setupUi() {
     qDebug() << "AdminPanel: UI setup complete.";
 }
 
+void AdminPanel::showCreateElectionWizard() {
+    qInfo() << "AdminPanel: Create Election wizard opened.";
+    if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_ELECTION_CREATE)) {
+        ToastNotification::show(this, "You do not have permission to create elections.", ToastNotification::Error);
+        Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, "Denied election creation from admin panel.", Auth::AuthManager::instance().currentUserId());
+        return;
+    }
+
+    QWizard wizard(this);
+    wizard.setWindowTitle("Create Election");
+    wizard.setWizardStyle(QWizard::ModernStyle);
+    wizard.setOption(QWizard::NoBackButtonOnStartPage);
+    wizard.setMinimumSize(720, 520);
+
+    auto* basicPage = new QWizardPage(&wizard);
+    basicPage->setTitle("Basic Information");
+    basicPage->setSubTitle("Name the election and describe its purpose for voters and administrators.");
+
+    auto* titleEdit = new QLineEdit(basicPage);
+    titleEdit->setPlaceholderText("e.g. Student Council Election 2026");
+    titleEdit->setMaxLength(120);
+    titleEdit->setAccessibleName("Election name");
+
+    auto* descriptionEdit = new QTextEdit(basicPage);
+    descriptionEdit->setPlaceholderText("Describe eligibility, goals, offices, and any important instructions.");
+    descriptionEdit->setAcceptRichText(false);
+    descriptionEdit->setMinimumHeight(140);
+    descriptionEdit->setAccessibleName("Election description");
+
+    auto* classesEdit = new QLineEdit(basicPage);
+    classesEdit->setPlaceholderText("Optional, comma-separated: Grade 10, Grade 11");
+    classesEdit->setAccessibleName("Eligible classes");
+
+    auto* departmentsEdit = new QLineEdit(basicPage);
+    departmentsEdit->setPlaceholderText("Optional, comma-separated: Computer Science, Commerce");
+    departmentsEdit->setAccessibleName("Eligible departments");
+
+    auto* basicLayout = new QFormLayout(basicPage);
+    basicLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+    basicLayout->addRow("Election name *", titleEdit);
+    basicLayout->addRow("Description", descriptionEdit);
+    basicLayout->addRow("Eligible classes", classesEdit);
+    basicLayout->addRow("Eligible departments", departmentsEdit);
+    wizard.addPage(basicPage);
+
+    auto* schedulePage = new QWizardPage(&wizard);
+    schedulePage->setTitle("Schedule & Rules");
+    schedulePage->setSubTitle("Define when voting is open and the core voting constraints.");
+
+    const QDateTime now = QDateTime::currentDateTime();
+    auto* startEdit = new QDateTimeEdit(now.addSecs(3600), schedulePage);
+    startEdit->setCalendarPopup(true);
+    startEdit->setDisplayFormat("yyyy-MM-dd HH:mm");
+    startEdit->setAccessibleName("Voting start date and time");
+
+    auto* endEdit = new QDateTimeEdit(now.addDays(7), schedulePage);
+    endEdit->setCalendarPopup(true);
+    endEdit->setDisplayFormat("yyyy-MM-dd HH:mm");
+    endEdit->setAccessibleName("Voting end date and time");
+
+    auto* maxVotesSpin = new QSpinBox(schedulePage);
+    maxVotesSpin->setRange(1, 50);
+    maxVotesSpin->setValue(1);
+    maxVotesSpin->setAccessibleName("Maximum votes per student");
+
+    auto* verificationCheck = new QCheckBox("Require verified student identity before accepting a vote", schedulePage);
+    verificationCheck->setChecked(true);
+    verificationCheck->setAccessibleName("Require student verification");
+
+    auto* scheduleLayout = new QFormLayout(schedulePage);
+    scheduleLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+    scheduleLayout->addRow("Voting starts", startEdit);
+    scheduleLayout->addRow("Voting ends", endEdit);
+    scheduleLayout->addRow("Max votes per student", maxVotesSpin);
+    scheduleLayout->addRow("", verificationCheck);
+    wizard.addPage(schedulePage);
+
+    auto* reviewPage = new QWizardPage(&wizard);
+    reviewPage->setTitle("Review");
+    reviewPage->setSubTitle("Confirm the election setup before it is created.");
+    auto* reviewLabel = new QLabel(reviewPage);
+    reviewLabel->setWordWrap(true);
+    reviewLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    reviewLabel->setAccessibleName("Election creation summary");
+    auto* reviewLayout = new QVBoxLayout(reviewPage);
+    reviewLayout->addWidget(reviewLabel);
+    wizard.addPage(reviewPage);
+
+    connect(&wizard, &QWizard::currentIdChanged, &wizard, [&](int id) {
+        if (wizard.page(id) != reviewPage) {
+            return;
+        }
+
+        const QStringList classes = splitCsvValues(classesEdit->text());
+        const QStringList departments = splitCsvValues(departmentsEdit->text());
+        reviewLabel->setText(QString(
+            "<b>%1</b><br><br>"
+            "%2<br><br>"
+            "<b>Schedule</b><br>"
+            "Starts: %3<br>"
+            "Ends: %4<br><br>"
+            "<b>Rules</b><br>"
+            "Max votes per student: %5<br>"
+            "Verification required: %6<br><br>"
+            "<b>Eligibility</b><br>%7")
+            .arg(titleEdit->text().trimmed().toHtmlEscaped(),
+                 descriptionEdit->toPlainText().trimmed().isEmpty()
+                    ? QString("No public description provided.")
+                    : descriptionEdit->toPlainText().trimmed().toHtmlEscaped(),
+                 startEdit->dateTime().toString("yyyy-MM-dd HH:mm"),
+                 endEdit->dateTime().toString("yyyy-MM-dd HH:mm"),
+                 QString::number(maxVotesSpin->value()),
+                 verificationCheck->isChecked() ? "Yes" : "No",
+                 buildEligibilitySummary(classes, departments).toHtmlEscaped().replace("\n", "<br>")));
+    });
+
+    if (wizard.exec() != QDialog::Accepted) {
+        qDebug() << "AdminPanel: Create Election wizard cancelled.";
+        return;
+    }
+
+    const QString title = titleEdit->text().trimmed();
+    if (title.isEmpty()) {
+        ToastNotification::show(this, "Election name is required.", ToastNotification::Warning);
+        return;
+    }
+
+    if (endEdit->dateTime() <= startEdit->dateTime()) {
+        ToastNotification::show(this, "Voting end time must be after the start time.", ToastNotification::Warning);
+        return;
+    }
+
+    Core::Election election;
+    election.title = title;
+    election.description = descriptionEdit->toPlainText().trimmed();
+    election.startDate = startEdit->dateTime();
+    election.endDate = endEdit->dateTime();
+    election.state = Core::VotingState::Idle;
+    election.isActive = false;
+    election.createdBy = Auth::AuthManager::instance().currentUserId();
+    election.eligibleClasses = splitCsvValues(classesEdit->text());
+    election.eligibleDepartments = splitCsvValues(departmentsEdit->text());
+    election.maxVotesPerStudent = maxVotesSpin->value();
+    election.requireVerification = verificationCheck->isChecked();
+
+    if (Election::ElectionManager::instance().createElection(election)) {
+        ToastNotification::show(this, "Election '" + election.title + "' created successfully.", ToastNotification::Success);
+        refreshData();
+        Audit::AuditManager::instance().log(Core::AuditAction::ElectionCreated, QString("Election '%1' created from wizard.").arg(election.title), Auth::AuthManager::instance().currentUserId());
+        return;
+    }
+
+    ToastNotification::show(this, "Failed to create election.", ToastNotification::Error);
+    Audit::AuditManager::instance().log(Core::AuditAction::ElectionCreated, QString("Failed to create election '%1' from wizard.").arg(election.title), Auth::AuthManager::instance().currentUserId());
+}
+
 /**
  * @brief Refreshes the data displayed in the administration panel.
  * This includes system information and the elections table.
@@ -342,6 +528,24 @@ void AdminPanel::refreshData() {
     }
     m_electionsTable->setSortingEnabled(true); // Re-enable sorting
     qDebug() << "AdminPanel: Elections table updated with" << elections.size() << "entries.";
+    updateActionAvailability();
+}
+
+void AdminPanel::updateActionAvailability() {
+    auto& auth = Auth::AuthManager::instance();
+    const bool authenticated = auth.isAuthenticated();
+    const bool canCreateElection = authenticated && Auth::RBACManager::instance().hasPermission(auth.currentRole(), Auth::RBACManager::PERM_ELECTION_CREATE);
+    const bool canDeleteElection = authenticated && Auth::RBACManager::instance().hasPermission(auth.currentRole(), Auth::RBACManager::PERM_ELECTION_DELETE);
+    const bool canManageCandidates = authenticated && Auth::RBACManager::instance().hasPermission(auth.currentRole(), Auth::RBACManager::PERM_CANDIDATE_MANAGE);
+
+    m_createElectionBtn->setEnabled(canCreateElection);
+    m_createElectionBtn->setToolTip(canCreateElection ? "Create a new election" : "Requires election creation permission");
+
+    m_deleteElectionBtn->setEnabled(canDeleteElection);
+    m_deleteElectionBtn->setToolTip(canDeleteElection ? "Delete the selected non-running election" : "Requires election deletion permission");
+
+    m_manageCandidatesBtn->setEnabled(canManageCandidates);
+    m_manageCandidatesBtn->setToolTip(canManageCandidates ? "Add, edit, or delete candidates" : "Requires candidate management permission");
 }
 
 } // namespace Ballot::UI

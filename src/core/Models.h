@@ -136,6 +136,7 @@ struct Student {
     QByteArray photoData;
     QString admissionNumber;
     QString rollNumber;
+    QString department;
     QString className;
     QString section;
     int age = 0;
@@ -160,6 +161,7 @@ struct Student {
         o["photoData"] = QString(photoData.toBase64());
         o["admissionNumber"] = admissionNumber;
         o["rollNumber"] = rollNumber;
+        o["department"] = department;
         o["class"] = className;
         o["section"] = section;
         o["age"] = age;

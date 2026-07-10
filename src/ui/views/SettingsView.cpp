@@ -10,9 +10,7 @@
 #include <QGroupBox>
 #include <QFormLayout>
 #include <QFile>
-#include <QApplication>
 #include <QDebug> // For logging
-#include <QMetaEnum> // For QMetaEnum
 #include <QSignalBlocker>
 
 namespace Ballot::UI {
@@ -53,11 +51,8 @@ void SettingsView::setupUi() {
     appearanceLayout->setSpacing(12);
 
     m_themeCombo = new QComboBox(appearanceGroup);
-    // Populate theme combo box from ThemeManager enum
-    QMetaEnum metaEnum = QMetaEnum::fromType<Core::ThemeManager::Theme>();
-    for (int i = 0; i < metaEnum.keyCount(); ++i) {
-        m_themeCombo->addItem(metaEnum.key(i));
-    }
+    // Keep theme names aligned with the persisted configuration values.
+    m_themeCombo->addItems({"Modern", "Light", "Dark"});
     m_themeCombo->setStyleSheet(R"(
         QComboBox { background-color: #1e1e34; color: #e0e0e0; border: 1px solid #3d3d5c; border-radius: 4px; padding: 5px; }
         QComboBox::drop-down { border: 0px; }
@@ -195,13 +190,24 @@ void SettingsView::loadSettings() {
     qInfo() << "SettingsView: Loading settings...";
     Core::SystemSettings settings = Core::SystemManager::instance().settings();
 
-    // Set current theme in combo box
-    QMetaEnum metaEnum = QMetaEnum::fromType<Core::ThemeManager::Theme>();
-    QString currentThemeName = QString::fromUtf8(metaEnum.valueToKey(static_cast<int>(Core::ThemeManager::instance().currentTheme())));
-    int index = m_themeCombo->findText(currentThemeName);
+    // Set current theme in combo box from the persisted application settings.
+    // This keeps the UI aligned with the database-backed configuration rather
+    // than a transient runtime state.
+    const QString normalizedTheme = [&settings]() {
+        const QString theme = settings.theme.trimmed();
+        if (theme.compare("dark", Qt::CaseInsensitive) == 0) return QStringLiteral("Dark");
+        if (theme.compare("light", Qt::CaseInsensitive) == 0) return QStringLiteral("Light");
+        if (theme.compare("modern", Qt::CaseInsensitive) == 0) return QStringLiteral("Modern");
+        return theme;
+    }();
+
+    int index = m_themeCombo->findText(normalizedTheme);
     if (index != -1) {
         const QSignalBlocker blocker(m_themeCombo);
         m_themeCombo->setCurrentIndex(index);
+    } else {
+        const QSignalBlocker blocker(m_themeCombo);
+        m_themeCombo->setCurrentIndex(0);
     }
 
 
@@ -239,8 +245,8 @@ void SettingsView::saveSettings() {
     qInfo() << "SettingsView: Saving settings...";
     Core::SystemSettings settings = Core::SystemManager::instance().settings(); // Get current settings to modify
 
-    // Theme is now saved directly by onThemeChanged slot, no need to save here.
-    // settings.theme = m_themeCombo->currentText().toLower();
+    // Persist the selected theme so the next startup matches the UI state.
+    settings.theme = m_themeCombo->currentText();
 
     // Map display text to language code
     if (m_languageCombo->currentText() == "English") settings.language = "en";
@@ -261,8 +267,6 @@ void SettingsView::saveSettings() {
         ToastNotification::show(this, "Settings saved successfully", ToastNotification::Success);
         Audit::AuditManager::instance().log(Core::AuditAction::SettingsChanged, "System settings updated.", Auth::AuthManager::instance().currentUserId());
         qInfo() << "SettingsView: Settings saved successfully.";
-        // Trigger a refresh of SystemManager's internal state if necessary
-        Core::SystemManager::instance().initialize(QVariantMap()); // Re-initialize to apply new settings
     } else {
         ToastNotification::show(this, "Failed to save settings", ToastNotification::Error);
         Audit::AuditManager::instance().log(Core::AuditAction::SettingsChanged, "Failed to update system settings.", Auth::AuthManager::instance().currentUserId());
@@ -273,7 +277,7 @@ void SettingsView::saveSettings() {
 void SettingsView::onThemeChanged(int index)
 {
     QString themeName = m_themeCombo->itemText(index);
-    Core::ThemeManager::instance().applyTheme(themeName);
+    Core::SystemManager::instance().setTheme(themeName);
     qInfo() << "SettingsView: Theme changed to" << themeName;
 }
 

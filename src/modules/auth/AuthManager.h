@@ -5,6 +5,8 @@
 #include <vector>
 #include <QTimer>
 #include <QStringList>
+#include <QDateTime>
+#include <QHash>
 #include "IAuthProvider.h"
 #include "src/core/Models.h"
 
@@ -58,6 +60,8 @@ private:
     bool m_isAuthenticated = false;
     QTimer* m_sessionTimer;
     int m_timeoutMinutes = 30;
+    QHash<QString, int> m_failedLoginCounts;
+    QHash<QString, QDateTime> m_lockoutUntil;
 };
 
 } // namespace Ballot::Auth

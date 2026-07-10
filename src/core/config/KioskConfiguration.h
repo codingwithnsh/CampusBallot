@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QVariant>
 #include <QVariantMap>
 #include <QJsonObject>
@@ -9,6 +10,7 @@
 #include <QFile>
 #include <QStandardPaths>
 #include <QDir>
+#include <QMutex>
 #include <optional>
 #include "src/core/models/ElectionConfiguration.h"
 

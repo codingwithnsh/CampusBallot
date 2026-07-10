@@ -130,7 +130,7 @@ FieldDefinition FieldDefinition::fromJson(const QJsonObject& obj) {
     field.isSearchable = obj["isSearchable"].toBool();
     field.isSortable = obj["isSortable"].toBool();
     field.isExportable = obj["isExportable"].toBool();
-    field.isEditable = obj["isEditable(obj["isEditable"].toBool());
+    field.isEditable = obj["isEditable"].toBool();
     field.isVisible = obj["isVisible"].toBool();
     field.readOnly = obj["readOnly"].toBool();
     field.minLength = obj["minLength"].toInt();

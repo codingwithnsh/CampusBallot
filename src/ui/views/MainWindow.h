@@ -3,8 +3,6 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <memory>
-#include <QPropertyAnimation> // For view transitions
-#include <QGraphicsOpacityEffect> // For fade effect
 #include "src/ui/components/Sidebar.h"
 #include "SetupWizard.h" // Include SetupWizard header
 
@@ -32,7 +30,7 @@ private:
     void setupUi();
     void setupSidebar();
     void connectSignals();
-    void animateViewTransition(int newIndex); // Method for animating transitions
+    void switchStackIndex(int newIndex);
 
     QStackedWidget *m_stackedWidget;
     Sidebar *m_sidebar;
@@ -51,8 +49,6 @@ private:
     class ViewModels::ResultsViewModel *m_resultsViewModel;
 
     QString m_currentViewId; // Member to store the current view ID
-    QPropertyAnimation *m_fadeAnimation; // Animation for view transitions
-    QGraphicsOpacityEffect *m_opacityEffect; // Opacity effect for transitions
 };
 
 } // namespace Ballot::UI

@@ -16,6 +16,8 @@ public:
 private:
     void setupUi();
     void refreshData();
+    void showCreateElectionWizard();
+    void updateActionAvailability();
 
     QTableWidget* m_electionsTable;
     QPushButton* m_createElectionBtn;

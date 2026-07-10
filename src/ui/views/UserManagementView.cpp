@@ -12,13 +12,189 @@
 #include <QLabel>
 #include <QScrollArea>
 #include <QGroupBox>
-#include <QInputDialog> // For user input dialogs
 #include <QMessageBox>  // For confirmation dialogs
 #include <QUuid>        // Still included for QJsonDocument::Indented or if needed elsewhere
 #include <QDateTime>
 #include <QDebug> // For logging
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QCheckBox>
+#include <QRegularExpression>
+#include <optional>
 
 namespace Ballot::UI {
+
+namespace {
+
+struct UserFormResult {
+    QString name;
+    QString email;
+    QString department;
+    Core::UserRole role = Core::UserRole::Observer;
+    bool isActive = true;
+    QString password;
+    bool passwordChanged = false;
+};
+
+QStringList roleNames() {
+    QStringList roles;
+    for (int i = 0; i < static_cast<int>(Core::UserRole::Count); ++i) {
+        roles << Auth::RBACManager::instance().roleToString(static_cast<Core::UserRole>(i));
+    }
+    return roles;
+}
+
+bool isValidEmail(const QString& email) {
+    static const QRegularExpression emailPattern(
+        R"(^[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}$)",
+        QRegularExpression::CaseInsensitiveOption);
+    return emailPattern.match(email.trimmed()).hasMatch();
+}
+
+QString passwordValidationError(const QString& password) {
+    if (password.length() < 12) {
+        return "Password must be at least 12 characters long.";
+    }
+
+    const bool hasLower = password.contains(QRegularExpression("[a-z]"));
+    const bool hasUpper = password.contains(QRegularExpression("[A-Z]"));
+    const bool hasDigit = password.contains(QRegularExpression("[0-9]"));
+    const bool hasSymbol = password.contains(QRegularExpression(R"([^A-Za-z0-9])"));
+
+    if (!hasLower || !hasUpper || !hasDigit || !hasSymbol) {
+        return "Password must include uppercase, lowercase, number, and symbol characters.";
+    }
+
+    return {};
+}
+
+std::optional<UserFormResult> showUserFormDialog(QWidget* parent, const std::optional<Core::User>& existingUser = std::nullopt) {
+    const bool editing = existingUser.has_value();
+
+    QDialog dialog(parent);
+    dialog.setWindowTitle(editing ? "Edit User" : "Add User");
+    dialog.setMinimumWidth(520);
+
+    auto* layout = new QVBoxLayout(&dialog);
+    auto* formLayout = new QFormLayout();
+    formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+
+    auto* nameEdit = new QLineEdit(&dialog);
+    nameEdit->setPlaceholderText("Full name");
+    nameEdit->setMaxLength(120);
+    nameEdit->setAccessibleName("User full name");
+
+    auto* emailEdit = new QLineEdit(&dialog);
+    emailEdit->setPlaceholderText("name@example.edu");
+    emailEdit->setMaxLength(180);
+    emailEdit->setAccessibleName("User email address");
+
+    auto* departmentEdit = new QLineEdit(&dialog);
+    departmentEdit->setPlaceholderText("Department or office");
+    departmentEdit->setMaxLength(120);
+    departmentEdit->setAccessibleName("User department");
+
+    auto* roleCombo = new QComboBox(&dialog);
+    roleCombo->addItems(roleNames());
+    roleCombo->setAccessibleName("User role");
+
+    auto* activeCheck = new QCheckBox("Account is active", &dialog);
+    activeCheck->setChecked(true);
+    activeCheck->setAccessibleName("Account active status");
+
+    auto* passwordEdit = new QLineEdit(&dialog);
+    passwordEdit->setEchoMode(QLineEdit::Password);
+    passwordEdit->setPlaceholderText(editing ? "Leave blank to keep current password" : "Temporary password");
+    passwordEdit->setAccessibleName("User password");
+
+    auto* confirmPasswordEdit = new QLineEdit(&dialog);
+    confirmPasswordEdit->setEchoMode(QLineEdit::Password);
+    confirmPasswordEdit->setPlaceholderText(editing ? "Repeat only when changing password" : "Repeat password");
+    confirmPasswordEdit->setAccessibleName("Confirm user password");
+
+    auto* passwordHint = new QLabel("Minimum 12 characters with uppercase, lowercase, number, and symbol.", &dialog);
+    passwordHint->setWordWrap(true);
+    passwordHint->setStyleSheet("color: #9ca3af;");
+
+    if (editing) {
+        const Core::User& user = *existingUser;
+        nameEdit->setText(user.name);
+        emailEdit->setText(user.email);
+        departmentEdit->setText(user.department);
+        activeCheck->setChecked(user.isActive);
+        const int roleIndex = roleCombo->findText(Auth::RBACManager::instance().roleToString(user.role));
+        if (roleIndex >= 0) {
+            roleCombo->setCurrentIndex(roleIndex);
+        }
+    }
+
+    formLayout->addRow("Name *", nameEdit);
+    formLayout->addRow("Email *", emailEdit);
+    formLayout->addRow("Department", departmentEdit);
+    formLayout->addRow("Role *", roleCombo);
+    formLayout->addRow("", activeCheck);
+    formLayout->addRow(editing ? "New password" : "Password *", passwordEdit);
+    formLayout->addRow(editing ? "Confirm new password" : "Confirm password *", confirmPasswordEdit);
+    formLayout->addRow("", passwordHint);
+    layout->addLayout(formLayout);
+
+    auto* buttons = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Save, &dialog);
+    layout->addWidget(buttons);
+    QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, [&]() {
+        const QString name = nameEdit->text().trimmed();
+        const QString email = emailEdit->text().trimmed().toLower();
+        const QString password = passwordEdit->text();
+        const QString confirmPassword = confirmPasswordEdit->text();
+
+        if (name.isEmpty()) {
+            QMessageBox::warning(&dialog, "Validation Error", "Name is required.");
+            nameEdit->setFocus();
+            return;
+        }
+        if (!isValidEmail(email)) {
+            QMessageBox::warning(&dialog, "Validation Error", "Enter a valid email address.");
+            emailEdit->setFocus();
+            return;
+        }
+
+        const bool passwordRequired = !editing;
+        const bool passwordProvided = !password.isEmpty() || !confirmPassword.isEmpty();
+        if (passwordRequired || passwordProvided) {
+            if (password != confirmPassword) {
+                QMessageBox::warning(&dialog, "Validation Error", "Passwords do not match.");
+                confirmPasswordEdit->setFocus();
+                return;
+            }
+
+            const QString passwordError = passwordValidationError(password);
+            if (!passwordError.isEmpty()) {
+                QMessageBox::warning(&dialog, "Validation Error", passwordError);
+                passwordEdit->setFocus();
+                return;
+            }
+        }
+
+        dialog.accept();
+    });
+
+    if (dialog.exec() != QDialog::Accepted) {
+        return std::nullopt;
+    }
+
+    UserFormResult result;
+    result.name = nameEdit->text().trimmed();
+    result.email = emailEdit->text().trimmed().toLower();
+    result.department = departmentEdit->text().trimmed();
+    result.role = Auth::RBACManager::instance().roleFromString(roleCombo->currentText());
+    result.isActive = activeCheck->isChecked();
+    result.password = passwordEdit->text();
+    result.passwordChanged = !result.password.isEmpty();
+    return result;
+}
+
+} // namespace
 
 UserManagementView::UserManagementView(QWidget *parent) : QWidget(parent) {
     setupUi();
@@ -149,6 +325,11 @@ void UserManagementView::setupUi() {
 
     connect(m_addUserBtn, &QPushButton::clicked, this, [this]() {
         qInfo() << "UserManagementView: Add User button clicked.";
+        if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_USER_CREATE)) {
+            ToastNotification::show(this, "You do not have permission to create users.", ToastNotification::Error);
+            return;
+        }
+
         auto* storage = Core::SystemManager::instance().storage();
         if (!storage) {
             ToastNotification::show(this, "Storage not available. Cannot add user.", ToastNotification::Error);
@@ -156,58 +337,29 @@ void UserManagementView::setupUi() {
             return;
         }
 
-        bool ok;
-        QString name = QInputDialog::getText(this, tr("Add New User"), tr("Name:"), QLineEdit::Normal, "", &ok);
-        if (!ok || name.isEmpty()) {
-            qDebug() << "UserManagementView: Add User cancelled or empty name provided.";
+        const auto form = showUserFormDialog(this);
+        if (!form) {
+            qDebug() << "UserManagementView: Add User cancelled.";
             return;
         }
-
-        QString email = QInputDialog::getText(this, tr("Add New User"), tr("Email:"), QLineEdit::Normal, "", &ok);
-        if (!ok || email.isEmpty()) {
-            qDebug() << "UserManagementView: Add User cancelled or empty email provided.";
-            return;
-        }
-        // Basic email format validation
-        if (!email.contains('@') || !email.contains('.')) {
-            ToastNotification::show(this, "Invalid email format.", ToastNotification::Warning);
-            qWarning() << "UserManagementView: Invalid email format provided:" << email;
-            return;
-        }
-
-        QString password = QInputDialog::getText(this, tr("Add New User"), tr("Password:"), QLineEdit::Password, "", &ok);
-        if (!ok || password.isEmpty()) {
-            qDebug() << "UserManagementView: Add User cancelled or empty password provided.";
-            return;
-        }
-        if (password.length() < 8) {
-            ToastNotification::show(this, "Password must be at least 8 characters long.", ToastNotification::Warning);
-            qWarning() << "UserManagementView: Password too short.";
-            return;
-        }
-
-        // Select role
-        QStringList roles;
-        for (int i = 0; i < static_cast<int>(Core::UserRole::Count); ++i) {
-            roles << Auth::RBACManager::instance().roleToString(static_cast<Core::UserRole>(i));
-        }
-        QString roleString = QInputDialog::getItem(this, tr("Add New User"), tr("Role:"), roles, 0, false, &ok);
-        if (!ok || roleString.isEmpty()) {
-            qDebug() << "UserManagementView: Add User cancelled or no role selected.";
-            return;
-        }
-        Core::UserRole role = Auth::RBACManager::instance().roleFromString(roleString);
 
         Core::User newUser;
         newUser.id = Core::IdGenerator::generateId();
-        newUser.name = name;
-        newUser.email = email;
-        newUser.role = role;
-        newUser.isActive = true;
+        newUser.name = form->name;
+        newUser.email = form->email;
+        newUser.department = form->department;
+        newUser.role = form->role;
+        newUser.isActive = form->isActive;
         newUser.createdAt = QDateTime::currentDateTime();
 
+        if (!Auth::RBACManager::instance().canPerformAction(Auth::AuthManager::instance().currentRole(), newUser.role)) {
+            ToastNotification::show(this, "You cannot create a user with that role.", ToastNotification::Error);
+            Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, QString("Denied user creation with role '%1'.").arg(Auth::RBACManager::instance().roleToString(newUser.role)), Auth::AuthManager::instance().currentUserId());
+            return;
+        }
+
         QByteArray salt = Security::HashProvider::generateSalt();
-        QByteArray hashedPassword = Security::HashProvider::argon2Hash(password, salt);
+        QByteArray hashedPassword = Security::HashProvider::argon2Hash(form->password, salt);
         newUser.passwordHashAndSalt = salt + hashedPassword; // Store combined salt and hash
 
         if (storage->createUser(newUser)) {
@@ -223,6 +375,11 @@ void UserManagementView::setupUi() {
 
     connect(m_editUserBtn, &QPushButton::clicked, this, [this]() {
         qInfo() << "UserManagementView: Edit User button clicked.";
+        if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_USER_MODIFY)) {
+            ToastNotification::show(this, "You do not have permission to edit users.", ToastNotification::Error);
+            return;
+        }
+
         auto selectedItems = m_usersTable->selectedItems();
         if (selectedItems.isEmpty()) {
             ToastNotification::show(this, "Please select a user to edit.", ToastNotification::Warning);
@@ -246,57 +403,38 @@ void UserManagementView::setupUi() {
         }
         Core::User user = *userOpt;
 
-        bool ok;
-        QString name = QInputDialog::getText(this, tr("Edit User"), tr("Name:"), QLineEdit::Normal, user.name, &ok);
-        if (!ok) {
-            qDebug() << "UserManagementView: Edit User cancelled (name).";
+        if (!Auth::RBACManager::instance().canPerformAction(Auth::AuthManager::instance().currentRole(), user.role)) {
+            ToastNotification::show(this, "You cannot edit a user with that role.", ToastNotification::Error);
+            Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, QString("Denied edit of user '%1'.").arg(user.email), Auth::AuthManager::instance().currentUserId());
             return;
         }
-        user.name = name;
 
-        QString email = QInputDialog::getText(this, tr("Edit User"), tr("Email:"), QLineEdit::Normal, user.email, &ok);
-        if (!ok) {
-            qDebug() << "UserManagementView: Edit User cancelled (email).";
+        const auto form = showUserFormDialog(this, user);
+        if (!form) {
+            qDebug() << "UserManagementView: Edit User cancelled.";
             return;
         }
-        // Basic email format validation
-        if (!email.contains('@') || !email.contains('.')) {
-            ToastNotification::show(this, "Invalid email format.", ToastNotification::Warning);
-            qWarning() << "UserManagementView: Invalid email format provided during edit:" << email;
+
+        user.name = form->name;
+        user.email = form->email;
+        user.department = form->department;
+        user.role = form->role;
+        user.isActive = form->isActive;
+
+        if (!Auth::RBACManager::instance().canPerformAction(Auth::AuthManager::instance().currentRole(), user.role)) {
+            ToastNotification::show(this, "You cannot assign that role.", ToastNotification::Error);
+            Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, QString("Denied role assignment '%1' to user '%2'.").arg(Auth::RBACManager::instance().roleToString(user.role), user.email), Auth::AuthManager::instance().currentUserId());
             return;
         }
-        user.email = email;
 
-        // Select role
-        QStringList roles;
-        for (int i = 0; i < static_cast<int>(Core::UserRole::Count); ++i) {
-            roles << Auth::RBACManager::instance().roleToString(static_cast<Core::UserRole>(i));
-        }
-        QString currentRoleString = Auth::RBACManager::instance().roleToString(user.role);
-        int currentRoleIndex = roles.indexOf(currentRoleString);
-
-        QString roleString = QInputDialog::getItem(this, tr("Edit User"), tr("Role:"), roles, currentRoleIndex, false, &ok);
-        if (!ok || roleString.isEmpty()) {
-            qDebug() << "UserManagementView: Edit User cancelled (role).";
+        if (user.id == Auth::AuthManager::instance().currentUserId() && (!user.isActive || user.role != Auth::AuthManager::instance().currentRole())) {
+            ToastNotification::show(this, "You cannot deactivate or change the role of your own active session.", ToastNotification::Error);
             return;
         }
-        user.role = Auth::RBACManager::instance().roleFromString(roleString);
 
-        // Option to change password
-        int changePass = QMessageBox::question(this, tr("Edit User"), tr("Do you want to change the password?"), QMessageBox::Yes | QMessageBox::No);
-        if (changePass == QMessageBox::Yes) {
-            QString newPassword = QInputDialog::getText(this, tr("Change Password"), tr("New Password:"), QLineEdit::Password, "", &ok);
-            if (!ok || newPassword.isEmpty()) {
-                qDebug() << "UserManagementView: Change password cancelled or empty password provided.";
-                return;
-            }
-            if (newPassword.length() < 8) {
-                ToastNotification::show(this, "Password must be at least 8 characters long.", ToastNotification::Warning);
-                qWarning() << "UserManagementView: New password too short.";
-                return;
-            }
+        if (form->passwordChanged) {
             QByteArray salt = Security::HashProvider::generateSalt();
-            QByteArray hashedPassword = Security::HashProvider::argon2Hash(newPassword, salt);
+            QByteArray hashedPassword = Security::HashProvider::argon2Hash(form->password, salt);
             user.passwordHashAndSalt = salt + hashedPassword; // Store combined salt and hash
             qInfo() << "UserManagementView: Password change requested for user" << user.id;
         }
@@ -314,6 +452,11 @@ void UserManagementView::setupUi() {
 
     connect(m_deleteUserBtn, &QPushButton::clicked, this, [this]() {
         qInfo() << "UserManagementView: Delete User button clicked.";
+        if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_USER_DELETE)) {
+            ToastNotification::show(this, "You do not have permission to delete users.", ToastNotification::Error);
+            return;
+        }
+
         auto selectedItems = m_usersTable->selectedItems();
         if (selectedItems.isEmpty()) {
             ToastNotification::show(this, "Please select a user to delete.", ToastNotification::Warning);
@@ -329,17 +472,29 @@ void UserManagementView::setupUi() {
             return;
         }
 
+        auto* storage = Core::SystemManager::instance().storage();
+        if (!storage) {
+            ToastNotification::show(this, "Storage not available. Cannot delete user.", ToastNotification::Error);
+            qCritical() << "UserManagementView: Storage not available for deleting user.";
+            return;
+        }
+
+        const auto userOpt = storage->getUser(userId);
+        if (!userOpt) {
+            ToastNotification::show(this, "User not found.", ToastNotification::Error);
+            return;
+        }
+        if (!Auth::RBACManager::instance().canPerformAction(Auth::AuthManager::instance().currentRole(), userOpt->role)) {
+            ToastNotification::show(this, "You cannot delete a user with that role.", ToastNotification::Error);
+            Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, QString("Denied delete of user '%1'.").arg(userOpt->email), Auth::AuthManager::instance().currentUserId());
+            return;
+        }
+
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, "Confirm Deletion",
                                       "Are you sure you want to delete user '" + userName + "'?\nThis action cannot be undone.",
                                       QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
-            auto* storage = Core::SystemManager::instance().storage();
-            if (!storage) {
-                ToastNotification::show(this, "Storage not available. Cannot delete user.", ToastNotification::Error);
-                qCritical() << "UserManagementView: Storage not available for deleting user.";
-                return;
-            }
             if (storage->deleteUser(userId)) {
                 ToastNotification::show(this, "User '" + userName + "' deleted successfully.", ToastNotification::Success);
                 refreshData();
@@ -376,7 +531,10 @@ void UserManagementView::refreshData() {
     QList<Core::User> filtered;
     for (const auto& u : users) {
         // Apply search filter
-        if (!search.isEmpty() && !u.name.toLower().contains(search) && !u.email.toLower().contains(search)) {
+        if (!search.isEmpty() &&
+            !u.name.toLower().contains(search) &&
+            !u.email.toLower().contains(search) &&
+            !u.department.toLower().contains(search)) {
             continue;
         }
         // Apply role filter
@@ -400,7 +558,7 @@ void UserManagementView::refreshData() {
         nameItem->setData(Qt::UserRole, u.id); // Store user ID in UserRole
         m_usersTable->setItem(i, 0, nameItem);
         m_usersTable->setItem(i, 1, new QTableWidgetItem(u.email));
-        m_usersTable->setItem(i, 2, new QTableWidgetItem(u.department)); // Department is empty in Core::User, consider removing or adding to dialog
+        m_usersTable->setItem(i, 2, new QTableWidgetItem(u.department));
         m_usersTable->setItem(i, 3, new QTableWidgetItem(rbac.roleToString(u.role)));
         auto *statusItem = new QTableWidgetItem(u.isActive ? "Active" : "Inactive");
         statusItem->setForeground(u.isActive ? QColor("#4caf50") : QColor("#f44336"));

@@ -24,10 +24,39 @@
 #include <QApplication>
 #include <QPixmap>
 #include <QStyle>
+#include <QRegularExpression>
 #include <QUuid> // Still included for QJsonDocument::Indented or if needed elsewhere
 #include <QDebug> // For logging
 
 namespace Ballot::UI {
+
+namespace {
+
+bool isValidEmail(const QString& email) {
+    static const QRegularExpression emailPattern(
+        R"(^[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}$)",
+        QRegularExpression::CaseInsensitiveOption);
+    return emailPattern.match(email.trimmed()).hasMatch();
+}
+
+QString passwordValidationError(const QString& password) {
+    if (password.length() < 12) {
+        return "Password must be at least 12 characters long";
+    }
+
+    const bool hasLower = password.contains(QRegularExpression("[a-z]"));
+    const bool hasUpper = password.contains(QRegularExpression("[A-Z]"));
+    const bool hasDigit = password.contains(QRegularExpression("[0-9]"));
+    const bool hasSymbol = password.contains(QRegularExpression(R"([^A-Za-z0-9])"));
+
+    if (!hasLower || !hasUpper || !hasDigit || !hasSymbol) {
+        return "Password must include uppercase, lowercase, number, and symbol characters";
+    }
+
+    return {};
+}
+
+} // namespace
 
 SetupWizard::SetupWizard(QWidget *parent) : QWidget(parent) {
     setWindowTitle("Campus Ballot - Setup Wizard");
@@ -182,7 +211,7 @@ void SetupWizard::nextStep() {
             m_adminEmailEdit->setFocus();
             return;
         }
-        if (!m_adminEmailEdit->text().contains('@') || !m_adminEmailEdit->text().contains('.')) {
+        if (!isValidEmail(m_adminEmailEdit->text())) {
             ToastNotification::show(this, "Please enter a valid email address", ToastNotification::Warning);
             m_adminEmailEdit->setFocus();
             return;
@@ -202,16 +231,22 @@ void SetupWizard::nextStep() {
             m_adminPasswordEdit->setFocus();
             return;
         }
-        if (m_adminPasswordEdit->text().length() < 8) {
-            ToastNotification::show(this, "Password must be at least 8 characters long", ToastNotification::Warning);
+        const QString passwordError = passwordValidationError(m_adminPasswordEdit->text());
+        if (!passwordError.isEmpty()) {
+            ToastNotification::show(this, passwordError, ToastNotification::Warning);
             m_adminPasswordEdit->setFocus();
             return;
         }
 
         // Store admin details in config
-        m_config["admin_name"] = m_adminNameEdit->text();
-        m_config["admin_email"] = m_adminEmailEdit->text();
-        m_config["admin_password"] = m_adminPasswordEdit->text();
+        const QByteArray salt = Security::HashProvider::generateSalt();
+        const QByteArray hashedPassword = Security::HashProvider::argon2Hash(m_adminPasswordEdit->text(), salt);
+        m_config["admin_name"] = m_adminNameEdit->text().trimmed();
+        m_config["admin_email"] = m_adminEmailEdit->text().trimmed().toLower();
+        m_config["admin_password_hash"] = QString::fromUtf8((salt + hashedPassword).toHex());
+        m_config.remove("admin_password");
+        m_adminPasswordEdit->clear();
+        m_adminConfirmEdit->clear();
         nextIndex = 5;
     }
 
@@ -728,7 +763,7 @@ QWidget* SetupWizard::createAdminAccountPage() {
     formLayout->addRow(emailLabel, m_adminEmailEdit);
 
     m_adminPasswordEdit = new QLineEdit(formGroup);
-    m_adminPasswordEdit->setPlaceholderText("Enter password (min 8 characters)");
+    m_adminPasswordEdit->setPlaceholderText("Minimum 12 chars with uppercase, lowercase, number, and symbol");
     m_adminPasswordEdit->setEchoMode(QLineEdit::Password);
     m_adminPasswordEdit->setFixedHeight(44);
     auto* passwordLabel = new QLabel("Password *");
@@ -742,6 +777,11 @@ QWidget* SetupWizard::createAdminAccountPage() {
     auto* confirmLabel = new QLabel("Confirm Password *");
     styleLabel(confirmLabel);
     formLayout->addRow(confirmLabel, m_adminConfirmEdit);
+
+    auto* passwordHint = new QLabel("Use at least 12 characters, including uppercase, lowercase, number, and symbol.", formGroup);
+    passwordHint->setWordWrap(true);
+    passwordHint->setStyleSheet("font-size: 12px; color: #9a9ab0; background: transparent;");
+    formLayout->addRow("", passwordHint);
 
     layout->addWidget(formGroup);
     layout->addStretch();

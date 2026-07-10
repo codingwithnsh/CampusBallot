@@ -14,6 +14,7 @@ set(SOURCES
     main.cpp
     src/core/SystemManager.cpp
     src/core/ThemeManager.cpp
+    src/core/config/KioskConfiguration.cpp
     # Updated paths for security modules
     src/modules/security/AES256Provider.cpp
     src/modules/security/HashProvider.cpp

@@ -19,6 +19,8 @@ public:
 private:
     void setupUi();
     void updateUi();
+    void updateExportAvailability();
+    void exportResultsAs(const QString& format, const QString& defaultFileName, const QString& fileFilter);
     QWidget* createChartWidget();
 
     ViewModels::ResultsViewModel* m_viewModel = nullptr;

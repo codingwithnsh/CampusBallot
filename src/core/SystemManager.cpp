@@ -2,6 +2,7 @@
 #include "src/modules/storage/providers/SQLiteStorageProvider.h" // Specific storage provider
 #include "src/modules/security/AES256Provider.h" // Specific crypto provider
 #include "src/modules/security/TamperDetector.h" // Specific tamper detection
+#include "src/core/ThemeManager.h"
 #include "src/core/Utils.h" // For SystemInfo namespace
 #include "src/modules/audit/AuditManager.h" // Dependency for audit logging
 #include "src/modules/backup/BackupManager.h" // Dependency for backup management
@@ -10,8 +11,6 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <QDebug> // For logging
-#include <QApplication> // For applying stylesheet
-#include <QFile> // For reading QSS file
 
 namespace Ballot::Core {
 
@@ -194,25 +193,10 @@ void SystemManager::setTheme(const QString& theme) {
 }
 
 void SystemManager::applyTheme(const QString& themeName) {
-    QString qssPath;
-    if (themeName.toLower() == "dark" || themeName.toLower() == "modern") {
-        qssPath = ":/src/ui/styles/modern.qss";
-    } else if (themeName.toLower() == "light") {
-        qssPath = ":/src/ui/styles/light.qss";
-    } else {
-        qWarning() << "SystemManager: Unknown theme specified:" << themeName << ". Defaulting to modern.qss.";
-        qssPath = ":/src/ui/styles/modern.qss";
-    }
-
-    QFile file(qssPath);
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
-        QString styleSheet = QLatin1String(file.readAll());
-        qApp->setStyleSheet(styleSheet);
-        file.close();
-        qInfo() << "SystemManager: Applied theme from" << qssPath;
-    } else {
-        qCritical() << "SystemManager: Failed to load stylesheet from" << qssPath << ":" << file.errorString();
-    }
+    // Theme application is centralized in ThemeManager so the app uses one
+    // stylesheet path, one persistence mechanism, and one source of truth.
+    ThemeManager::instance().applyTheme(themeName);
+    qInfo() << "SystemManager: Delegated theme application to ThemeManager:" << themeName;
 }
 
 QString SystemManager::accentColor() const { return m_settings.accentColor; }

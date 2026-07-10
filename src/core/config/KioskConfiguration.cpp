@@ -1,6 +1,7 @@
 #include "KioskConfiguration.h"
 #include <QDebug>
 #include <QCoreApplication>
+#include <QMutexLocker>
 
 namespace Ballot::Core {
 

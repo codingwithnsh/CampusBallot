@@ -42,7 +42,10 @@ void ThemeManager::applyTheme(const QString& themeName)
     if (themeName.compare("Light", Qt::CaseInsensitive) == 0) {
         theme = Theme::Light;
     } else if (themeName.compare("Dark", Qt::CaseInsensitive) == 0) {
-        theme = Theme::Dark;
+        // The legacy dark stylesheet applies borders to every QFrame, which
+        // creates boxes around arbitrary labels/layout helper widgets. Use the
+        // modern dark stylesheet for persisted "dark" settings instead.
+        theme = Theme::Modern;
     }
     // Add more themes here as they are implemented
 

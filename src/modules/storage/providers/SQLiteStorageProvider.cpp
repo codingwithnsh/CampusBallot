@@ -148,7 +148,7 @@ bool SQLiteStorageProvider::initSchema() {
 
     ok &= exec(R"(CREATE TABLE IF NOT EXISTS students (
         id TEXT PRIMARY KEY, name TEXT, photo_data BLOB, admission_number TEXT UNIQUE,
-        roll_number TEXT, class_name TEXT, section TEXT, age INTEGER,
+        roll_number TEXT, department TEXT, class_name TEXT, section TEXT, age INTEGER,
         gender TEXT, email TEXT, phone TEXT, parent_name TEXT,
         qr_code BLOB, rfid_tag TEXT, barcode BLOB, unique_voting_id TEXT UNIQUE, has_voted INTEGER DEFAULT 0,
         is_verified INTEGER DEFAULT 0, verified_at DATETIME, verified_by TEXT,
@@ -197,6 +197,13 @@ bool SQLiteStorageProvider::initSchema() {
         storage_path TEXT, is_encrypted INTEGER DEFAULT 1
     ))", "backups");
 
+    // These indexes keep the dashboard, eligibility checks, and result queries
+    // responsive as elections and voter populations grow.
+    ok &= exec("CREATE INDEX IF NOT EXISTS idx_candidates_election ON candidates(election_id)", "candidates");
+    ok &= exec("CREATE INDEX IF NOT EXISTS idx_votes_election ON votes(election_id)", "votes");
+    ok &= exec("CREATE INDEX IF NOT EXISTS idx_votes_student_election ON votes(student_id, election_id)", "votes");
+    ok &= exec("CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp)", "audit_logs");
+
     // --- Schema Migrations ---
     // Helper to add column if it doesn't exist
     auto addColumn = [&](const QString& tableName, const QString& columnName, const QString& columnDef) {
@@ -226,6 +233,7 @@ bool SQLiteStorageProvider::initSchema() {
 
     // Migrate students table
     ok &= addColumn("students", "photo_data", "BLOB");
+    ok &= addColumn("students", "department", "TEXT");
     ok &= addColumn("students", "qr_code", "BLOB");
     ok &= addColumn("students", "rfid_tag", "TEXT");
     ok &= addColumn("students", "barcode", "BLOB");
@@ -271,6 +279,10 @@ bool SQLiteStorageProvider::initSchema() {
     ok &= addColumn("elections", "eligible_departments", "TEXT");
     ok &= addColumn("elections", "max_votes_per_student", "INTEGER DEFAULT 1");
     ok &= addColumn("elections", "require_verification", "INTEGER DEFAULT 1");
+
+    // Student eligibility filters depend on department; create this index only
+    // after migrations have guaranteed the column exists on older databases.
+    ok &= exec("CREATE INDEX IF NOT EXISTS idx_students_class_department ON students(class_name, department)", "students");
 
 
     // Migrate votes table if old schema exists (candidate_id_encrypted to candidate_id)
@@ -540,13 +552,14 @@ QList<Core::Candidate> SQLiteStorageProvider::getCandidates(const QString& elect
 
 bool SQLiteStorageProvider::addStudent(const Core::Student& student) {
     QSqlQuery query(m_db);
-    query.prepare(R"(INSERT INTO students (id, name, photo_data, admission_number, roll_number, class_name, section, age, gender, email, phone, parent_name, qr_code, rfid_tag, barcode, unique_voting_id, has_voted, is_verified, verified_at, verified_by, registered_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?))");
+    query.prepare(R"(INSERT INTO students (id, name, photo_data, admission_number, roll_number, department, class_name, section, age, gender, email, phone, parent_name, qr_code, rfid_tag, barcode, unique_voting_id, has_voted, is_verified, verified_at, verified_by, registered_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?))");
     query.addBindValue(student.id);
     query.addBindValue(student.name);
     query.addBindValue(student.photoData);
     query.addBindValue(student.admissionNumber);
     query.addBindValue(student.rollNumber);
+    query.addBindValue(student.department);
     query.addBindValue(student.className);
     query.addBindValue(student.section);
     query.addBindValue(student.age);
@@ -572,11 +585,12 @@ bool SQLiteStorageProvider::addStudent(const Core::Student& student) {
 
 bool SQLiteStorageProvider::updateStudent(const Core::Student& student) {
     QSqlQuery query(m_db);
-    query.prepare(R"(UPDATE students SET name=?, photo_data=?, admission_number=?, roll_number=?, class_name=?, section=?, age=?, gender=?, email=?, phone=?, parent_name=?, qr_code=?, rfid_tag=?, barcode=?, unique_voting_id=?, has_voted=?, is_verified=?, verified_at=?, verified_by=? WHERE id=?)");
+    query.prepare(R"(UPDATE students SET name=?, photo_data=?, admission_number=?, roll_number=?, department=?, class_name=?, section=?, age=?, gender=?, email=?, phone=?, parent_name=?, qr_code=?, rfid_tag=?, barcode=?, unique_voting_id=?, has_voted=?, is_verified=?, verified_at=?, verified_by=? WHERE id=?)");
     query.addBindValue(student.name);
     query.addBindValue(student.photoData);
     query.addBindValue(student.admissionNumber);
     query.addBindValue(student.rollNumber);
+    query.addBindValue(student.department);
     query.addBindValue(student.className);
     query.addBindValue(student.section);
     query.addBindValue(student.age);
@@ -684,14 +698,17 @@ QList<Core::Student> SQLiteStorageProvider::getEligibleVoters(const QString& ele
     QList<QVariant> bindValues;
     bindValues.append(electionId);
 
-    if (!election->eligibleClasses.isEmpty()) {
-        // Use IN clause for multiple classes
-        conditions << "class_name IN ('" + election->eligibleClasses.join("','") + "')";
-    }
-    if (!election->eligibleDepartments.isEmpty()) {
-        // Use IN clause for multiple departments
-        conditions << "department IN ('" + election->eligibleDepartments.join("','") + "')";
-    }
+    auto addInCondition = [&](const QString& column, const QStringList& values) {
+        if (values.isEmpty()) return;
+        QStringList placeholders;
+        for (const auto& value : values) {
+            placeholders << "?";
+            bindValues.append(value);
+        }
+        conditions << QString("%1 IN (%2)").arg(column, placeholders.join(","));
+    };
+    addInCondition("class_name", election->eligibleClasses);
+    addInCondition("department", election->eligibleDepartments);
 
     QString sql = "SELECT * FROM students";
     if (!conditions.isEmpty()) {
@@ -730,12 +747,17 @@ int SQLiteStorageProvider::getVoterCount(const QString& electionId) {
     QStringList conditions;
     QList<QVariant> bindValues;
 
-    if (!election->eligibleClasses.isEmpty()) {
-        conditions << "class_name IN ('" + election->eligibleClasses.join("','") + "')";
-    }
-    if (!election->eligibleDepartments.isEmpty()) {
-        conditions << "department IN ('" + election->eligibleDepartments.join("','") + "')";
-    }
+    auto addInCondition = [&](const QString& column, const QStringList& values) {
+        if (values.isEmpty()) return;
+        QStringList placeholders;
+        for (const auto& value : values) {
+            placeholders << "?";
+            bindValues.append(value);
+        }
+        conditions << QString("%1 IN (%2)").arg(column, placeholders.join(","));
+    };
+    addInCondition("class_name", election->eligibleClasses);
+    addInCondition("department", election->eligibleDepartments);
 
     QString sql = "SELECT COUNT(*) FROM students";
     if (!conditions.isEmpty()) {
@@ -847,8 +869,8 @@ std::optional<Core::User> SQLiteStorageProvider::getUser(const QString& id) {
 
 std::optional<Core::User> SQLiteStorageProvider::getUserByEmail(const QString& email) {
     QSqlQuery query(m_db);
-    query.prepare("SELECT * FROM users WHERE email=?");
-    query.addBindValue(email);
+    query.prepare("SELECT * FROM users WHERE lower(trim(email))=lower(trim(?))");
+    query.addBindValue(email.trimmed());
     if (query.exec()) {
         if (query.next()) return std::optional<Core::User>(parseUser(query));
     } else {
@@ -1405,6 +1427,7 @@ static Core::Student parseStudent(const QSqlQuery& query) {
     s.photoData = query.value("photo_data").toByteArray();
     s.admissionNumber = query.value("admission_number").toString();
     s.rollNumber = query.value("roll_number").toString();
+    s.department = query.value("department").toString();
     s.className = query.value("class_name").toString();
     s.section = query.value("section").toString();
     s.age = query.value("age").toInt();

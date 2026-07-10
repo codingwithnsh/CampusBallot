@@ -3,6 +3,8 @@
 #include "src/modules/election/ElectionManager.h"
 #include "src/modules/election/VoteManager.h"
 #include "src/modules/audit/AuditManager.h" // For audit logging
+#include "src/modules/auth/AuthManager.h"
+#include "src/modules/auth/RBACManager.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -12,6 +14,22 @@
 #include <QDebug>        // For logging
 
 namespace Ballot::ViewModels {
+
+namespace {
+
+QString escapeCsvCell(QString value) {
+    if (!value.isEmpty() && QStringLiteral("=+-@").contains(value.front())) {
+        value.prepend('\'');
+    }
+    value.replace("\"", "\"\"");
+    return "\"" + value + "\"";
+}
+
+QString htmlEscaped(const QString& value) {
+    return value.toHtmlEscaped();
+}
+
+} // namespace
 
 ResultsViewModel::ResultsViewModel(QObject *parent)
     : QObject(parent) {
@@ -155,6 +173,13 @@ QList<Core::Election> ResultsViewModel::getElections() const {
  */
 bool ResultsViewModel::exportResults(const QString& filePath, const QString& format) {
     qInfo() << "ResultsViewModel: Exporting results to" << filePath << "in" << format << "format.";
+    if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_RESULTS_EXPORT)) {
+        qWarning() << "ResultsViewModel: Results export denied by RBAC.";
+        Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, QString("Denied results export to %1 as %2.").arg(filePath, format), Auth::AuthManager::instance().currentUserId());
+        emit errorOccurred("You do not have permission to export results.");
+        return false;
+    }
+
     if (m_results.isEmpty()) {
         qWarning() << "ResultsViewModel: No results to export.";
         emit errorOccurred("No results to export.");
@@ -191,23 +216,23 @@ bool ResultsViewModel::exportResults(const QString& filePath, const QString& for
         QTextStream out(&file);
         out << "Candidate,Party,Votes,Percentage\n";
         for (const auto& r : m_results) {
-            out << "\"" << r.candidateName << "\",\""
-                << r.party << "\","
+            out << escapeCsvCell(r.candidateName) << ","
+                << escapeCsvCell(r.party) << ","
                 << r.voteCount << ","
-                << QString::number(r.percentage, 'f', 1) << "%\n";
+                << escapeCsvCell(QString::number(r.percentage, 'f', 1) + "%") << "\n";
         }
         file.close();
         success = true;
     } else if (format.toLower() == "pdf") {
         QTextDocument document;
-        QString htmlContent = "<h1>Election Results for " + m_election->title + "</h1>";
+        QString htmlContent = "<h1>Election Results for " + htmlEscaped(m_election->title) + "</h1>";
         htmlContent += "<p>Total Votes: " + QString::number(m_totalVotes) + "</p>";
         htmlContent += "<p>Voter Turnout: " + QString::number(m_turnout, 'f', 1) + "%</p>";
         htmlContent += "<table border='1' cellpadding='5' cellspacing='0'>";
         htmlContent += "<thead><tr><th>Candidate</th><th>Party</th><th>Votes</th><th>Percentage</th></tr></thead>";
         htmlContent += "<tbody>";
         for (const auto& r : m_results) {
-            htmlContent += "<tr><td>" + r.candidateName + "</td><td>" + r.party + "</td><td>" + QString::number(r.voteCount) + "</td><td>" + QString::number(r.percentage, 'f', 1) + "%</td></tr>";
+            htmlContent += "<tr><td>" + htmlEscaped(r.candidateName) + "</td><td>" + htmlEscaped(r.party) + "</td><td>" + QString::number(r.voteCount) + "</td><td>" + QString::number(r.percentage, 'f', 1) + "%</td></tr>";
         }
         htmlContent += "</tbody></table>";
         document.setHtml(htmlContent);

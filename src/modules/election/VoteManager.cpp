@@ -15,6 +15,19 @@ namespace Ballot::Election {
 // Static mutex to protect castVote from concurrent access
 static QMutex voteMutex;
 
+namespace {
+
+QByteArray deriveVoteEncryptionKey() {
+    const auto& system = Core::SystemManager::instance();
+    const QString material = QStringLiteral("CampusBallot::VoteEnvelope::v1|%1|%2|%3")
+        .arg(system.settings().masterMachineId,
+             system.machineId(),
+             Core::SystemInfo::getMachineId());
+    return Security::HashProvider::sha256(material.toUtf8());
+}
+
+} // namespace
+
 VoteManager& VoteManager::instance() {
     static VoteManager inst;
     return inst;
@@ -71,6 +84,56 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
             Core::AuditAction::VoteCompleted,
             QString("Vote failed: Candidate not found - Student: %1, Election: %2, Candidate: %3").arg(studentId, electionId, candidateId),
             studentId);
+        return false;
+    }
+
+    // A candidate ID is globally unique, so existence alone is not enough.  Without
+    // this check a crafted request could cast a vote in this election for a candidate
+    // belonging to another election.
+    if (candidate->electionId != electionId) {
+        qWarning() << "VoteManager: Candidate" << candidateId
+                   << "does not belong to election" << electionId;
+        Audit::AuditManager::instance().log(
+            Core::AuditAction::VoteCompleted,
+            QString("Vote failed: Candidate belongs to another election - Student: %1, Election: %2, Candidate: %3")
+                .arg(studentId, electionId, candidateId),
+            studentId);
+        return false;
+    }
+
+    if (!candidate->isApproved) {
+        qWarning() << "VoteManager: Unapproved candidate vote rejected:" << candidateId;
+        return false;
+    }
+
+    if (election->requireVerification && !student->isVerified) {
+        qWarning() << "VoteManager: Unverified student vote rejected:" << studentId;
+        Audit::AuditManager::instance().log(
+            Core::AuditAction::VoteCompleted,
+            QString("Vote failed: Student verification required - Student: %1, Election: %2")
+                .arg(studentId, electionId),
+            studentId);
+        return false;
+    }
+
+    const auto now = QDateTime::currentDateTime();
+    if (election->startDate.isValid() && now < election->startDate) {
+        qWarning() << "VoteManager: Voting window has not opened for election:" << electionId;
+        return false;
+    }
+    if (election->endDate.isValid() && now > election->endDate) {
+        qWarning() << "VoteManager: Voting window has closed for election:" << electionId;
+        return false;
+    }
+
+    if (!election->eligibleClasses.isEmpty() &&
+        !election->eligibleClasses.contains(student->className, Qt::CaseInsensitive)) {
+        qWarning() << "VoteManager: Student is not eligible by class:" << studentId;
+        return false;
+    }
+    if (!election->eligibleDepartments.isEmpty() &&
+        !election->eligibleDepartments.contains(student->department, Qt::CaseInsensitive)) {
+        qWarning() << "VoteManager: Student is not eligible by department:" << studentId;
         return false;
     }
 
@@ -249,42 +312,54 @@ double VoteManager::getTurnout(const QString& electionId) const {
     return (static_cast<double>(votes) / total) * 100.0;
 }
 
-// --- TEMPORARY AUDITABLE ENCRYPTION (for vote hash, not candidate ID in DB) ---
-// TODO: Replace with a secure, election-specific key management system.
-// This hardcoded key is for auditability during development/testing ONLY.
-static const QByteArray TEMP_ENCRYPTION_KEY = QByteArrayLiteral("ThisIsATempSecretKeyForAuditing1234567890"); // 32 bytes for AES256
-
 // This function is now effectively unused for storing candidateId in the DB.
 // It could be repurposed to encrypt the entire vote object if needed for end-to-end encryption.
 QByteArray VoteManager::encryptVote(const QString& data) const {
     Security::AES256Provider crypto;
     try {
-        QByteArray encrypted = crypto.encrypt(data.toUtf8(), TEMP_ENCRYPTION_KEY);
+        const QByteArray key = deriveVoteEncryptionKey();
+        if (key.size() != 32) {
+            qCritical() << "VoteManager: Derived vote encryption key has invalid size.";
+            return {};
+        }
+
+        QByteArray encrypted = crypto.encrypt(data.toUtf8(), key);
         qDebug() << "VoteManager: Encrypted data. Original size:" << data.toUtf8().size() << "Encrypted size:" << encrypted.size();
         return encrypted;
     } catch (const std::exception& e) {
         qCritical() << "VoteManager: Encryption failed for data. Error:" << e.what();
-        return data.toUtf8(); // Fallback to unencrypted if encryption fails (CRITICAL, should ideally prevent vote)
+        return {};
     } catch (...) {
         qCritical() << "VoteManager: Unknown encryption failed for data.";
-        return data.toUtf8(); // Fallback to unencrypted
+        return {};
     }
 }
 
 // This function is now effectively unused for decrypting candidateId from the DB.
 // It could be repurposed to decrypt the entire vote object if needed for end-to-end encryption.
 QString VoteManager::decryptVote(const QByteArray& encrypted) const {
+    if (encrypted.isEmpty()) {
+        qWarning() << "VoteManager: Cannot decrypt empty vote payload.";
+        return {};
+    }
+
     Security::AES256Provider crypto;
     try {
-        QByteArray decrypted = crypto.decrypt(encrypted, TEMP_ENCRYPTION_KEY);
+        const QByteArray key = deriveVoteEncryptionKey();
+        if (key.size() != 32) {
+            qCritical() << "VoteManager: Derived vote encryption key has invalid size.";
+            return {};
+        }
+
+        QByteArray decrypted = crypto.decrypt(encrypted, key);
         qDebug() << "VoteManager: Decrypted data. Encrypted size:" << encrypted.size() << "Decrypted size:" << decrypted.size();
         return QString::fromUtf8(decrypted);
     } catch (const std::exception& e) {
         qCritical() << "VoteManager: Decryption failed. Error:" << e.what();
-        return QString("DECRYPTION_FAILED: %1").arg(e.what());
+        return {};
     } catch (...) {
         qCritical() << "VoteManager: Unknown decryption failed.";
-        return "DECRYPTION_FAILED: Unknown error";
+        return {};
     }
 }
 

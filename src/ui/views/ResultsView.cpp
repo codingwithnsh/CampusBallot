@@ -2,6 +2,8 @@
 #include "src/ui/components/ToastNotification.h"
 #include "src/modules/election/ElectionManager.h" // For getting elections
 #include "src/modules/audit/AuditManager.h" // For audit logging
+#include "src/modules/auth/AuthManager.h"
+#include "src/modules/auth/RBACManager.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -23,6 +25,9 @@ namespace Ballot::UI {
 
 ResultsView::ResultsView(QWidget *parent) : QWidget(parent) {
     setupUi();
+    connect(&Auth::AuthManager::instance(), &Auth::AuthManager::authStateChanged, this, &ResultsView::updateExportAvailability);
+    connect(&Auth::AuthManager::instance(), &Auth::AuthManager::loginSuccessful, this, [this](const QString&) { updateExportAvailability(); });
+    connect(&Auth::AuthManager::instance(), &Auth::AuthManager::logoutOccurred, this, &ResultsView::updateExportAvailability);
     qDebug() << "ResultsView: Initialized.";
 }
 
@@ -189,16 +194,13 @@ void ResultsView::setupUi() {
     m_exportPdfBtn->setStyleSheet(exportBtnStyle);
 
     connect(m_exportCsvBtn, &QPushButton::clicked, this, [this]() {
-        QString path = QFileDialog::getSaveFileName(this, "Export CSV", "election_results.csv", "CSV (*.csv)");
-        if (!path.isEmpty() && m_viewModel) m_viewModel->exportResults(path, "csv");
+        exportResultsAs("csv", "election_results.csv", "CSV (*.csv)");
     });
     connect(m_exportJsonBtn, &QPushButton::clicked, this, [this]() {
-        QString path = QFileDialog::getSaveFileName(this, "Export JSON", "election_results.json", "JSON (*.json)");
-        if (!path.isEmpty() && m_viewModel) m_viewModel->exportResults(path, "json");
+        exportResultsAs("json", "election_results.json", "JSON (*.json)");
     });
     connect(m_exportPdfBtn, &QPushButton::clicked, this, [this]() {
-        QString path = QFileDialog::getSaveFileName(this, "Export PDF", "election_results.pdf", "PDF (*.pdf)");
-        if (!path.isEmpty() && m_viewModel) m_viewModel->exportResults(path, "pdf");
+        exportResultsAs("pdf", "election_results.pdf", "PDF (*.pdf)");
     });
 
     exportLayout->addWidget(m_exportCsvBtn);
@@ -223,7 +225,40 @@ void ResultsView::setupUi() {
             qDebug() << "ResultsView: Election selected:" << id;
         }
     });
+    updateExportAvailability();
     qDebug() << "ResultsView: UI setup complete.";
+}
+
+void ResultsView::updateExportAvailability() {
+    auto& auth = Auth::AuthManager::instance();
+    const bool canExport = auth.isAuthenticated()
+        && Auth::RBACManager::instance().hasPermission(auth.currentRole(), Auth::RBACManager::PERM_RESULTS_EXPORT);
+    const QString tooltip = canExport ? "Export election results" : "Requires results export permission";
+
+    m_exportCsvBtn->setEnabled(canExport);
+    m_exportJsonBtn->setEnabled(canExport);
+    m_exportPdfBtn->setEnabled(canExport);
+    m_exportCsvBtn->setToolTip(tooltip);
+    m_exportJsonBtn->setToolTip(tooltip);
+    m_exportPdfBtn->setToolTip(tooltip);
+}
+
+void ResultsView::exportResultsAs(const QString& format, const QString& defaultFileName, const QString& fileFilter) {
+    if (!Auth::AuthManager::instance().hasPermission(Auth::RBACManager::PERM_RESULTS_EXPORT)) {
+        ToastNotification::show(this, "You do not have permission to export results.", ToastNotification::Error);
+        Audit::AuditManager::instance().log(Core::AuditAction::PermissionDenied, QString("Denied results export as %1.").arg(format), Auth::AuthManager::instance().currentUserId());
+        return;
+    }
+
+    if (!m_viewModel) {
+        ToastNotification::show(this, "Results are not ready to export.", ToastNotification::Warning);
+        return;
+    }
+
+    const QString path = QFileDialog::getSaveFileName(this, "Export " + format.toUpper(), defaultFileName, fileFilter);
+    if (!path.isEmpty()) {
+        m_viewModel->exportResults(path, format);
+    }
 }
 
 /**
@@ -286,6 +321,7 @@ void ResultsView::updateUi() {
         m_resultsTable->setItem(i, 3, new QTableWidgetItem(QString::number(r.percentage, 'f', 1) + "%"));
     }
     qDebug() << "ResultsView: UI update complete.";
+    updateExportAvailability();
 }
 
 /**

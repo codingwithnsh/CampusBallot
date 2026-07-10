@@ -108,12 +108,6 @@ void MainWindow::setupUi() {
     m_stackedWidget = new QStackedWidget(centralWidget);
     m_stackedWidget->setStyleSheet("background-color: #1a1a2e;"); // Ensure background for stacked widget
 
-    // Setup opacity effect and animation for transitions
-    m_opacityEffect = new QGraphicsOpacityEffect(m_stackedWidget);
-    m_stackedWidget->setGraphicsEffect(m_opacityEffect);
-    m_fadeAnimation = new QPropertyAnimation(m_opacityEffect, "opacity", this);
-    m_fadeAnimation->setDuration(200); // 200ms fade transition
-
     hLayout->addWidget(m_stackedWidget, 1);
 
     setCentralWidget(centralWidget);
@@ -218,7 +212,7 @@ void MainWindow::connectSignals() {
         Auth::AuthManager::instance().initialize(config);
 
         // Create admin user if details are present
-        if (config.contains("admin_email") && config.contains("admin_password")) {
+        if (config.contains("admin_email") && (config.contains("admin_password_hash") || config.contains("admin_password"))) {
             auto* storage = Core::SystemManager::instance().storage();
             if (!storage) {
                 ToastNotification::show(this, "Setup failed. Storage is unavailable.", ToastNotification::Error);
@@ -241,10 +235,14 @@ void MainWindow::connectSignals() {
             adminUser.name = config.value("admin_name").toString().trimmed();
             adminUser.email = adminEmail;
 
-            // Hash the admin password
-            QByteArray salt = Security::HashProvider::generateSalt();
-            QByteArray hashedPassword = Security::HashProvider::argon2Hash(config.value("admin_password").toString(), salt);
-            adminUser.passwordHashAndSalt = salt + hashedPassword; // Store combined salt and hash
+            if (config.contains("admin_password_hash")) {
+                adminUser.passwordHashAndSalt = QByteArray::fromHex(config.value("admin_password_hash").toString().toUtf8());
+            } else {
+                // Backward compatibility for older setup payloads.
+                QByteArray salt = Security::HashProvider::generateSalt();
+                QByteArray hashedPassword = Security::HashProvider::argon2Hash(config.value("admin_password").toString(), salt);
+                adminUser.passwordHashAndSalt = salt + hashedPassword;
+            }
 
             adminUser.role = Core::UserRole::SuperAdministrator;
             adminUser.isActive = true;
@@ -269,33 +267,26 @@ void MainWindow::connectSignals() {
         switchToView("login");
     });
 
-    // Connect fade animation finished signal to actually change the stacked widget index
-    connect(m_fadeAnimation, &QPropertyAnimation::finished, this, [this]() {
-        int newIndex = m_stackedWidget->property("targetIndex").toInt();
-        m_stackedWidget->setCurrentIndex(newIndex);
-        m_opacityEffect->setOpacity(1.0); // Ensure new page is fully visible
-        qDebug() << "MainWindow: View transition finished. Current index:" << newIndex;
-    });
     qDebug() << "MainWindow: Signals connected.";
 }
 
 /**
- * @brief Animates the transition between stacked widget pages using a fade effect.
+ * @brief Switches the stacked widget page directly.
+ *
+ * A previous implementation applied QGraphicsOpacityEffect to the whole
+ * QStackedWidget. Several child widgets also use graphics effects for shadows,
+ * which causes Qt painter/effect failures on Windows during login transitions.
+ * Direct switching is stable and avoids rendering artifacts.
  * @param newIndex The index of the page to switch to.
  */
-void MainWindow::animateViewTransition(int newIndex) {
+void MainWindow::switchStackIndex(int newIndex) {
     if (m_stackedWidget->currentIndex() == newIndex) {
-        qDebug() << "MainWindow: Already on target view index" << newIndex << ". Skipping animation.";
+        qDebug() << "MainWindow: Already on target view index" << newIndex << ".";
         return;
     }
 
-    qDebug() << "MainWindow: Starting view transition to index" << newIndex;
-    m_stackedWidget->setProperty("targetIndex", newIndex); // Store target index
-
-    // Fade out current view
-    m_fadeAnimation->setStartValue(1.0);
-    m_fadeAnimation->setEndValue(0.0);
-    m_fadeAnimation->start();
+    m_stackedWidget->setCurrentIndex(newIndex);
+    qDebug() << "MainWindow: Switched view. Current index:" << newIndex;
 }
 
 void MainWindow::switchToView(const QString& viewId) {
@@ -376,8 +367,7 @@ void MainWindow::switchToView(const QString& viewId) {
         }
     }
 
-    // Animate view transition
-    animateViewTransition(newIndex);
+    switchStackIndex(newIndex);
 
     // Refresh data for relevant views
     if (viewId == "dashboard") m_dashboardViewModel->refresh();

@@ -28,6 +28,18 @@ bool ElectionManager::createElection(const Core::Election& election) {
     }
 
     Core::Election e = election;
+    if (e.title.trimmed().isEmpty()) {
+        qWarning() << "ElectionManager: Cannot create an election without a title.";
+        return false;
+    }
+    if (e.startDate.isValid() && e.endDate.isValid() && e.endDate < e.startDate) {
+        qWarning() << "ElectionManager: Election end date precedes start date.";
+        return false;
+    }
+    if (e.maxVotesPerStudent < 1) {
+        qWarning() << "ElectionManager: maxVotesPerStudent must be at least one.";
+        return false;
+    }
     if (e.id.isEmpty()) {
         e.id = Core::IdGenerator::generateId(); // Use centralized ID generator
     }
@@ -50,6 +62,19 @@ bool ElectionManager::updateElection(const Core::Election& election) {
     auto* storage = Core::SystemManager::instance().storage();
     if (!storage) {
         qCritical() << "ElectionManager: Storage not available. Cannot update election.";
+        return false;
+    }
+
+    if (election.title.trimmed().isEmpty()) {
+        qWarning() << "ElectionManager: Cannot update an election without a title.";
+        return false;
+    }
+    if (election.startDate.isValid() && election.endDate.isValid() && election.endDate < election.startDate) {
+        qWarning() << "ElectionManager: Election end date precedes start date.";
+        return false;
+    }
+    if (election.maxVotesPerStudent < 1) {
+        qWarning() << "ElectionManager: maxVotesPerStudent must be at least one.";
         return false;
     }
 
