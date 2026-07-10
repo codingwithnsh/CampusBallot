@@ -6,18 +6,24 @@
 #include "AdminPanel.h"
 #include "UserManagementView.h"
 #include "SettingsView.h"
-#include "SetupWizard.h" // Include SetupWizard header
+#include "SetupWizard.h"
 #include "src/ui/viewmodels/DashboardViewModel.h"
 #include "src/ui/viewmodels/AuthViewModel.h"
 #include "src/ui/viewmodels/ResultsViewModel.h"
 #include "src/core/SystemManager.h"
 #include "src/modules/auth/AuthManager.h"
 #include "src/modules/auth/RBACManager.h"
-#include "src/core/Models.h" // Include Core::User
+#include "src/modules/audit/AuditManager.h"
+#include "src/core/Models.h"
+#include "src/core/Utils.h"
+#include "src/modules/security/HashProvider.h"
+#include "src/ui/components/ToastNotification.h" // For displaying messages
 #include <QHBoxLayout>
 #include <QApplication>
 #include <QIcon>
-#include <QUuid> // Include QUuid for user ID
+#include <QScreen> // For screen geometry
+#include <QDebug>
+#include <QSettings>
 
 namespace Ballot::UI {
 
@@ -26,8 +32,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setupSidebar();
     connectSignals();
 
-    // Show login by default
-    switchToView("login");
+    // Initial view based on system state
+    auto* storage = Core::SystemManager::instance().storage();
+    // Check if storage is connected and if there's at least one SuperAdministrator
+    if (!storage || !storage->isConnected() || storage->getUsersByRole(Core::UserRole::SuperAdministrator).isEmpty()) {
+        qInfo() << "MainWindow: No SuperAdministrator found or storage not connected. Switching to SetupWizard.";
+        switchToView("setupWizard");
+    } else {
+        qInfo() << "MainWindow: SuperAdministrator found. Switching to LoginView.";
+        switchToView("login");
+    }
+    qDebug() << "MainWindow: Initialization complete.";
 }
 
 void MainWindow::setupUi() {
@@ -36,31 +51,79 @@ void MainWindow::setupUi() {
     resize(1400, 900);
     setMinimumSize(1024, 768);
 
+    // Apply global modern stylesheet
+    setStyleSheet(R"(
+        QMainWindow {
+            background-color: #1a1a2e; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            font-family: "Segoe UI Variable", "Segoe UI", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 14px;
+        }
+        /* General scroll area styling */
+        QScrollArea {
+            background: transparent;
+            border: none;
+        }
+        QScrollArea > QWidget > QWidget { /* Target the content widget inside scroll area */
+            background: transparent;
+        }
+        QScrollBar:vertical, QScrollBar:horizontal {
+            background-color: transparent;
+            width: 8px;
+            height: 8px;
+            margin: 0;
+        }
+        QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+            background-color: #3d3d5c;
+            border-radius: 4px;
+            min-height: 30px;
+            min-width: 30px;
+        }
+        QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover {
+            background-color: #5a5a7a;
+        }
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical,
+        QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+            height: 0;
+            width: 0;
+        }
+        QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical,
+        QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+            background: none;
+        }
+    )");
+
     // Central widget with horizontal layout
     auto *centralWidget = new QWidget(this);
     auto *hLayout = new QHBoxLayout(centralWidget);
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
 
-    // Sidebar (initially hidden)
+    // Sidebar
     m_sidebar = new Sidebar(centralWidget);
-    m_sidebar->setVisible(false);
+    m_sidebar->setVisible(false); // Initially hidden
     hLayout->addWidget(m_sidebar);
 
     // Stacked widget for views
     m_stackedWidget = new QStackedWidget(centralWidget);
-    m_stackedWidget->setStyleSheet("background-color: #1a1a2e;");
+    m_stackedWidget->setStyleSheet("background-color: #1a1a2e;"); // Ensure background for stacked widget
+
+    // Setup opacity effect and animation for transitions
+    m_opacityEffect = new QGraphicsOpacityEffect(m_stackedWidget);
+    m_stackedWidget->setGraphicsEffect(m_opacityEffect);
+    m_fadeAnimation = new QPropertyAnimation(m_opacityEffect, "opacity", this);
+    m_fadeAnimation->setDuration(200); // 200ms fade transition
+
     hLayout->addWidget(m_stackedWidget, 1);
 
     setCentralWidget(centralWidget);
 
-    // Create ViewModels
-    auto* storage = Core::SystemManager::instance().storage();
-    m_dashboardViewModel = new ViewModels::DashboardViewModel(storage, this);
+    // Create ViewModels (pass this as parent)
+    m_dashboardViewModel = new ViewModels::DashboardViewModel(this);
     m_authViewModel = new ViewModels::AuthViewModel(this);
-    m_resultsViewModel = new ViewModels::ResultsViewModel(storage, this);
+    m_resultsViewModel = new ViewModels::ResultsViewModel(this);
 
-    // Create views
+    // Create views (pass this as parent)
     m_loginView = new LoginView(this);
     m_dashboard = new DashboardView(this);
     m_kiosk = new VotingKiosk(this);
@@ -68,118 +131,232 @@ void MainWindow::setupUi() {
     m_adminPanel = new AdminPanel(this);
     m_userManagement = new UserManagementView(this);
     m_settingsView = new SettingsView(this);
-    m_setupWizard = new SetupWizard(this); // Instantiate SetupWizard
+    m_setupWizard = new SetupWizard(this);
 
-    // Connect view models
+    // Connect view models to views
     m_dashboard->setViewModel(m_dashboardViewModel);
     m_loginView->setViewModel(m_authViewModel);
     m_resultsView->setViewModel(m_resultsViewModel);
 
     // Add views to stack
-    m_stackedWidget->addWidget(m_loginView);
-    m_stackedWidget->addWidget(m_dashboard);
-    m_stackedWidget->addWidget(m_kiosk);
-    m_stackedWidget->addWidget(m_resultsView);
-    m_stackedWidget->addWidget(m_adminPanel);
-    m_stackedWidget->addWidget(m_userManagement);
-    m_stackedWidget->addWidget(m_settingsView);
-    m_stackedWidget->addWidget(m_setupWizard); // Add SetupWizard to stack
+    m_stackedWidget->addWidget(m_loginView);      // Index 0
+    m_stackedWidget->addWidget(m_dashboard);     // Index 1
+    m_stackedWidget->addWidget(m_kiosk);         // Index 2
+    m_stackedWidget->addWidget(m_resultsView);   // Index 3
+    m_stackedWidget->addWidget(m_adminPanel);    // Index 4
+    m_stackedWidget->addWidget(m_userManagement); // Index 5
+    m_stackedWidget->addWidget(m_settingsView);  // Index 6
+    m_stackedWidget->addWidget(m_setupWizard);   // Index 7
+
+    qDebug() << "MainWindow: UI setup complete.";
 }
 
 void MainWindow::setupSidebar() {
-    m_sidebar->addItem("dashboard", "Dashboard", "DB");
-    m_sidebar->addItem("voting", "Voting Kiosk", "VK");
-    m_sidebar->addItem("results", "Results", "RS");
-    m_sidebar->addItem("users", "User Management", "UM");
-    m_sidebar->addItem("admin", "Administration", "AD");
-    m_sidebar->addItem("settings", "Settings", "ST");
-    m_sidebar->addItem("logout", "Logout", "LO");
+    // Using modern icons (emojis or FontAwesome-like characters)
+    m_sidebar->addItem("dashboard", "Dashboard", "📊");
+    m_sidebar->addItem("voting", "Voting Kiosk", "🗳️");
+    m_sidebar->addItem("results", "Results", "📈");
+    m_sidebar->addItem("users", "User Management", "👥");
+    m_sidebar->addItem("admin", "Administration", "⚙️");
+    m_sidebar->addItem("settings", "Settings", "🛠️");
+    m_sidebar->addItem("logout", "Logout", "🚪");
 
     connect(m_sidebar, &Sidebar::itemClicked, this, [this](const QString& id) {
+        qDebug() << "MainWindow: Sidebar item clicked:" << id;
         if (id == "logout") {
             Auth::AuthManager::instance().logout();
-            switchToView("login");
+            // logout will emit logoutOccurred, which will call switchToView("login")
         } else {
             switchToView(id);
         }
     });
+    qDebug() << "MainWindow: Sidebar setup complete.";
 }
 
 void MainWindow::connectSignals() {
     auto& auth = Auth::AuthManager::instance();
     connect(&auth, &Auth::AuthManager::loginSuccessful, this, [this](const QString& userId) {
         Q_UNUSED(userId);
-
+        qInfo() << "MainWindow: Login successful for user" << userId;
         auto user = Auth::AuthManager::instance().currentUser();
         setUserAuthenticated(user.name, Auth::RBACManager::instance().roleToString(user.role));
         switchToView("dashboard");
     });
     connect(&auth, &Auth::AuthManager::logoutOccurred, this, [this]() {
+        qInfo() << "MainWindow: Logout occurred. Switching to login view.";
+        setUserAuthenticated("Guest", "N/A"); // Clear user info in sidebar
         switchToView("login");
+    });
+    connect(&auth, &Auth::AuthManager::loginFailed, this, [this](const QString& reason) {
+        qWarning() << "MainWindow: Login failed:" << reason;
+        ToastNotification::show(this, reason, ToastNotification::Error);
     });
 
     connect(m_loginView, &LoginView::loginRequested, this, [this](const QString& email, const QString& password, const QString& authType) {
         m_authViewModel->login(email, password, authType);
     });
 
-    // Connect signupRequested from LoginView to switch to SetupWizard
     connect(m_loginView, &LoginView::signupRequested, this, [this]() {
+        qInfo() << "MainWindow: Signup requested. Switching to SetupWizard.";
+        auto* storage = Core::SystemManager::instance().storage();
+        if (storage && !storage->getUsersByRole(Core::UserRole::SuperAdministrator).isEmpty()) {
+            ToastNotification::show(this, "Setup is already complete. Please log in with an administrator account.", ToastNotification::Info);
+            return;
+        }
         switchToView("setupWizard");
     });
 
-    // Connect setupCompleted from SetupWizard to create admin user and switch to login
     connect(m_setupWizard, &SetupWizard::setupCompleted, this, [this](const QVariantMap& config) {
+        qInfo() << "MainWindow: SetupWizard completed. Processing configuration.";
         // Initialize SystemManager with config (e.g., storage type and path)
-        Core::SystemManager::instance().initialize(config);
+        if (!Core::SystemManager::instance().isInitialized()) {
+            if (!Core::SystemManager::instance().initialize(config)) {
+                ToastNotification::show(this, "Setup failed. The database could not be initialized.", ToastNotification::Error);
+                return;
+            }
+        }
+        Auth::AuthManager::instance().initialize(config);
 
         // Create admin user if details are present
-        if (config.contains("admin_email") && config.contains("admin_password_hash")) {
+        if (config.contains("admin_email") && config.contains("admin_password")) {
+            auto* storage = Core::SystemManager::instance().storage();
+            if (!storage) {
+                ToastNotification::show(this, "Setup failed. Storage is unavailable.", ToastNotification::Error);
+                return;
+            }
+
+            const QString adminEmail = config.value("admin_email").toString().trimmed();
+            if (storage->getUserByEmail(adminEmail).has_value()) {
+                QSettings settings;
+                settings.setValue("first_run", false);
+                settings.setValue("storage_type", "sqlite");
+                settings.setValue("db_path", config.value("db_path", Core::Constants::DB_FILENAME).toString());
+                settings.sync();
+                switchToView("login");
+                return;
+            }
+
             Core::User adminUser;
-            adminUser.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-            adminUser.name = config.value("admin_name").toString();
-            adminUser.email = config.value("admin_email").toString();
-            // FIX: Convert hex string to QByteArray
-            adminUser.digitalSignature = QByteArray::fromHex(config.value("admin_password_hash").toString().toUtf8());
+            adminUser.id = Core::IdGenerator::generateId();
+            adminUser.name = config.value("admin_name").toString().trimmed();
+            adminUser.email = adminEmail;
+
+            // Hash the admin password
+            QByteArray salt = Security::HashProvider::generateSalt();
+            QByteArray hashedPassword = Security::HashProvider::argon2Hash(config.value("admin_password").toString(), salt);
+            adminUser.passwordHashAndSalt = salt + hashedPassword; // Store combined salt and hash
+
             adminUser.role = Core::UserRole::SuperAdministrator;
             adminUser.isActive = true;
             adminUser.createdAt = QDateTime::currentDateTime();
             adminUser.lastLogin = QDateTime(); // Set to invalid initially
 
-            auto* storage = Core::SystemManager::instance().storage();
-            if (storage) {
-                storage->createUser(adminUser); // Use createUser instead of addUser
+            if (storage->createUser(adminUser)) {
+                qInfo() << "MainWindow: SuperAdministrator user created successfully.";
+                Audit::AuditManager::instance().log(Core::AuditAction::UserCreated, "SuperAdministrator user created during setup.", adminUser.id);
+                QSettings settings;
+                settings.setValue("first_run", false);
+                settings.setValue("storage_type", "sqlite");
+                settings.setValue("db_path", config.value("db_path", Core::Constants::DB_FILENAME).toString());
+                settings.sync();
+            } else {
+                qCritical() << "MainWindow: Failed to create SuperAdministrator user.";
+                Audit::AuditManager::instance().log(Core::AuditAction::UserCreated, "Failed to create SuperAdministrator user during setup.", "System");
+                ToastNotification::show(this, "Failed to create administrator. The email may already exist.", ToastNotification::Error);
+                return;
             }
         }
         switchToView("login");
     });
+
+    // Connect fade animation finished signal to actually change the stacked widget index
+    connect(m_fadeAnimation, &QPropertyAnimation::finished, this, [this]() {
+        int newIndex = m_stackedWidget->property("targetIndex").toInt();
+        m_stackedWidget->setCurrentIndex(newIndex);
+        m_opacityEffect->setOpacity(1.0); // Ensure new page is fully visible
+        qDebug() << "MainWindow: View transition finished. Current index:" << newIndex;
+    });
+    qDebug() << "MainWindow: Signals connected.";
+}
+
+/**
+ * @brief Animates the transition between stacked widget pages using a fade effect.
+ * @param newIndex The index of the page to switch to.
+ */
+void MainWindow::animateViewTransition(int newIndex) {
+    if (m_stackedWidget->currentIndex() == newIndex) {
+        qDebug() << "MainWindow: Already on target view index" << newIndex << ". Skipping animation.";
+        return;
+    }
+
+    qDebug() << "MainWindow: Starting view transition to index" << newIndex;
+    m_stackedWidget->setProperty("targetIndex", newIndex); // Store target index
+
+    // Fade out current view
+    m_fadeAnimation->setStartValue(1.0);
+    m_fadeAnimation->setEndValue(0.0);
+    m_fadeAnimation->start();
 }
 
 void MainWindow::switchToView(const QString& viewId) {
+    qInfo() << "MainWindow: Request to switch to view:" << viewId;
     static const QHash<QString, int> viewMap = {
         {"login", 0}, {"dashboard", 1}, {"voting", 2}, {"voting_kiosk", 2},
         {"results", 3}, {"admin", 4}, {"administration", 4},
         {"users", 5}, {"user_management", 5}, {"settings", 6},
-        {"setupWizard", 7} // Add setupWizard to viewMap
+        {"setupWizard", 7}
     };
 
+    // Authentication and Authorization checks
     if (viewId != "login" && viewId != "setupWizard") {
         auto& auth = Auth::AuthManager::instance();
-        bool allowed = auth.isAuthenticated();
-        if (viewId == "results") allowed &= auth.hasPermission(Auth::RBACManager::PERM_RESULTS_VIEW);
-        else if (viewId == "users") allowed &= auth.hasPermission(Auth::RBACManager::PERM_USER_MANAGE);
-        else if (viewId == "admin" || viewId == "administration") allowed &= auth.hasPermission(Auth::RBACManager::PERM_ELECTION_MODIFY);
-        else if (viewId == "settings") allowed &= auth.hasPermission(Auth::RBACManager::PERM_SETTINGS_MODIFY);
+        if (!auth.isAuthenticated()) {
+            qWarning() << "MainWindow: Not authenticated. Redirecting to login.";
+            ToastNotification::show(this, "Please log in to access this feature.", ToastNotification::Warning);
+            switchToView("login");
+            return;
+        }
+
+        bool allowed = true;
+        if (viewId == "results") allowed = auth.hasPermission(Auth::RBACManager::PERM_RESULTS_VIEW);
+        else if (viewId == "users") allowed = auth.hasPermission(Auth::RBACManager::PERM_USER_MANAGE);
+        else if (viewId == "admin" || viewId == "administration") allowed = auth.hasPermission(Auth::RBACManager::PERM_ELECTION_MODIFY);
+        else if (viewId == "settings") allowed = auth.hasPermission(Auth::RBACManager::PERM_SETTINGS_MODIFY);
         else if (viewId == "voting" || viewId == "voting_kiosk") {
-            allowed &= auth.hasPermission(Auth::RBACManager::PERM_VOTE_VERIFY)
+            allowed = auth.hasPermission(Auth::RBACManager::PERM_VOTE_VERIFY)
                     || auth.hasPermission(Auth::RBACManager::PERM_VOTE_START);
         }
-        if (!allowed) return;
+        // Add more permission checks for other views as needed
+
+        if (!allowed) {
+            qWarning() << "MainWindow: Permission denied for view:" << viewId << ". Redirecting to dashboard.";
+            ToastNotification::show(this, "Permission Denied: You do not have access to this feature.", ToastNotification::Error);
+            switchToView("dashboard"); // Redirect to a default view if not allowed
+            return;
+        }
     }
 
-    int index = viewMap.value(viewId, 1);
-    m_stackedWidget->setCurrentIndex(index);
+    int newIndex = viewMap.value(viewId, -1); // Default to -1 if not found
+    if (newIndex == -1) {
+        qWarning() << "MainWindow: Attempted to switch to unknown view ID:" << viewId;
+        ToastNotification::show(this, "Error: Unknown view requested.", ToastNotification::Error);
+        // Fallback to dashboard or login if viewId is unknown
+        if (Auth::AuthManager::instance().isAuthenticated()) {
+            switchToView("dashboard");
+        } else {
+            switchToView("login");
+        }
+        return;
+    }
 
-    bool showSidebar = (viewId != "login" && viewId != "setupWizard"); // Hide sidebar for setupWizard
+    // Update currentViewId property
+    if (m_currentViewId != viewId) {
+        m_currentViewId = viewId;
+        emit currentViewIdChanged();
+    }
+
+    // Handle sidebar visibility
+    bool showSidebar = (viewId != "login" && viewId != "setupWizard" && viewId != "voting" && viewId != "voting_kiosk");
     m_sidebar->setVisible(showSidebar);
 
     if (showSidebar) {
@@ -189,24 +366,38 @@ void MainWindow::switchToView(const QString& viewId) {
     // Toggle fullscreen for kiosk mode
     if (viewId == "voting" || viewId == "voting_kiosk") {
         showFullScreen();
+        m_sidebar->setVisible(false); // Ensure sidebar is hidden in kiosk mode
+        m_kiosk->start(); // Start kiosk specific logic
     } else {
         showNormal();
+        // Ensure kiosk is reset if exiting kiosk mode
+        if (m_stackedWidget->currentWidget() == m_kiosk) {
+            m_kiosk->resetKiosk();
+        }
     }
 
-    // Refresh data
+    // Animate view transition
+    animateViewTransition(newIndex);
+
+    // Refresh data for relevant views
     if (viewId == "dashboard") m_dashboardViewModel->refresh();
     if (viewId == "results") m_resultsViewModel->refresh();
+    // Add refresh calls for other views as they become active
 }
 
 void MainWindow::setUserAuthenticated(const QString& userName, const QString& role) {
     m_sidebar->setUserInfo(userName, role);
     auto& auth = Auth::AuthManager::instance();
+
+    // Update sidebar item visibility based on permissions
     m_sidebar->setItemVisible("voting", auth.hasPermission(Auth::RBACManager::PERM_VOTE_VERIFY)
                                        || auth.hasPermission(Auth::RBACManager::PERM_VOTE_START));
     m_sidebar->setItemVisible("results", auth.hasPermission(Auth::RBACManager::PERM_RESULTS_VIEW));
     m_sidebar->setItemVisible("users", auth.hasPermission(Auth::RBACManager::PERM_USER_MANAGE));
     m_sidebar->setItemVisible("admin", auth.hasPermission(Auth::RBACManager::PERM_ELECTION_MODIFY));
     m_sidebar->setItemVisible("settings", auth.hasPermission(Auth::RBACManager::PERM_SETTINGS_MODIFY));
+    m_sidebar->setItemVisible("logout", true); // Logout is always visible when authenticated
+    qInfo() << "MainWindow: User authenticated. Sidebar permissions updated.";
 }
 
 } // namespace Ballot::UI

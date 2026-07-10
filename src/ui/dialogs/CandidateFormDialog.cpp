@@ -1,4 +1,8 @@
 #include "CandidateFormDialog.h"
+#include "src/core/SystemManager.h" // For accessing storage if needed (though ElectionManager is preferred)
+#include "src/modules/election/ElectionManager.h" // For adding/updating candidates
+#include "src/modules/audit/AuditManager.h" // For audit logging
+#include "src/core/Utils.h" // For IdGenerator
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -8,112 +12,81 @@
 #include <QImageWriter>
 #include <QCheckBox>
 #include <QScrollArea>
-#include <QUuid>
+#include <QUuid> // Still included for QJsonDocument::Indented or if needed elsewhere
 #include <QDateTime>
 #include <QPixmap>
+#include <QFileDialog>
+#include <QDebug> // For logging
 
 namespace Ballot::UI {
 
+/**
+ * @brief Constructs a CandidateFormDialog for adding a new candidate.
+ * @param parent The parent widget.
+ */
 CandidateFormDialog::CandidateFormDialog(QWidget* parent) : QDialog(parent) {
     setWindowTitle("Add Candidate");
     setModal(true);
     resize(600, 800);
     setupUi();
+    qDebug() << "CandidateFormDialog: Add mode initialized.";
 }
 
-CandidateFormDialog::CandidateFormDialog(const Core::Candidate& candidate, QWidget* parent) : QDialog(parent), m_isEditing(true), m_originalCandidate(candidate) {
+/**
+ * @brief Constructs a CandidateFormDialog for editing an existing candidate.
+ * @param candidate The candidate object to edit.
+ * @param parent The parent widget.
+ */
+CandidateFormDialog::CandidateFormDialog(const Core::Candidate& candidate, QWidget* parent)
+    : QDialog(parent), m_isEditing(true), m_originalCandidate(candidate) {
     setWindowTitle("Edit Candidate");
     setModal(true);
     resize(600, 800);
     setupUi();
     loadCandidateData();
+    qDebug() << "CandidateFormDialog: Edit mode initialized for candidate ID:" << candidate.id;
 }
 
+/**
+ * @brief Sets up the user interface of the dialog.
+ */
 void CandidateFormDialog::setupUi() {
+    // Consolidated stylesheet for better readability
     setStyleSheet(R"(
-        QDialog {
-            background-color: #1e1e34;
-        }
-        QLabel {
-            color: #e0e0e0;
-            background: transparent;
-        }
+        QDialog { background-color: #1e1e34; }
+        QLabel { color: #e0e0e0; background: transparent; }
         QLineEdit, QTextEdit, QComboBox {
-            background-color: #25253a;
-            border: 1px solid #3d3d5c;
-            border-radius: 8px;
-            padding: 10px;
-            color: #ffffff;
-            font-size: 14px;
+            background-color: #25253a; border: 1px solid #3d3d5c; border-radius: 8px;
+            padding: 10px; color: #ffffff; font-size: 14px;
         }
-        QLineEdit:focus, QTextEdit:focus {
-            border-color: #0078d4;
-        }
+        QLineEdit:focus, QTextEdit:focus { border-color: #0078d4; }
         QPushButton {
-            background-color: #0078d4;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-size: 15px;
-            font-weight: 600;
+            background-color: #0078d4; color: white; border: none; border-radius: 8px;
+            padding: 12px 24px; font-size: 15px; font-weight: 600;
         }
-        QPushButton:hover {
-            background-color: #1a8ae8;
-        }
-        QPushButton:pressed {
-            background-color: #006cbd;
-        }
+        QPushButton:hover { background-color: #1a8ae8; }
+        QPushButton:pressed { background-color: #006cbd; }
         QPushButton#ghostButton {
-            background-color: transparent;
-            color: #9a9ab0;
-            border: 1px solid #3d3d5c;
+            background-color: transparent; color: #9a9ab0; border: 1px solid #3d3d5c;
         }
-        QPushButton#ghostButton:hover {
-            background-color: #2a2a42;
-            color: #e0e0e0;
-        }
-        QPushButton#dangerButton {
-            background-color: #d32f2f;
-        }
-        QPushButton#dangerButton:hover {
-            background-color: #ef5350;
-        }
+        QPushButton#ghostButton:hover { background-color: #2a2a42; color: #e0e0e0; }
+        QPushButton#dangerButton { background-color: #d32f2f; }
+        QPushButton#dangerButton:hover { background-color: #ef5350; }
         QGroupBox {
-            background-color: #25253a;
-            border: 1px solid #3d3d5c;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 16px;
-            color: #e0e0e0;
-            font-weight: 600;
-            font-size: 14px;
+            background-color: #25253a; border: 1px solid #3d3d5c; border-radius: 12px;
+            padding: 20px; margin-top: 16px; color: #e0e0e0; font-weight: 600; font-size: 14px;
         }
-        QGroupBox::title {
-            subcontrol-origin: margin;
-            left: 16px;
-            padding: 0 8px;
-        }
-        QCheckBox {
-            color: #e0e0e0;
-            font-size: 14px;
-        }
+        QGroupBox::title { subcontrol-origin: margin; left: 16px; padding: 0 8px; }
+        QCheckBox { color: #e0e0e0; font-size: 14px; }
         QCheckBox::indicator {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #3d3d5c;
-            border-radius: 4px;
+            width: 20px; height: 20px; border: 2px solid #3d3d5c; border-radius: 4px;
             background-color: #1e1e34;
         }
         QCheckBox::indicator:checked {
-            background-color: #0078d4;
-            border-color: #0078d4;
+            background-color: #0078d4; border-color: #0078d4;
             image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuNSAxMS41TDExIDVMMTEuNSA0LjVMNC41IDExTDIgOC41IDIuNSA4TDQuNSAxMXoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==);
         }
-        QScrollArea {
-            background: transparent;
-            border: none;
-        }
+        QScrollArea { background: transparent; border: none; }
     )");
 
     auto* mainLayout = new QVBoxLayout(this);
@@ -125,18 +98,19 @@ void CandidateFormDialog::setupUi() {
     header->setFixedHeight(70);
     header->setStyleSheet("background-color: #1a1a2e; border-bottom: 1px solid #2d2d44;");
     auto* headerLayout = new QHBoxLayout(header);
-    
-    m_isEditing ? headerLayout->addWidget(new QLabel("✏️  Edit Candidate", header)) : headerLayout->addWidget(new QLabel("➕  Add New Candidate", header));
-    header->findChild<QLabel*>()->setStyleSheet("font-size: 22px; font-weight: 700; color: #ffffff; background: transparent;");
+
+    QLabel* headerLabel = m_isEditing ? new QLabel("✏️  Edit Candidate", header) : new QLabel("➕  Add New Candidate", header);
+    headerLabel->setStyleSheet("font-size: 22px; font-weight: 700; color: #ffffff; background: transparent;");
+    headerLayout->addWidget(headerLabel);
     headerLayout->addStretch();
-    
+
     mainLayout->addWidget(header);
 
-    // Scroll area for form
+    // Scroll area for form content
     auto* scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setStyleSheet("QScrollArea { background: transparent; border: none; }");
-    
+
     auto* scrollContent = new QWidget();
     scrollContent->setStyleSheet("background: transparent;");
     auto* formLayout = new QVBoxLayout(scrollContent);
@@ -167,7 +141,7 @@ void CandidateFormDialog::setupUi() {
     )");
     m_photoLabel->setText("📷");
     m_photoLabel->setCursor(Qt::PointingHandCursor);
-    m_photoLabel->installEventFilter(this);
+    m_photoLabel->installEventFilter(this); // Install event filter for click
     photoContainerLayout->addWidget(m_photoLabel);
 
     auto* photoInfo = new QVBoxLayout();
@@ -216,7 +190,7 @@ void CandidateFormDialog::setupUi() {
 
     auto* classSectionLayout = new QHBoxLayout();
     classSectionLayout->setSpacing(12);
-    
+
     m_classEdit = new QLineEdit(basicGroup);
     m_classEdit->setPlaceholderText("e.g., 12th Grade");
     m_classEdit->setFixedHeight(44);
@@ -224,7 +198,7 @@ void CandidateFormDialog::setupUi() {
     styleLabel(classLabel);
     classSectionLayout->addWidget(classLabel, 0, Qt::AlignVCenter);
     classSectionLayout->addWidget(m_classEdit, 1);
-    
+
     m_sectionEdit = new QLineEdit(basicGroup);
     m_sectionEdit->setPlaceholderText("e.g., A, B, C");
     m_sectionEdit->setFixedHeight(44);
@@ -234,7 +208,7 @@ void CandidateFormDialog::setupUi() {
     classSectionLayout->addWidget(sectionLabel, 0, Qt::AlignVCenter);
     classSectionLayout->addWidget(m_sectionEdit, 0);
     classSectionLayout->addStretch();
-    
+
     basicLayout->addRow(classSectionLayout);
 
     m_symbolEdit = new QLineEdit(basicGroup);
@@ -309,10 +283,17 @@ void CandidateFormDialog::setupUi() {
 
     footerLayout->addWidget(m_saveBtn);
     mainLayout->addWidget(footer);
+    qDebug() << "CandidateFormDialog: UI setup complete.";
 }
 
+/**
+ * @brief Loads candidate data into the form fields when editing an existing candidate.
+ */
 void CandidateFormDialog::loadCandidateData() {
-    if (m_originalCandidate.id.isEmpty()) return;
+    if (m_originalCandidate.id.isEmpty()) {
+        qWarning() << "CandidateFormDialog: Attempted to load data for empty candidate.";
+        return;
+    }
 
     m_nameEdit->setText(m_originalCandidate.name);
     m_partyEdit->setText(m_originalCandidate.party);
@@ -323,34 +304,67 @@ void CandidateFormDialog::loadCandidateData() {
     m_manifestoEdit->setPlainText(m_originalCandidate.manifesto);
     m_approvedCheck->setChecked(m_originalCandidate.isApproved);
 
-    if (!m_originalCandidate.photo.isNull()) {
-        m_candidatePhoto = m_originalCandidate.photo;
-        QPixmap pixmap = QPixmap::fromImage(m_candidatePhoto.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        m_photoLabel->setPixmap(pixmap);
-        m_photoLabel->setText("");
+    // Convert QByteArray photoData to QImage for display
+    if (!m_originalCandidate.photoData.isEmpty()) {
+        QImage image;
+        if (image.loadFromData(m_originalCandidate.photoData)) {
+            m_candidatePhotoData = m_originalCandidate.photoData; // Store the raw data
+            QPixmap pixmap = QPixmap::fromImage(image.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            m_photoLabel->setPixmap(pixmap);
+            m_photoLabel->setText("");
+            qDebug() << "CandidateFormDialog: Loaded candidate photo for display.";
+        } else {
+            qWarning() << "CandidateFormDialog: Failed to load image from photoData for candidate" << m_originalCandidate.id;
+            m_photoLabel->setText("📷"); // Fallback icon
+        }
+    } else {
+        m_photoLabel->setText("📷"); // Fallback icon
     }
+    qDebug() << "CandidateFormDialog: Candidate data loaded into form.";
 }
 
+/**
+ * @brief Slot to handle photo selection when the photo label or button is clicked.
+ */
 void CandidateFormDialog::onPhotoClicked() {
+    qDebug() << "CandidateFormDialog: Photo selection initiated.";
     QString filePath = QFileDialog::getOpenFileName(this, "Select Candidate Photo", "", "Images (*.png *.jpg *.jpeg *.bmp *.webp)");
     if (!filePath.isEmpty()) {
-        QImage image(filePath);
-        if (!image.isNull()) {
+        QImage image;
+        if (image.load(filePath)) {
             // Scale to max 300x300 keeping aspect ratio
-            if (image.width() > 300 || image.height() > 300) {
-                image = image.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            if (image.width() > Core::Constants::PHOTO_CROP_SIZE || image.height() > Core::Constants::PHOTO_CROP_SIZE) {
+                image = image.scaled(Core::Constants::PHOTO_CROP_SIZE, Core::Constants::PHOTO_CROP_SIZE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             }
-            m_candidatePhoto = image;
-            QPixmap pixmap = QPixmap::fromImage(m_candidatePhoto);
-            m_photoLabel->setPixmap(pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            m_photoLabel->setText("");
+
+            // Convert QImage to QByteArray (PNG format for lossless storage)
+            QByteArray imageData;
+            QBuffer buffer(&imageData);
+            buffer.open(QIODevice::WriteOnly);
+            if (image.save(&buffer, "PNG")) {
+                m_candidatePhotoData = imageData;
+                QPixmap pixmap = QPixmap::fromImage(image);
+                m_photoLabel->setPixmap(pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                m_photoLabel->setText("");
+                qInfo() << "CandidateFormDialog: Photo selected and converted to QByteArray.";
+            } else {
+                qCritical() << "CandidateFormDialog: Failed to convert QImage to QByteArray (PNG).";
+                QMessageBox::warning(this, "Image Error", "Could not process the selected image.");
+            }
         } else {
+            qWarning() << "CandidateFormDialog: Could not load the selected image file:" << filePath;
             QMessageBox::warning(this, "Invalid Image", "Could not load the selected image file.");
         }
+    } else {
+        qDebug() << "CandidateFormDialog: Photo selection cancelled.";
     }
 }
 
+/**
+ * @brief Slot to handle the save button click. Validates input and emits candidateSaved signal.
+ */
 void CandidateFormDialog::onSaveClicked() {
+    qInfo() << "CandidateFormDialog: Save button clicked.";
     QString name = m_nameEdit->text().trimmed();
     QString party = m_partyEdit->text().trimmed();
     QString className = m_classEdit->text().trimmed();
@@ -358,16 +372,19 @@ void CandidateFormDialog::onSaveClicked() {
     if (name.isEmpty()) {
         QMessageBox::warning(this, "Validation Error", "Candidate name is required.");
         m_nameEdit->setFocus();
+        Audit::AuditManager::instance().log(Core::AuditAction::CandidateModified, "Candidate save failed: Name missing.", "UI");
         return;
     }
     if (party.isEmpty()) {
         QMessageBox::warning(this, "Validation Error", "Party/Group name is required.");
         m_partyEdit->setFocus();
+        Audit::AuditManager::instance().log(Core::AuditAction::CandidateModified, "Candidate save failed: Party missing.", "UI");
         return;
     }
     if (className.isEmpty()) {
         QMessageBox::warning(this, "Validation Error", "Class/Grade is required.");
         m_classEdit->setFocus();
+        Audit::AuditManager::instance().log(Core::AuditAction::CandidateModified, "Candidate save failed: Class missing.", "UI");
         return;
     }
 
@@ -375,8 +392,9 @@ void CandidateFormDialog::onSaveClicked() {
     if (m_isEditing) {
         candidate = m_originalCandidate;
     } else {
-        candidate.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        candidate.registeredAt = QDateTime::currentDateTime();
+        // ID and registeredAt will be set by ElectionManager when adding a new candidate
+        // candidate.id = Core::IdGenerator::generateId();
+        // candidate.registeredAt = QDateTime::currentDateTime();
     }
 
     candidate.name = name;
@@ -387,23 +405,33 @@ void CandidateFormDialog::onSaveClicked() {
     candidate.videoUrl = m_videoUrlEdit->text().trimmed();
     candidate.manifesto = m_manifestoEdit->toPlainText().trimmed();
     candidate.isApproved = m_approvedCheck->isChecked();
-    candidate.photo = m_candidatePhoto;
+    candidate.photoData = m_candidatePhotoData; // Use photoData
 
-    emit candidateSaved(candidate);
-    accept();
+    emit candidateSaved(candidate); // Emit the candidate object
+    accept(); // Close dialog with accept result
+    qInfo() << "CandidateFormDialog: Candidate data emitted and dialog accepted.";
 }
 
+/**
+ * @brief Slot to handle the cancel button click.
+ */
 void CandidateFormDialog::onCancelClicked() {
-    reject();
+    qInfo() << "CandidateFormDialog: Cancel button clicked. Dialog rejected.";
+    reject(); // Close dialog with reject result
 }
 
+/**
+ * @brief Retrieves the candidate data from the form fields.
+ * @return A Core::Candidate object populated with current form data.
+ */
 Core::Candidate CandidateFormDialog::getCandidate() const {
     Core::Candidate candidate;
     if (m_isEditing) {
         candidate = m_originalCandidate;
     } else {
-        candidate.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        candidate.registeredAt = QDateTime::currentDateTime();
+        // ID and registeredAt will be set by ElectionManager when adding a new candidate
+        // candidate.id = Core::IdGenerator::generateId();
+        // candidate.registeredAt = QDateTime::currentDateTime();
     }
 
     candidate.name = m_nameEdit->text().trimmed();
@@ -414,25 +442,39 @@ Core::Candidate CandidateFormDialog::getCandidate() const {
     candidate.videoUrl = m_videoUrlEdit->text().trimmed();
     candidate.manifesto = m_manifestoEdit->toPlainText().trimmed();
     candidate.isApproved = m_approvedCheck->isChecked();
-    candidate.photo = m_candidatePhoto;
+    candidate.photoData = m_candidatePhotoData; // Use photoData
 
     return candidate;
 }
 
+/**
+ * @brief Sets the candidate data to be displayed and edited in the form.
+ * @param candidate The Core::Candidate object to display.
+ */
 void CandidateFormDialog::setCandidate(const Core::Candidate& candidate) {
     m_originalCandidate = candidate;
     m_isEditing = !candidate.id.isEmpty();
     setWindowTitle(m_isEditing ? "Edit Candidate" : "Add Candidate");
-    m_saveBtn->setText(m_isEditing ? "Update Candidate" : "Add Candidate");
+    // Update save button text
+    if (m_saveBtn) { // Check if button is initialized
+        m_saveBtn->setText(m_isEditing ? "Update Candidate" : "Add Candidate");
+    }
     loadCandidateData();
+    qDebug() << "CandidateFormDialog: Candidate set for form. Editing mode:" << m_isEditing;
 }
 
+/**
+ * @brief Event filter to handle clicks on the photo label.
+ * @param watched The object that received the event.
+ * @param event The event that occurred.
+ * @return True if the event was handled, false otherwise.
+ */
 bool CandidateFormDialog::eventFilter(QObject* watched, QEvent* event) {
     if (watched == m_photoLabel && event->type() == QEvent::MouseButtonPress) {
         onPhotoClicked();
-        return true;
+        return true; // Event handled
     }
-    return QDialog::eventFilter(watched, event);
+    return QDialog::eventFilter(watched, event); // Pass unhandled events to base class
 }
 
 } // namespace Ballot::UI

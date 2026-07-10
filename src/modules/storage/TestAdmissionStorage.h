@@ -8,6 +8,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QMutex>
+#include <QSet>
 #include <optional>
 
 namespace Ballot::Storage {

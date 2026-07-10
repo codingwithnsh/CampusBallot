@@ -2,7 +2,9 @@
 
 #include <QObject>
 #include <memory>
+#include <vector>
 #include <QTimer>
+#include <QStringList>
 #include "IAuthProvider.h"
 #include "src/core/Models.h"
 
@@ -43,7 +45,7 @@ signals:
     void loginFailed(const QString& reason);
     void logoutOccurred();
     void sessionTimedOut();
-    void permissionDenied(const QString& permission);
+    void permissionDenied(const QString& permission) const;
 
 private:
     AuthManager();

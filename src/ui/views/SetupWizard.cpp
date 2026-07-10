@@ -1,14 +1,15 @@
 #include "SetupWizard.h"
 #include "src/core/SystemManager.h"
 #include "src/ui/components/ToastNotification.h"
-#include "src/security/HashProvider.h" // Include HashProvider
+#include "src/modules/security/HashProvider.h" // Include HashProvider
 #include "src/modules/auth/RBACManager.h" // Include RBACManager for roles
+#include "src/core/Utils.h" // For FileUtil::appDataPath
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QNetworkAccessManager>
+#include <QNetworkAccessManager> // For Firebase config validation (if needed)
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QUrl>
@@ -22,51 +23,58 @@
 #include <QFile>
 #include <QApplication>
 #include <QPixmap>
-#include <QUuid> // Include QUuid for user ID
+#include <QStyle>
+#include <QUuid> // Still included for QJsonDocument::Indented or if needed elsewhere
+#include <QDebug> // For logging
 
 namespace Ballot::UI {
 
 SetupWizard::SetupWizard(QWidget *parent) : QWidget(parent) {
     setWindowTitle("Campus Ballot - Setup Wizard");
     setFixedSize(820, 620);
-    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint); // Frameless dialog
     setupUi();
+    qDebug() << "SetupWizard: Initialized.";
 }
 
+/**
+ * @brief Sets up the user interface for the setup wizard.
+ */
 void SetupWizard::setupUi() {
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
-    // Header
+    // --- Header ---
     auto *header = new QFrame(this);
     header->setFixedHeight(80);
     header->setStyleSheet("background-color: #1a1a2e; border-bottom: 1px solid #2d2d44;");
     auto *headerLayout = new QVBoxLayout(header);
+    headerLayout->setContentsMargins(20, 10, 20, 10);
 
     auto *title = new QLabel("Setup Wizard", header);
     title->setStyleSheet("font-size: 24px; font-weight: 700; color: #ffffff; background: transparent;");
     headerLayout->addWidget(title);
 
-    m_stepIndicator = new QLabel("Step 1 of 6", header);
+    m_stepIndicator = new QLabel("Step 1 of 6", header); // Total steps might be dynamic
     m_stepIndicator->setStyleSheet("font-size: 13px; color: #9a9ab0; background: transparent;");
     headerLayout->addWidget(m_stepIndicator);
 
     mainLayout->addWidget(header);
 
-    // Pages
+    // --- Pages Stack ---
     m_pages = new QStackedWidget(this);
     m_pages->setStyleSheet("background-color: #1e1e34;");
-    m_pages->addWidget(createWelcomePage());
-    m_pages->addWidget(createStorageSelectionPage());
-    m_pages->addWidget(createFirebaseConfigPage());
-    m_pages->addWidget(createLocalConfigPage());
-    m_pages->addWidget(createAdminAccountPage());
-    m_pages->addWidget(createSummaryPage());
+    m_pages->addWidget(createWelcomePage());            // Index 0
+    m_pages->addWidget(createStorageSelectionPage());   // Index 1
+    m_pages->addWidget(createFirebaseConfigPage());     // Index 2
+    m_pages->addWidget(createLocalConfigPage());        // Index 3
+    m_pages->addWidget(createAdminAccountPage());       // Index 4
+    m_pages->addWidget(createSummaryPage());            // Index 5
 
     mainLayout->addWidget(m_pages, 1);
 
-    // Footer with buttons
+    // --- Footer with Navigation Buttons ---
     auto *footer = new QFrame(this);
     footer->setFixedHeight(64);
     footer->setStyleSheet("background-color: #1a1a2e; border-top: 1px solid #2d2d44;");
@@ -76,24 +84,37 @@ void SetupWizard::setupUi() {
     m_backButton = new QPushButton("Back", footer);
     m_backButton->setObjectName("ghostButton");
     m_backButton->setFixedWidth(100);
-
+    m_backButton->setStyleSheet(R"(
+        QPushButton#ghostButton { background-color: transparent; color: #9a9ab0; border: 1px solid #3d3d5c; border-radius: 8px; padding: 8px 16px; font-size: 15px; font-weight: 600; }
+        QPushButton#ghostButton:hover { background-color: #2a2a42; color: #e0e0e0; }
+        QPushButton#ghostButton:pressed { background-color: #1a1a2e; }
+    )");
     footerLayout->addWidget(m_backButton);
     footerLayout->addStretch();
 
     auto *cancelBtn = new QPushButton("Cancel", footer);
     cancelBtn->setObjectName("ghostButton");
     cancelBtn->setFixedWidth(100);
+    cancelBtn->setStyleSheet(R"(
+        QPushButton#ghostButton { background-color: transparent; color: #9a9ab0; border: 1px solid #3d3d5c; border-radius: 8px; padding: 8px 16px; font-size: 15px; font-weight: 600; }
+        QPushButton#ghostButton:hover { background-color: #2a2a42; color: #e0e0e0; }
+        QPushButton#ghostButton:pressed { background-color: #1a1a2e; }
+    )");
     connect(cancelBtn, &QPushButton::clicked, this, &QWidget::close);
     footerLayout->addWidget(cancelBtn);
 
     m_nextButton = new QPushButton("Next", footer);
     m_nextButton->setFixedWidth(120);
-    m_nextButton->setStyleSheet("background-color: #0078d4; color: white; font-weight: 600; padding: 10px 24px;");
+    m_nextButton->setStyleSheet(R"(
+        QPushButton { background-color: #0078d4; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; padding: 10px 24px; }
+        QPushButton:hover { background-color: #1a8ae8; }
+        QPushButton:pressed { background-color: #006cbd; }
+    )");
     footerLayout->addWidget(m_nextButton);
 
     mainLayout->addWidget(footer);
 
-    // Background
+    // --- Overall Styling ---
     setStyleSheet(R"(
         SetupWizard {
             background-color: #1a1a2e;
@@ -105,15 +126,25 @@ void SetupWizard::setupUi() {
     connect(m_nextButton, &QPushButton::clicked, this, &SetupWizard::nextStep);
     connect(m_backButton, &QPushButton::clicked, this, &SetupWizard::prevStep);
 
-    m_backButton->setEnabled(false);
+    updateNavigation(); // Set initial button states and step indicator
+    qDebug() << "SetupWizard: UI setup complete.";
 }
 
+/**
+ * @brief Advances the wizard to the next step.
+ * Performs validation for the current page before proceeding.
+ */
 void SetupWizard::nextStep() {
+    qInfo() << "SetupWizard: Moving to next step from index" << m_currentIndex;
+    
+    int nextIndex = m_currentIndex + 1;
+
     // Page-specific validation and navigation logic
     if (m_currentIndex == 1) { // Storage Selection Page
         int id = m_storageGroup->checkedId();
         if (id < 0) {
             ToastNotification::show(this, "Please select a storage provider", ToastNotification::Warning);
+            qWarning() << "SetupWizard: No storage provider selected.";
             return;
         }
         QRadioButton* rb = qobject_cast<QRadioButton*>(m_storageGroup->button(id));
@@ -121,47 +152,71 @@ void SetupWizard::nextStep() {
             QString selected = rb->text();
             if (selected == "Firebase") {
                 m_config["storage_type"] = "firebase";
-                m_currentIndex = 2; // Go to Firebase Config
-            } else { // Local Device, PostgreSQL, MySQL, etc.
-                m_config["storage_type"] = selected.toLower().replace(" ", "_");
-                m_currentIndex = 3; // Go to Local Config (or other specific config page if implemented)
+                nextIndex = 2; // Go to Firebase Config
+            } else { // Local Device
+                m_config["storage_type"] = "sqlite";
+                // Default path if not changed in Local Config page
+                if (!m_config.contains("db_path")) {
+                    m_config["db_path"] = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
+                }
+                nextIndex = 3; // Go to Local Config
             }
         }
     } else if (m_currentIndex == 2) { // Firebase Config Page
         if (m_firebaseApiKey.isEmpty() || m_firebaseProjectId.isEmpty()) {
             ToastNotification::show(this, "Please upload a valid Firebase configuration file", ToastNotification::Warning);
+            qWarning() << "SetupWizard: Firebase config incomplete.";
             return;
         }
+        nextIndex = 4; // Skip Local Config page
+    } else if (m_currentIndex == 3) { // Local Config Page
+        nextIndex = 4; // Go to Admin Account Page
     } else if (m_currentIndex == 4) { // Admin Account Page
         if (!m_adminNameEdit || m_adminNameEdit->text().isEmpty()) {
             ToastNotification::show(this, "Please enter admin name", ToastNotification::Warning);
+            m_adminNameEdit->setFocus();
             return;
         }
         if (!m_adminEmailEdit || m_adminEmailEdit->text().isEmpty()) {
             ToastNotification::show(this, "Please enter admin email", ToastNotification::Warning);
+            m_adminEmailEdit->setFocus();
+            return;
+        }
+        if (!m_adminEmailEdit->text().contains('@') || !m_adminEmailEdit->text().contains('.')) {
+            ToastNotification::show(this, "Please enter a valid email address", ToastNotification::Warning);
+            m_adminEmailEdit->setFocus();
             return;
         }
         if (!m_adminPasswordEdit || m_adminPasswordEdit->text().isEmpty()) {
             ToastNotification::show(this, "Please enter admin password", ToastNotification::Warning);
+            m_adminPasswordEdit->setFocus();
             return;
         }
         if (!m_adminConfirmEdit || m_adminConfirmEdit->text().isEmpty()) {
             ToastNotification::show(this, "Please confirm admin password", ToastNotification::Warning);
+            m_adminConfirmEdit->setFocus();
             return;
         }
         if (m_adminPasswordEdit->text() != m_adminConfirmEdit->text()) {
             ToastNotification::show(this, "Passwords do not match", ToastNotification::Warning);
+            m_adminPasswordEdit->setFocus();
             return;
         }
         if (m_adminPasswordEdit->text().length() < 8) {
             ToastNotification::show(this, "Password must be at least 8 characters long", ToastNotification::Warning);
+            m_adminPasswordEdit->setFocus();
             return;
         }
+
+        // Store admin details in config
+        m_config["admin_name"] = m_adminNameEdit->text();
+        m_config["admin_email"] = m_adminEmailEdit->text();
+        m_config["admin_password"] = m_adminPasswordEdit->text();
+        nextIndex = 5;
     }
 
-    // Default navigation
-    if (m_currentIndex < m_pages->count() - 1) {
-        m_currentIndex++;
+    if (nextIndex < m_pages->count()) {
+        m_currentIndex = nextIndex;
         m_pages->setCurrentIndex(m_currentIndex);
         updateNavigation();
     } else {
@@ -169,62 +224,75 @@ void SetupWizard::nextStep() {
     }
 }
 
+/**
+ * @brief Moves the wizard to the previous step.
+ * Handles custom back navigation for skipped pages.
+ */
 void SetupWizard::prevStep() {
+    qInfo() << "SetupWizard: Moving to previous step from index" << m_currentIndex;
     if (m_currentIndex > 0) {
-        // Custom back navigation for skipped pages
-        if (m_currentIndex == 2 && m_config.value("storage_type").toString() == "firebase") {
-            m_currentIndex = 1; // From Firebase Config back to Storage Selection
-        } else if (m_currentIndex == 3 && m_config.value("storage_type").toString() != "firebase") { // Assuming local config is at index 3
-            m_currentIndex = 1; // From Local Config back to Storage Selection
-        } else {
-            m_currentIndex--;
+        int prevIndex = m_currentIndex - 1;
+        
+        if (m_currentIndex == 4) { // From Admin Account
+            if (m_config.value("storage_type").toString() == "firebase") {
+                prevIndex = 2; // Back to Firebase Config
+            } else {
+                prevIndex = 3; // Back to Local Config
+            }
+        } else if (m_currentIndex == 2 || m_currentIndex == 3) {
+            prevIndex = 1; // Back to Storage Selection
         }
+        
+        m_currentIndex = prevIndex;
         m_pages->setCurrentIndex(m_currentIndex);
         updateNavigation();
+    } else {
+        qWarning() << "SetupWizard: Attempted to go before first step.";
     }
 }
 
+/**
+ * @brief Handles the completion of the wizard.
+ * Emits the setupCompleted signal with the collected configuration.
+ */
 void SetupWizard::handleFinish() {
-    // Collect admin account details
-    if (m_adminNameEdit && m_adminEmailEdit && m_adminPasswordEdit) {
-        QString name = m_adminNameEdit->text();
-        QString email = m_adminEmailEdit->text();
-        QString password = m_adminPasswordEdit->text();
-
-        // Generate salt and hash the password
-        QByteArray salt = Security::HashProvider::generateSalt();
-        QByteArray hashedPassword = Security::HashProvider::argon2Hash(password, salt);
-        QByteArray combinedHash = salt + hashedPassword; // Combine salt and hash
-
-        m_config["admin_name"] = name;
-        m_config["admin_email"] = email;
-        m_config["admin_password_hash"] = QString(combinedHash.toHex()); // Store combined hash as hex string
-    }
-
-    // Ensure db_path is set for local storage if not already set by browse button
-    if (m_config.value("storage_type").toString() == "local_device" && !m_config.contains("db_path")) {
-        m_config["db_path"] = "ballot.db";
-    }
-
+    qInfo() << "SetupWizard: Setup wizard finished. Emitting setupCompleted signal.";
     emit setupCompleted(m_config);
     close();
 }
 
+/**
+ * @brief Updates the navigation buttons (Next/Back) and step indicator based on the current page.
+ */
 void SetupWizard::updateNavigation() {
     m_backButton->setEnabled(m_currentIndex > 0);
     m_nextButton->setText(m_currentIndex == m_pages->count() - 1 ? "Finish" : "Next");
-    // The total number of steps should be dynamic if pages are skipped.
-    // For now, let's assume 6 steps as per original design, but this might need adjustment.
-    m_stepIndicator->setText(QString("Step %1 of %2").arg(m_currentIndex + 1).arg(m_pages->count()));
+
+    int totalSteps = 5;
+    int currentStepNum = 1;
+
+    if (m_currentIndex == 0) currentStepNum = 1;
+    else if (m_currentIndex == 1) currentStepNum = 2;
+    else if (m_currentIndex == 2 || m_currentIndex == 3) currentStepNum = 3;
+    else if (m_currentIndex == 4) currentStepNum = 4;
+    else if (m_currentIndex == 5) currentStepNum = 5;
+
+    m_stepIndicator->setText(QString("Step %1 of %2").arg(currentStepNum).arg(totalSteps));
+    qDebug() << "SetupWizard: Navigation updated. Current step:" << currentStepNum << "of" << totalSteps;
 }
 
-// ---- Pages ----
+// ---- Pages Creation ----
 
+/**
+ * @brief Creates the welcome page for the wizard.
+ * @return The welcome page widget.
+ */
 QWidget* SetupWizard::createWelcomePage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(60, 40, 60, 40);
     layout->setSpacing(20);
+    layout->setAlignment(Qt::AlignCenter);
 
     auto *icon = new QLabel(page);
     icon->setFixedSize(88, 88);
@@ -250,10 +318,15 @@ QWidget* SetupWizard::createWelcomePage() {
     return page;
 }
 
+/**
+ * @brief Creates the storage selection page for the wizard.
+ * @return The storage selection page widget.
+ */
 QWidget* SetupWizard::createStorageSelectionPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(40, 30, 40, 30);
+    layout->setAlignment(Qt::AlignCenter);
 
     auto *title = new QLabel("Where should votes be stored?", page);
     title->setStyleSheet("font-size: 20px; font-weight: 600; color: #ffffff; margin-bottom: 20px; background: transparent;");
@@ -266,47 +339,60 @@ QWidget* SetupWizard::createStorageSelectionPage() {
     m_storageGroup = new QButtonGroup(page);
 
     // SQLite is the only storage provider currently implemented by SystemManager.
-    QStringList options = {"Local Device"};
-    QStringList icons = {"LOCAL"};
+    // Other options are placeholders for future expansion.
+    QList<QPair<QString, QString>> storageOptions = {
+        {"Local Device", "SQLite database stored on this device. All data stays local, no internet required."},
+        // {"PostgreSQL", "External PostgreSQL database. Requires database server setup."},
+        // {"MySQL", "External MySQL database. Requires database server setup."},
+        // {"SQL Server", "External SQL Server database. Requires database server setup."},
+        // {"REST API", "Custom REST API endpoint for data storage. Requires custom backend."},
+        // {"Custom Server", "Custom school server integration. Requires custom development."}
+    };
 
     auto *grid = new QGridLayout();
     grid->setSpacing(12);
+    grid->setAlignment(Qt::AlignCenter);
 
-    for (int i = 0; i < options.size(); ++i) {
+    for (int i = 0; i < storageOptions.size(); ++i) {
         auto *card = new QFrame(page);
         card->setObjectName("storageCard");
         card->setFixedSize(220, 112);
         card->setCursor(Qt::PointingHandCursor);
         card->setStyleSheet(R"(
             QFrame#storageCard {
-                background-color: #25253a;
-                border: 1px solid #3d3d5c;
-                border-radius: 12px;
-                padding: 12px;
+                background-color: #25253a; border: 1px solid #3d3d5c; border-radius: 12px; padding: 12px;
             }
             QFrame#storageCard:hover {
-                border-color: #5a5a7a;
-                background-color: #2a2a42;
+                border-color: #0078d4; background-color: rgba(0, 120, 212, 0.08);
+            }
+            QFrame#storageCard[checked="true"] {
+                border-color: #0078d4; background-color: rgba(0, 120, 212, 0.15);
             }
         )");
+        const bool selectedByDefault = (i == 0);
+        card->setProperty("checked", selectedByDefault); // Custom property for QSS
 
         auto *cardLayout = new QVBoxLayout(card);
-        auto *iconLabel = new QLabel(icons[i], card);
-        iconLabel->setStyleSheet("font-size: 11px; font-weight: 800; color: #5eead4; background: transparent; letter-spacing: 1px;");
-        cardLayout->addWidget(iconLabel);
+        cardLayout->setContentsMargins(0,0,0,0);
+        cardLayout->setSpacing(4);
 
-        auto *nameLabel = new QLabel(options[i], card);
+        auto *nameLabel = new QLabel(storageOptions[i].first, card);
         nameLabel->setStyleSheet("font-size: 14px; font-weight: 600; color: #e0e0e0; background: transparent;");
         cardLayout->addWidget(nameLabel);
+
+        auto *descLabel = new QLabel(storageOptions[i].second, card);
+        descLabel->setStyleSheet("font-size: 11px; color: #9a9ab0; background: transparent;");
+        descLabel->setWordWrap(true);
+        cardLayout->addWidget(descLabel);
 
         auto *rb = new QRadioButton(card);
         rb->setText("");
         rb->setFixedSize(20, 20);
         m_storageGroup->addButton(rb, i);
-        cardLayout->addWidget(rb, 0, Qt::AlignRight);
+        rb->setChecked(selectedByDefault);
+        cardLayout->addWidget(rb, 0, Qt::AlignRight | Qt::AlignBottom); // Position radio button at bottom right
 
-        // Make the whole card clickable by connecting a lambda to the card's mouse press event
-        // This is a more robust way than customContextMenuRequested
+        // Connect card click to radio button toggle
         card->installEventFilter(this); // Install event filter to capture mouse clicks on the card
         // The eventFilter method will handle the click to toggle the radio button
 
@@ -315,30 +401,57 @@ QWidget* SetupWizard::createStorageSelectionPage() {
 
     layout->addLayout(grid);
     layout->addStretch();
+
+    m_config["storage_type"] = "sqlite";
+    if (!m_config.contains("db_path")) {
+        m_config["db_path"] = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
+    }
     return page;
 }
 
-// Event filter to make QFrame clickable for radio buttons
+/**
+ * @brief Event filter to make QFrame (storageCard) clickable for radio buttons.
+ * @param obj The object that received the event.
+ * @param event The event that occurred.
+ * @return True if the event was handled, false otherwise.
+ */
 bool SetupWizard::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QFrame* card = qobject_cast<QFrame*>(obj);
         if (card && card->objectName() == "storageCard") {
-            // Find the radio button within this card
             QRadioButton* rb = card->findChild<QRadioButton*>();
             if (rb) {
                 rb->setChecked(true);
+                // Update QSS property for visual feedback
+                card->setProperty("checked", true);
+                card->style()->polish(card); // Repolish to apply new style
+                // Uncheck other cards
+                for (QAbstractButton* button : m_storageGroup->buttons()) {
+                    if (button != rb) {
+                        QFrame* otherCard = qobject_cast<QFrame*>(button->parentWidget());
+                        if (otherCard) {
+                            otherCard->setProperty("checked", false);
+                            otherCard->style()->polish(otherCard);
+                        }
+                    }
+                }
+                qDebug() << "SetupWizard: Storage card clicked for:" << rb->parentWidget()->findChild<QLabel*>()->text();
                 return true; // Event handled
             }
         }
     }
-    return QWidget::eventFilter(obj, event);
+    return QWidget::eventFilter(obj, event); // Pass unhandled events to base class
 }
 
-
+/**
+ * @brief Creates the Firebase configuration page.
+ * @return The Firebase configuration page widget.
+ */
 QWidget* SetupWizard::createFirebaseConfigPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(40, 30, 40, 30);
+    layout->setAlignment(Qt::AlignCenter);
 
     auto *title = new QLabel("Firebase Configuration", page);
     title->setStyleSheet("font-size: 20px; font-weight: 600; color: #ffffff; background: transparent;");
@@ -358,17 +471,15 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
     uploadFrame->setFixedHeight(180);
     uploadFrame->setStyleSheet(R"(
         QFrame#uploadFrame {
-            background-color: #25253a;
-            border: 2px dashed #3d3d5c;
-            border-radius: 16px;
+            background-color: #25253a; border: 2px dashed #3d3d5c; border-radius: 16px;
         }
         QFrame#uploadFrame:hover {
-            border-color: #0078d4;
-            background-color: rgba(0, 120, 212, 0.05);
+            border-color: #0078d4; background-color: rgba(0, 120, 212, 0.05);
         }
     )");
 
     auto *uploadLayout = new QVBoxLayout(uploadFrame);
+    uploadLayout->setAlignment(Qt::AlignCenter);
     auto *uploadIcon = new QLabel("JSON", uploadFrame);
     uploadIcon->setStyleSheet("font-size: 18px; font-weight: 800; color: #5eead4; background: transparent;");
     uploadLayout->addWidget(uploadIcon, 0, Qt::AlignCenter);
@@ -384,17 +495,11 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
     statusLabel->setAlignment(Qt::AlignCenter);
     uploadLayout->addWidget(statusLabel);
 
-    // Use a QPushButton directly for upload functionality
     auto *uploadButton = new QPushButton("Upload JSON File", uploadFrame);
     uploadButton->setStyleSheet(R"(
         QPushButton {
-            background-color: #0078d4;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            padding: 10px 24px;
+            background-color: #0078d4; color: white; border: none; border-radius: 8px;
+            font-size: 15px; font-weight: 600; padding: 10px 24px;
         }
         QPushButton:hover { background-color: #1a8ae8; }
         QPushButton:pressed { background-color: #006cbd; }
@@ -408,10 +513,14 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
             if (processFirebaseConfig(path)) {
                 statusLabel->setText("Configuration loaded successfully: " + QFileInfo(path).fileName());
                 statusLabel->setStyleSheet("font-size: 13px; color: #4caf50; background: transparent;");
+                qInfo() << "SetupWizard: Firebase config loaded from" << path;
             } else {
                 statusLabel->setText("Invalid Firebase configuration file");
                 statusLabel->setStyleSheet("font-size: 13px; color: #f44336; background: transparent;");
+                qWarning() << "SetupWizard: Invalid Firebase config file:" << path;
             }
+        } else {
+            qDebug() << "SetupWizard: Firebase config upload cancelled.";
         }
     });
 
@@ -421,13 +530,8 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
     auto *configGroup = new QGroupBox("Detected Configuration", page);
     configGroup->setStyleSheet(R"(
         QGroupBox {
-            background-color: #1e1e34;
-            border: 1px solid #3d3d5c;
-            border-radius: 8px;
-            margin-top: 12px;
-            padding: 16px;
-            color: #e0e0e0;
-            font-weight: 600;
+            background-color: #1e1e34; border: 1px solid #3d3d5c; border-radius: 8px;
+            margin-top: 12px; padding: 16px; color: #e0e0e0; font-weight: 600;
         }
     )");
 
@@ -451,26 +555,47 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
     return page;
 }
 
+/**
+ * @brief Processes the uploaded Firebase configuration JSON file.
+ * @param filePath The path to the Firebase JSON file.
+ * @return True if the configuration was successfully parsed, false otherwise.
+ */
 bool SetupWizard::processFirebaseConfig(const QString& filePath) {
     QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly)) return false;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qCritical() << "SetupWizard: Failed to open Firebase config file:" << filePath << "-" << file.errorString();
+        return false;
+    }
 
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
     file.close();
 
-    if (doc.isNull() || !doc.isObject()) return false;
+    if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
+        qCritical() << "SetupWizard: Invalid JSON in Firebase config file:" << filePath << "-" << parseError.errorString();
+        return false;
+    }
 
     m_firebaseConfig = doc.object();
-    m_firebaseApiKey = m_firebaseConfig["apiKey"].toString();
+    // Extract relevant fields (these might vary based on Firebase project setup)
+    m_firebaseApiKey = m_firebaseConfig["api_key"].toString(); // Assuming 'api_key' or 'apiKey'
+    if (m_firebaseApiKey.isEmpty()) m_firebaseApiKey = m_firebaseConfig["apiKey"].toString();
+
     m_firebaseProjectId = m_firebaseConfig["project_id"].toString();
+    if (m_firebaseProjectId.isEmpty()) m_firebaseProjectId = m_firebaseConfig["projectId"].toString();
+
     m_firebaseDbUrl = m_firebaseConfig["databaseURL"].toString();
 
-    if (m_firebaseApiKey.isEmpty() || m_firebaseProjectId.isEmpty()) return false;
+    if (m_firebaseApiKey.isEmpty() || m_firebaseProjectId.isEmpty()) {
+        qWarning() << "SetupWizard: Missing API Key or Project ID in Firebase config.";
+        return false;
+    }
 
     m_config["storage_type"] = "firebase";
     m_config["api_key"] = m_firebaseApiKey;
     m_config["project_id"] = m_firebaseProjectId;
     m_config["database_url"] = m_firebaseDbUrl;
+    // Add other Firebase specific configs if needed
     m_config["auth_domain"] = m_firebaseConfig["authDomain"].toString();
     m_config["storage_bucket"] = m_firebaseConfig["storageBucket"].toString();
     m_config["messaging_sender_id"] = m_firebaseConfig["messagingSenderId"].toString();
@@ -480,17 +605,23 @@ bool SetupWizard::processFirebaseConfig(const QString& filePath) {
     auto* apiLabel = findChild<QLabel*>("firebaseApiKey");
     auto* projectLabel = findChild<QLabel*>("firebaseProjectId");
     auto* dbLabel = findChild<QLabel*>("firebaseDbUrl");
-    if (apiLabel) apiLabel->setText("API Key: " + m_firebaseApiKey.left(20) + "...");
+    if (apiLabel) apiLabel->setText("API Key: " + m_firebaseApiKey.left(5) + "..." + m_firebaseApiKey.right(5)); // Show partial key
     if (projectLabel) projectLabel->setText("Project ID: " + m_firebaseProjectId);
     if (dbLabel) dbLabel->setText("Database URL: " + (m_firebaseDbUrl.isEmpty() ? "(not set)" : m_firebaseDbUrl));
 
+    qInfo() << "SetupWizard: Firebase configuration processed successfully.";
     return true;
 }
 
+/**
+ * @brief Creates the local storage configuration page.
+ * @return The local storage configuration page widget.
+ */
 QWidget* SetupWizard::createLocalConfigPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(40, 30, 40, 30);
+    layout->setAlignment(Qt::AlignCenter);
 
     auto *title = new QLabel("Local Storage Configuration", page);
     title->setStyleSheet("font-size: 20px; font-weight: 600; color: #ffffff; background: transparent;");
@@ -503,7 +634,7 @@ QWidget* SetupWizard::createLocalConfigPage() {
 
     auto *groupLayout = new QVBoxLayout(group);
 
-    auto *pathLabel = new QLabel("Default location: ballot.db", group);
+    auto *pathLabel = new QLabel("Default location: " + Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME, group);
     pathLabel->setStyleSheet("font-size: 14px; color: #9a9ab0; padding: 8px 0; background: transparent;");
     groupLayout->addWidget(pathLabel);
 
@@ -516,11 +647,15 @@ QWidget* SetupWizard::createLocalConfigPage() {
     groupLayout->addLayout(btnLayout);
 
     connect(browseBtn, &QPushButton::clicked, [this, pathLabel]() {
+        QString defaultPath = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
         QString path = QFileDialog::getSaveFileName(this, "Select Database Location",
-                                                     "ballot.db", "Database Files (*.db)");
+                                                     defaultPath, "Database Files (*.db)");
         if (!path.isEmpty()) {
             m_config["db_path"] = path;
             pathLabel->setText("Selected: " + path);
+            qInfo() << "SetupWizard: Local DB path set to:" << path;
+        } else {
+            qDebug() << "SetupWizard: Local DB path selection cancelled.";
         }
     });
 
@@ -545,10 +680,15 @@ QWidget* SetupWizard::createLocalConfigPage() {
     return page;
 }
 
+/**
+ * @brief Creates the admin account creation page.
+ * @return The admin account creation page widget.
+ */
 QWidget* SetupWizard::createAdminAccountPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(40, 30, 40, 30);
+    layout->setAlignment(Qt::AlignCenter);
 
     auto *title = new QLabel("Create Admin Account", page);
     title->setStyleSheet("font-size: 20px; font-weight: 600; color: #ffffff; background: transparent;");
@@ -565,41 +705,65 @@ QWidget* SetupWizard::createAdminAccountPage() {
 
     auto *formLayout = new QFormLayout(formGroup);
     formLayout->setSpacing(16);
+    formLayout->setLabelAlignment(Qt::AlignLeft);
+    formLayout->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    formLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+
+    auto styleLabel = [](QLabel* label) {
+        label->setStyleSheet("font-size: 14px; font-weight: 500; color: #e0e0e0; background: transparent;");
+    };
 
     m_adminNameEdit = new QLineEdit(formGroup);
     m_adminNameEdit->setPlaceholderText("Enter full name");
-    formLayout->addRow("Name:", m_adminNameEdit);
+    m_adminNameEdit->setFixedHeight(44);
+    auto* nameLabel = new QLabel("Name *");
+    styleLabel(nameLabel);
+    formLayout->addRow(nameLabel, m_adminNameEdit);
 
     m_adminEmailEdit = new QLineEdit(formGroup);
     m_adminEmailEdit->setPlaceholderText("Enter email address");
-    formLayout->addRow("Email:", m_adminEmailEdit);
+    m_adminEmailEdit->setFixedHeight(44);
+    auto* emailLabel = new QLabel("Email *");
+    styleLabel(emailLabel);
+    formLayout->addRow(emailLabel, m_adminEmailEdit);
 
     m_adminPasswordEdit = new QLineEdit(formGroup);
     m_adminPasswordEdit->setPlaceholderText("Enter password (min 8 characters)");
     m_adminPasswordEdit->setEchoMode(QLineEdit::Password);
-    formLayout->addRow("Password:", m_adminPasswordEdit);
+    m_adminPasswordEdit->setFixedHeight(44);
+    auto* passwordLabel = new QLabel("Password *");
+    styleLabel(passwordLabel);
+    formLayout->addRow(passwordLabel, m_adminPasswordEdit);
 
     m_adminConfirmEdit = new QLineEdit(formGroup);
     m_adminConfirmEdit->setPlaceholderText("Confirm password");
     m_adminConfirmEdit->setEchoMode(QLineEdit::Password);
-    formLayout->addRow("Confirm:", m_adminConfirmEdit);
+    m_adminConfirmEdit->setFixedHeight(44);
+    auto* confirmLabel = new QLabel("Confirm Password *");
+    styleLabel(confirmLabel);
+    formLayout->addRow(confirmLabel, m_adminConfirmEdit);
 
     layout->addWidget(formGroup);
     layout->addStretch();
     return page;
 }
 
+/**
+ * @brief Creates the summary page for the wizard.
+ * @return The summary page widget.
+ */
 QWidget* SetupWizard::createSummaryPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(40, 30, 40, 30);
+    layout->setAlignment(Qt::AlignCenter);
 
     auto *title = new QLabel("Setup Complete", page);
     title->setStyleSheet("font-size: 24px; font-weight: 700; color: #ffffff; background: transparent;");
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
-    auto *checkIcon = new QLabel("OK", page);
+    auto *checkIcon = new QLabel("✅", page); // Unicode checkmark
     checkIcon->setStyleSheet("font-size: 64px; color: #4caf50; background: transparent;");
     checkIcon->setAlignment(Qt::AlignCenter);
     layout->addWidget(checkIcon);

@@ -2,6 +2,7 @@
 <qresource>
     <file>src/ui/styles/modern.qss</file>
     <file>src/ui/styles/light.qss</file>
+    <file>src/ui/styles/dark.qss</file>
     <file>assets/brand/app-logo.svg</file>
     <file>assets/brand/app-mark.svg</file>
     <file>assets/backgrounds/auth-backdrop.svg</file>

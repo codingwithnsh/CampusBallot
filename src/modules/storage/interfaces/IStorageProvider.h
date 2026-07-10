@@ -19,6 +19,11 @@ public:
     virtual Core::StorageProviderType providerType() const = 0;
     virtual bool testConnection() = 0;
 
+    // Transaction Management
+    virtual bool beginTransaction() = 0;
+    virtual bool commitTransaction() = 0;
+    virtual bool rollbackTransaction() = 0;
+
     // Election Management
     virtual bool createElection(const Election& election) = 0;
     virtual bool updateElection(const Election& election) = 0;
@@ -55,6 +60,7 @@ public:
     virtual std::optional<User> getUserByEmail(const QString& email) = 0;
     virtual QList<User> getUsers() = 0;
     virtual QList<User> getUsersByRole(UserRole role) = 0;
+    virtual bool updateUserPassword(const QString& userId, const QByteArray& newPasswordHashAndSalt) = 0; // NEW
 
     // Voting
     virtual bool castVote(const Vote& vote) = 0;
@@ -84,6 +90,7 @@ public:
     // Backup
     virtual bool saveBackupRecord(const BackupEntry& backup) = 0;
     virtual QList<BackupEntry> getBackupHistory() = 0;
+    virtual std::optional<BackupEntry> getBackup(const QString& id) = 0;
     virtual bool deleteBackupRecord(const QString& id) = 0;
 
     // Bulk operations

@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
+    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
+  </component>
+  <component name="BackgroundAgentGlobalSettings">
+    <option name="selectedModelId" value="anthropic/claude-opus-4.8-fast" />
+    <option name="selectedProviderName" value="OpenRouter" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="TheRealCampusBallot" targetName="TheRealCampusBallot" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DCMAKE_PREFIX_PATH=&quot;D:/Qt/6.11.1/mingw_64&quot;" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="3rd Commit">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/QtSettings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/TheRealCampusBallot.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/.qt/QtDeploySupport.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/.qt/QtDeployTargets.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeCache.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/3.30.5/CMakeCXXCompiler.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/3.30.5/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/3.30.5/CMakeRCCompiler.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/3.30.5/CMakeSystem.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/3.30.5/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/3.30.5/CompilerIdCXX/a.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/CMakeRuleHashes.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/Makefile.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/Makefile2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TargetDirectories.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/TheRealCampusBallot_autogen/EWIEGA46WW/qrc_resources.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/TheRealCampusBallot_autogen/EWIEGA46WW/qrc_resources.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/TheRealCampusBallot_autogen/mocs_compilation.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/TheRealCampusBallot_autogen/mocs_compilation.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/compiler_depend.internal" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/compiler_depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/compiler_depend.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/includes_CXX.rsp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/linkLibs.rsp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/main.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/main.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/objects.a" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/objects1.rsp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/core/SystemManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/core/SystemManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/audit/AuditManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/audit/AuditManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/auth/AuthManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/auth/AuthManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/auth/RBACManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/auth/RBACManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/backup/BackupManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/backup/BackupManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/election/ElectionManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/election/ElectionManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/election/VoteManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/election/VoteManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/plugin/PluginManager.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/plugin/PluginManager.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/storage/providers/SQLiteStorageProvider.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/modules/storage/providers/SQLiteStorageProvider.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/AES256Provider.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/AES256Provider.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/DigitalSignature.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/DigitalSignature.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/HashProvider.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/HashProvider.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/TamperDetector.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/security/TamperDetector.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/AcrylicWidget.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/AcrylicWidget.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/AnimatedButton.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/AnimatedButton.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/Sidebar.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/Sidebar.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/StatCard.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/StatCard.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/ToastNotification.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/components/ToastNotification.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/viewmodels/AuthViewModel.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/viewmodels/AuthViewModel.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/viewmodels/DashboardViewModel.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/viewmodels/DashboardViewModel.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/viewmodels/ResultsViewModel.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/viewmodels/ResultsViewModel.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/AdminPanel.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/AdminPanel.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/DashboardView.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/DashboardView.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/LoginView.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/LoginView.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/MainWindow.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/MainWindow.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/ResultsView.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/ResultsView.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/SettingsView.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/SettingsView.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/SetupWizard.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/SetupWizard.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/SplashScreen.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/SplashScreen.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/UserManagementView.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/UserManagementView.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/VotingKiosk.cpp.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot.dir/src/ui/views/VotingKiosk.cpp.obj.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/AutoRcc_resources_EWIEGA46WW_Info.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/AutoRcc_resources_EWIEGA46WW_Lock.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/AutoRcc_resources_EWIEGA46WW_Used.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/AutogenInfo.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/AutogenUsed.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/ParseCache.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/compiler_depend.internal" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/compiler_depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/compiler_depend.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen_timestamp_deps.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen_timestamp_deps.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen_timestamp_deps.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen_timestamp_deps.dir/compiler_depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen_timestamp_deps.dir/compiler_depend.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/TheRealCampusBallot_autogen_timestamp_deps.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/cmake.check_cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/CMakeFiles/progress.marks" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/D3Dcompiler_47.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Qt6Core.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Qt6Gui.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Qt6Network.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Qt6PrintSupport.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Qt6Sql.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Qt6Svg.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/Qt6Widgets.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/6MB76OGVS6/moc_AuthManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/6MB76OGVS6/moc_AuthManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/6MB76OGVS6/moc_RBACManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/6MB76OGVS6/moc_RBACManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/AWH56BEWUT/moc_TamperDetector.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/AWH56BEWUT/moc_TamperDetector.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_AcrylicWidget.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_AcrylicWidget.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_AnimatedButton.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_AnimatedButton.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_Sidebar.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_Sidebar.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_StatCard.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_StatCard.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_ToastNotification.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/DFYB2GAN4A/moc_ToastNotification.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/EWIEGA46WW/qrc_resources.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_AdminPanel.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_AdminPanel.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_DashboardView.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_DashboardView.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_LoginView.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_LoginView.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_MainWindow.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_MainWindow.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_ResultsView.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_ResultsView.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_SettingsView.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_SettingsView.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_SetupWizard.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_SetupWizard.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_SplashScreen.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_SplashScreen.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_UserManagementView.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_UserManagementView.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_VotingKiosk.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/J3CC273FWE/moc_VotingKiosk.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/KIXYDUAWSN/moc_PluginManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/KIXYDUAWSN/moc_PluginManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/L6XBWHIX5O/moc_BackupManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/L6XBWHIX5O/moc_BackupManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/PRMOGMWJPH/moc_SystemManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/PRMOGMWJPH/moc_SystemManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/TO5YODZPY3/moc_AuditManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/TO5YODZPY3/moc_AuditManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/XUWP55ROXA/moc_AuthViewModel.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/XUWP55ROXA/moc_AuthViewModel.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/XUWP55ROXA/moc_DashboardViewModel.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/XUWP55ROXA/moc_DashboardViewModel.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/XUWP55ROXA/moc_ResultsViewModel.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/XUWP55ROXA/moc_ResultsViewModel.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/ZJFYVIBJKQ/moc_ElectionManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/ZJFYVIBJKQ/moc_ElectionManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/ZJFYVIBJKQ/moc_VoteManager.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/ZJFYVIBJKQ/moc_VoteManager.cpp.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/deps" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/moc_predefs.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/mocs_compilation.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/TheRealCampusBallot_autogen/timestamp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/cmake_install.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/generic/qtuiotouchplugin.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/iconengines/qsvgicon.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/imageformats/qgif.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/imageformats/qico.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/imageformats/qjpeg.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/imageformats/qsvg.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/libgcc_s_seh-1.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/libstdc++-6.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/libwinpthread-1.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/networkinformation/qnetworklistmanager.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/opengl32sw.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/platforms/qwindows.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/sqldrivers/qsqlibase.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/sqldrivers/qsqlite.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/sqldrivers/qsqlmimer.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/sqldrivers/qsqloci.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/sqldrivers/qsqlodbc.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/sqldrivers/qsqlpsql.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/styles/qmodernwindowsstyle.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/tls/qcertonlybackend.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/tls/qschannelbackend.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_ar.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_bg.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_ca.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_cs.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_da.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_de.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_en.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_es.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_fa.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_fi.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_fr.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_gd.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_he.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_hr.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_hu.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_it.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_ja.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_ka.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_ko.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_lg.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_lv.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_nl.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_nn.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_pl.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_pt_BR.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_ru.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_sk.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_sv.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_tr.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_uk.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_zh_CN.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-audit/translations/qt_zh_TW.qm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeCache.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.30.5/CMakeSystem.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/3.30.5/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/CMakeFiles/cmake.check_cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_candidate.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_candidate_output.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_cmake.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_cmake2.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_log.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_admin.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_admin2.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_candidate.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_candidate2.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_candidate_output.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_candidate_output2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_output.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compile_output2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources.qrc" beforeDir="false" afterPath="$PROJECT_DIR$/resources.qrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Models.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Models.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/SystemManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/SystemManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/SystemManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/SystemManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Utils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/audit/AuditManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/audit/AuditManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/audit/AuditManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/audit/AuditManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/auth/AuthManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/AuthManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/auth/IAuthProvider.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/IAuthProvider.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/auth/RBACManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/RBACManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/backup/BackupManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/backup/BackupManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/backup/BackupManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/backup/BackupManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/election/ElectionManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/election/ElectionManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/election/ElectionManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/election/ElectionManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/election/VoteManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/election/VoteManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/storage/TestAdmissionStorage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/TestAdmissionStorage.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/storage/TestAdmissionStorage.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/TestAdmissionStorage.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/storage/interfaces/IStorageProvider.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/interfaces/IStorageProvider.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/AES256Provider.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/AES256Provider.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/DigitalSignature.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/DigitalSignature.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/HashProvider.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/HashProvider.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/IEncryptionProvider.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/TamperDetector.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/security/TamperDetector.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/AcrylicWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/AcrylicWidget.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/AcrylicWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/AcrylicWidget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/AnimatedButton.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/AnimatedButton.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/Sidebar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/Sidebar.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/StatCard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/StatCard.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/ToastNotification.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/ToastNotification.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/dialogs/CandidateFormDialog.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/dialogs/CandidateFormDialog.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/dialogs/CandidateFormDialog.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/dialogs/CandidateFormDialog.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/DashboardViewModel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/DashboardViewModel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/DashboardViewModel.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/DashboardViewModel.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/ResultsViewModel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/ResultsViewModel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/ResultsViewModel.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/ResultsViewModel.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/AdminPanel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/AdminPanel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/DashboardView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/DashboardView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/MainWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/MainWindow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/MainWindow.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/MainWindow.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/ResultsView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/ResultsView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SettingsView.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SettingsView.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SplashScreen.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SplashScreen.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SplashScreen.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SplashScreen.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/UserManagementView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/UserManagementView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/VotingKiosk.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/VotingKiosk.h" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/CLion Projects/TheRealCampusBallot" value="3FdH4yli3KEzFLu8gAbi9zMdpHd" />
+    </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="105" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {}
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/codingwithnsh/CampusBallot.git&quot;,
+    &quot;accountId&quot;: &quot;a24d042e-35bc-45bc-93bb-340844021b56&quot;
+  }
+}</component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="DMPhXw0z" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.4537595776585803" />
+      <entry key="MS500" value="1.8538177143912449" />
+      <entry key="S2" value="1.9612619175394495" />
+      <entry key="S5" value="1.9903464161095132" />
+      <entry key="S10" value="2.1079065646383377" />
+      <entry key="S30" value="3.1168481584299323" />
+      <entry key="S60" value="4.380579580973038" />
+      <entry key="M2" value="7.6989925461601" />
+      <entry key="M5" value="49.93872359527417" />
+      <entry key="M10" value="128.43249453925836" />
+      <entry key="M15" value="179.11849194051527" />
+      <entry key="M30" value="253.79362951763946" />
+      <entry key="H1" value="310.6086310661602" />
+      <entry key="H2" value="395.31182935644256" />
+      <entry key="H4" value="637.5797782619401" />
+      <entry key="D1" value="1583.80518029131" />
+      <entry key="W1" value="1947.2935874157386" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.3760106542252009" />
+      <entry key="MS500" value="1.8324058255414406" />
+      <entry key="S2" value="1.9555131293907138" />
+      <entry key="S5" value="1.9880049441324126" />
+      <entry key="S10" value="2.1066582641468674" />
+      <entry key="S30" value="3.1162194770493685" />
+      <entry key="S60" value="4.380137013806107" />
+      <entry key="M2" value="7.6985599879205555" />
+      <entry key="M5" value="49.93719096495693" />
+      <entry key="M10" value="128.4303801138874" />
+      <entry key="M15" value="179.1164861625355" />
+      <entry key="M30" value="253.79217860268022" />
+      <entry key="H1" value="310.60773407772115" />
+      <entry key="H2" value="395.3112764362126" />
+      <entry key="H4" value="637.579369032188" />
+      <entry key="D1" value="1583.8050240656175" />
+      <entry key="W1" value="1947.2935601794404" />
+    </decayedShown>
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2026" />
+    <option name="minorVersion" value="1.3" />
+    <option name="productBranch" value="Classic" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3FdH4yli3KEzFLu8gAbi9zMdpHd" />
+  <component name="ProjectSessionTemplates">
+    <option name="panelTemplate">
+      <template>
+        <option name="modeId" value="Agent" />
+        <option name="model">
+          <model>
+            <option name="modelProviderName" value="OpenRouter" />
+            <option name="modelType" value="byok_family" />
+            <option name="modelValue" value="anthropic/claude-opus-4.8-fast" />
+          </model>
+        </option>
+        <option name="targetType" value="BACKGROUND" />
+      </template>
+    </option>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;CMake Application.TheRealCampusBallot.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.west.config.association.type.startup.service&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;D:/CLion Projects/TheRealCampusBallot/main.cpp&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMThirdPartyAiProvidersConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TheRealCampusBallot" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="TheRealCampusBallot" TARGET_NAME="TheRealCampusBallot" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TheRealCampusBallot" RUN_TARGET_NAME="TheRealCampusBallot">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="" />
+      <created>1781113564206</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1781113564206</updated>
+      <workItem from="1781113565286" duration="359000" />
+      <workItem from="1782397840478" duration="11720000" />
+      <workItem from="1782413209982" duration="60000" />
+      <workItem from="1782413334584" duration="3098000" />
+      <workItem from="1782447443317" duration="2437000" />
+      <workItem from="1782758551041" duration="48000" />
+      <workItem from="1782790834082" duration="988000" />
+      <workItem from="1782792158813" duration="35005000" />
+      <workItem from="1783321988272" duration="6239000" />
+      <workItem from="1783351729449" duration="444000" />
+      <workItem from="1783680529785" duration="22000" />
+      <workItem from="1783685945840" duration="5271000" />
+    </task>
+    <task id="LOCAL-00001" summary="First Commit">
+      <option name="closed" value="true" />
+      <created>1782411733452</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1782411733453</updated>
+    </task>
+    <task id="LOCAL-00002" summary="2nd Commit">
+      <option name="closed" value="true" />
+      <created>1782800192465</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1782800192465</updated>
+    </task>
+    <task id="LOCAL-00003" summary="3rd Commit">
+      <option name="closed" value="true" />
+      <created>1782800230918</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1782800230918</updated>
+    </task>
+    <task id="LOCAL-00004" summary="3rd Commit">
+      <option name="closed" value="true" />
+      <created>1782808114124</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1782808114124</updated>
+    </task>
+    <task id="LOCAL-00005" summary="3rd Commit">
+      <option name="closed" value="true" />
+      <created>1782811653558</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1782811653558</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+    <isAutomaticBootstrapAfterUpdate value="false" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="First Commit" />
+    <MESSAGE value="2nd Commit" />
+    <MESSAGE value="3rd Commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="3rd Commit" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

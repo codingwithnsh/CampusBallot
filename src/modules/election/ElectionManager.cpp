@@ -1,9 +1,8 @@
 #include "ElectionManager.h"
 #include "src/core/SystemManager.h"
 #include "src/modules/audit/AuditManager.h"
-#include "src/core/Utils.h" // Include for Core::Utils::getMachineId()
-#include "src/security/HashProvider.h"
-#include <QUuid>
+#include "src/core/Utils.h" // Include for Core::SystemInfo and Core::IdGenerator
+#include "src/modules/election/VoteManager.h" // Include VoteManager for voting operations
 #include <QDateTime>
 #include <QDebug> // For debugging
 
@@ -18,59 +17,100 @@ ElectionManager::ElectionManager() {
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &ElectionManager::checkElectionTimers);
     m_timer->start(10000); // Check every 10 seconds
+    qDebug() << "ElectionManager: Initialized. Timer started for election state checks.";
 }
 
 bool ElectionManager::createElection(const Core::Election& election) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot create election.";
+        return false;
+    }
 
     Core::Election e = election;
     if (e.id.isEmpty()) {
-        e.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        e.id = Core::IdGenerator::generateId(); // Use centralized ID generator
     }
     e.createdAt = QDateTime::currentDateTime();
 
     if (storage->createElection(e)) {
         Audit::AuditManager::instance().log(
             Core::AuditAction::ElectionCreated,
-            "Election created: " + e.title);
+            "Election created: " + e.title,
+            e.createdBy);
         emit electionCreated(e.id);
+        qInfo() << "ElectionManager: Election created successfully:" << e.title << "(" << e.id << ")";
         return true;
     }
+    qCritical() << "ElectionManager: Failed to create election:" << e.title << ". Storage error.";
     return false;
 }
 
 bool ElectionManager::updateElection(const Core::Election& election) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage || !storage->updateElection(election)) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot update election.";
+        return false;
+    }
+
+    if (!storage->updateElection(election)) {
+        qCritical() << "ElectionManager: Failed to update election:" << election.title << ". Storage error.";
+        return false;
+    }
 
     Audit::AuditManager::instance().log(
         Core::AuditAction::ElectionModified,
-        "Election modified: " + election.title);
+        "Election modified: " + election.title,
+        election.createdBy); // Assuming createdBy is the last modifier for audit purposes
     emit electionUpdated(election.id);
+    qInfo() << "ElectionManager: Election updated successfully:" << election.title << "(" << election.id << ")";
     return true;
 }
 
 bool ElectionManager::deleteElection(const QString& id) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage || !storage->deleteElection(id)) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot delete election.";
+        return false;
+    }
+
+    auto electionOpt = storage->getElection(id);
+    QString electionTitle = electionOpt ? electionOpt->title : "Unknown";
+
+    if (!storage->deleteElection(id)) {
+        qCritical() << "ElectionManager: Failed to delete election:" << electionTitle << "(" << id << "). Storage error.";
+        return false;
+    }
 
     Audit::AuditManager::instance().log(
         Core::AuditAction::ElectionDeleted,
-        "Election deleted: " + id);
+        "Election deleted: " + electionTitle,
+        "System"); // Assuming system action for deletion
     emit electionDeleted(id);
+    qInfo() << "ElectionManager: Election deleted successfully:" << electionTitle << "(" << id << ")";
     return true;
 }
 
 bool ElectionManager::startElection(const QString& id) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot start election.";
+        return false;
+    }
 
     std::optional<Core::Election> electionOpt = storage->getElection(id);
-    if (!electionOpt) return false;
-    Core::Election election = *electionOpt; // Get the value from optional
+    if (!electionOpt) {
+        qWarning() << "ElectionManager: Election with ID" << id << "not found. Cannot start election.";
+        return false;
+    }
+    Core::Election election = *electionOpt;
 
-    if (election.state != Core::VotingState::Idle && election.state != Core::VotingState::Paused) {
+    if (election.state == Core::VotingState::Voting) {
+        qWarning() << "ElectionManager: Election" << id << "is already in Voting state.";
+        return true; // Already started, consider it a success
+    }
+    if (election.state == Core::VotingState::Ended) {
+        qWarning() << "ElectionManager: Election" << id << "has already ended. Cannot restart.";
         return false;
     }
 
@@ -82,76 +122,113 @@ bool ElectionManager::startElection(const QString& id) {
         election.startDate = QDateTime::currentDateTime();
     }
 
-
-    if (storage->updateElection(election)) {
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::ElectionStarted, // Changed to ElectionStarted
-            "Election started: " + election.title);
-        emit electionStarted(id);
-        emit electionStateChanged(id, Core::VotingState::Voting);
-        return true;
+    if (!storage->updateElection(election)) {
+        qCritical() << "ElectionManager: Failed to update election state to Voting for" << election.title << ". Storage error.";
+        return false;
     }
-    return false;
+
+    Audit::AuditManager::instance().log(
+        Core::AuditAction::ElectionStarted,
+        "Election started: " + election.title,
+        "System"); // System action or user who initiated
+    emit electionStarted(id);
+    emit electionStateChanged(id, Core::VotingState::Voting);
+    qInfo() << "ElectionManager: Election" << election.title << "(" << id << ") started.";
+    return true;
 }
 
 bool ElectionManager::endElection(const QString& id) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot end election.";
+        return false;
+    }
 
     std::optional<Core::Election> electionOpt = storage->getElection(id);
-    if (!electionOpt) return false;
+    if (!electionOpt) {
+        qWarning() << "ElectionManager: Election with ID" << id << "not found. Cannot end election.";
+        return false;
+    }
     Core::Election election = *electionOpt;
 
-    if (election.state != Core::VotingState::Voting && election.state != Core::VotingState::Paused) {
-        return false;
+    if (election.state == Core::VotingState::Ended) {
+        qWarning() << "ElectionManager: Election" << id << "has already ended.";
+        return true; // Already ended, consider it a success
     }
 
     election.state = Core::VotingState::Ended;
     election.isActive = false;
     election.endDate = QDateTime::currentDateTime();
 
-    if (storage->updateElection(election)) {
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::ElectionEnded, // Changed to ElectionEnded
-            "Election ended: " + election.title);
-        emit electionEnded(id);
-        emit electionStateChanged(id, Core::VotingState::Ended);
-        return true;
+    if (!storage->updateElection(election)) {
+        qCritical() << "ElectionManager: Failed to update election state to Ended for" << election.title << ". Storage error.";
+        return false;
     }
-    return false;
+
+    Audit::AuditManager::instance().log(
+        Core::AuditAction::ElectionEnded,
+        "Election ended: " + election.title,
+        "System");
+    emit electionEnded(id);
+    emit electionStateChanged(id, Core::VotingState::Ended);
+    qInfo() << "ElectionManager: Election" << election.title << "(" << id << ") ended.";
+    return true;
 }
 
 bool ElectionManager::pauseElection(const QString& id) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot pause election.";
+        return false;
+    }
 
     std::optional<Core::Election> electionOpt = storage->getElection(id);
-    if (!electionOpt) return false;
+    if (!electionOpt) {
+        qWarning() << "ElectionManager: Election with ID" << id << "not found. Cannot pause election.";
+        return false;
+    }
     Core::Election election = *electionOpt;
 
-    if (election.state != Core::VotingState::Voting) return false;
+    if (election.state == Core::VotingState::Paused) {
+        qWarning() << "ElectionManager: Election" << id << "is already in Paused state.";
+        return true; // Already paused, consider it a success
+    }
+    if (election.state != Core::VotingState::Voting) {
+        qWarning() << "ElectionManager: Election" << id << "is not in Voting state. Cannot pause.";
+        return false;
+    }
 
     election.state = Core::VotingState::Paused;
 
-    if (storage->updateElection(election)) {
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::ElectionPaused, // Assuming this enum exists
-            "Election paused: " + election.title);
-        emit electionStateChanged(id, Core::VotingState::Paused);
-        return true;
+    if (!storage->updateElection(election)) {
+        qCritical() << "ElectionManager: Failed to update election state to Paused for" << election.title << ". Storage error.";
+        return false;
     }
-    return false;
+
+    Audit::AuditManager::instance().log(
+        Core::AuditAction::ElectionPaused,
+        "Election paused: " + election.title,
+        "System");
+    emit electionStateChanged(id, Core::VotingState::Paused);
+    qInfo() << "ElectionManager: Election" << election.title << "(" << id << ") paused.";
+    return true;
 }
 
 std::optional<Core::Election> ElectionManager::getElection(const QString& id) const {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return std::nullopt;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot get election.";
+        return std::nullopt;
+    }
     return storage->getElection(id);
 }
 
 std::optional<Core::Election> ElectionManager::getActiveElection() const {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return std::nullopt;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot get active election.";
+        return std::nullopt;
+    }
 
     QList<Core::Election> elections = storage->getElections();
     for (const auto& election : elections) {
@@ -164,17 +241,22 @@ std::optional<Core::Election> ElectionManager::getActiveElection() const {
 
 QList<Core::Election> ElectionManager::getElections() const {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return {};
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot get elections.";
+        return {};
+    }
     return storage->getElections();
 }
 
-// This method is redundant with getActiveElection() but kept for now
 QList<Core::Election> ElectionManager::getActiveElections() const {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return {};
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot get active elections.";
+        return {};
+    }
     QList<Core::Election> activeElections;
     for (const auto& election : storage->getElections()) {
-        if (election.isActive) {
+        if (election.isActive && election.state == Core::VotingState::Voting) { // Only truly active and voting elections
             activeElections.append(election);
         }
     }
@@ -183,46 +265,79 @@ QList<Core::Election> ElectionManager::getActiveElections() const {
 
 bool ElectionManager::addCandidate(const Core::Candidate& candidate) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot add candidate.";
+        return false;
+    }
 
     Core::Candidate c = candidate;
     if (c.id.isEmpty()) {
-        c.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        c.id = Core::IdGenerator::generateId(); // Use centralized ID generator
     }
     c.registeredAt = QDateTime::currentDateTime();
 
-    if (storage->addCandidate(c)) {
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::CandidateAdded, // Assuming this enum exists
-            "Candidate added: " + c.name + " for election " + c.electionId);
-        return true;
+    if (!storage->addCandidate(c)) {
+        qCritical() << "ElectionManager: Failed to add candidate:" << c.name << ". Storage error.";
+        return false;
     }
-    return false;
+
+    Audit::AuditManager::instance().log(
+        Core::AuditAction::CandidateAdded,
+        "Candidate added: " + c.name + " for election " + c.electionId,
+        "System"); // Assuming system action or user who added
+    qInfo() << "ElectionManager: Candidate" << c.name << "(" << c.id << ") added successfully to election" << c.electionId;
+    return true;
 }
 
 bool ElectionManager::updateCandidate(const Core::Candidate& candidate) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage || !storage->updateCandidate(candidate)) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot update candidate.";
+        return false;
+    }
+
+    if (!storage->updateCandidate(candidate)) {
+        qCritical() << "ElectionManager: Failed to update candidate:" << candidate.name << ". Storage error.";
+        return false;
+    }
 
     Audit::AuditManager::instance().log(
-        Core::AuditAction::CandidateModified, // Assuming this enum exists
-        "Candidate modified: " + candidate.name + " for election " + candidate.electionId);
+        Core::AuditAction::CandidateModified,
+        "Candidate modified: " + candidate.name + " for election " + candidate.electionId,
+        "System");
+    qInfo() << "ElectionManager: Candidate" << candidate.name << "(" << candidate.id << ") updated successfully.";
     return true;
 }
 
 bool ElectionManager::deleteCandidate(const QString& id) {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage || !storage->deleteCandidate(id)) return false;
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot delete candidate.";
+        return false;
+    }
+
+    auto candidateOpt = storage->getCandidate(id);
+    QString candidateName = candidateOpt ? candidateOpt->name : "Unknown";
+
+    if (!storage->deleteCandidate(id)) {
+        qCritical() << "ElectionManager: Failed to delete candidate:" << candidateName << "(" << id << "). Storage error.";
+        return false;
+    }
 
     Audit::AuditManager::instance().log(
-        Core::AuditAction::CandidateDeleted, // Assuming this enum exists
-        "Candidate deleted: " + id);
+        Core::AuditAction::CandidateDeleted,
+        "Candidate deleted: " + candidateName,
+        "System");
+    qInfo() << "ElectionManager: Candidate" << candidateName << "(" << id << ") deleted successfully.";
     return true;
 }
 
 QList<Core::Candidate> ElectionManager::getCandidates(const QString& electionId) const {
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return {};
+    if (!storage) {
+        qCritical() << "ElectionManager: Storage not available. Cannot get candidates.";
+        return {};
+    }
     return storage->getCandidates(electionId);
 }
 
@@ -231,100 +346,26 @@ Core::VotingState ElectionManager::getElectionState(const QString& electionId) c
     if (e.has_value()) {
         return e->state;
     }
-    return Core::VotingState::Unknown; // Return an appropriate default or error state
+    qWarning() << "ElectionManager: Election" << electionId << "not found. Returning Unknown state.";
+    return Core::VotingState::Unknown;
 }
 
-bool ElectionManager::canVote(const QString& studentId, const QString& electionId) const {
-    auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return false;
-
-    std::optional<Core::Election> electionOpt = getElection(electionId);
-    if (!electionOpt || !electionOpt->isActive || electionOpt->state != Core::VotingState::Voting) {
-        return false; // Cannot vote if election is not active or not in voting state
-    }
-
-    const auto student = storage->getStudent(studentId);
-    if (!student) return false;
-    if (!electionOpt->eligibleClasses.isEmpty() && !electionOpt->eligibleClasses.contains(student->className)) return false;
-
-    // Check if student has already voted
-    return !storage->hasStudentVoted(studentId, electionId);
-}
-
-bool ElectionManager::castVote(const QString& electionId, const QString& studentId, const QString& candidateId) {
-    auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) return false;
-
-    // Basic validation
-    if (electionId.isEmpty() || studentId.isEmpty() || candidateId.isEmpty()) {
-        qWarning() << "ElectionManager::castVote: Invalid parameters.";
-        return false;
-    }
-
-    // Check if election is active and in voting state
-    std::optional<Core::Election> electionOpt = getElection(electionId);
-    if (!electionOpt || !electionOpt->isActive || electionOpt->state != Core::VotingState::Voting) {
-        qWarning() << "ElectionManager::castVote: Election not active or not in voting state.";
-        return false;
-    }
-
-    // Check if student is eligible and hasn't voted yet
-    if (!canVote(studentId, electionId)) {
-        qWarning() << "ElectionManager::castVote: Student not eligible or already voted.";
-        return false;
-    }
-
-    const auto candidate = storage->getCandidate(candidateId);
-    if (!candidate || candidate->electionId != electionId || !candidate->isApproved) {
-        qWarning() << "ElectionManager::castVote: Candidate is invalid or not approved.";
-        return false;
-    }
-
-    Core::Vote vote;
-    vote.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-    vote.electionId = electionId;
-    vote.studentId = studentId;
-    // Results aggregation requires a stable candidate identifier. Access to the
-    // votes table must therefore be protected at the database/file level.
-    vote.encryptedCandidateId = candidateId;
-    vote.timestamp = QDateTime::currentDateTime();
-    vote.machineId = Core::Utils::getMachineId();
-    vote.isAudited = false; // Default to false, audit process will update this
-
-    vote.voteHash = Security::HashProvider::sha256(
-        vote.id.toUtf8() + vote.electionId.toUtf8() + vote.encryptedCandidateId.toUtf8()
-        + vote.timestamp.toString(Qt::ISODateWithMs).toUtf8() + vote.machineId.toUtf8());
-
-    if (storage->castVote(vote)) {
-        // Update student's voted status
-        std::optional<Core::Student> studentOpt = storage->getStudent(studentId);
-        if (studentOpt) {
-            Core::Student student = *studentOpt;
-            student.hasVoted = true;
-            storage->updateStudent(student);
-        }
-
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::VoteCast,
-            "Vote recorded for election " + electionId,
-            studentId);
-        emit voteCast(electionId, studentId, candidateId);
-        return true;
-    }
-
-    return false;
-}
-
+// Removed: bool ElectionManager::canVote(...)
+// Removed: bool ElectionManager::castVote(...)
 
 void ElectionManager::checkElectionTimers() {
     auto elections = getElections();
     auto now = QDateTime::currentDateTime();
     for (const auto& e : elections) {
+        // Automatically start elections
         if (e.state == Core::VotingState::Idle && e.startDate.isValid() && now >= e.startDate) {
-            startElection(e.id);
+            qInfo() << "ElectionManager: Auto-starting election" << e.title << "(" << e.id << ")";
+            startElection(e.id); // This will log and emit signals
         }
+        // Automatically end elections
         if (e.state == Core::VotingState::Voting && e.endDate.isValid() && now >= e.endDate) {
-            endElection(e.id);
+            qInfo() << "ElectionManager: Auto-ending election" << e.title << "(" << e.id << ")";
+            endElection(e.id); // This will log and emit signals
         }
     }
 }

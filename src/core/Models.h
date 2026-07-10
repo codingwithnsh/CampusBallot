@@ -2,12 +2,13 @@
 
 #include <QString>
 #include <QDateTime>
-#include <QImage>
+#include <QImage> // Keep for potential conversion utilities, but not for direct storage
 #include <QByteArray>
 #include <QVariantMap>
 #include <QUuid>
 #include <QJsonObject>
 #include <optional>
+#include <QJsonArray> // Added for QStringList serialization
 
 namespace Ballot::Core {
 
@@ -73,19 +74,34 @@ enum class AuditAction {
     VoteCast
 };
 
+// Struct to hold theme-related colors for UI components
+struct ThemeColors {
+    QString surface;            // Background color for cards/surfaces
+    QString outline;            // Border color for cards/elements
+    QString accent;             // Primary accent color
+    QString onSurface;          // Text color on surface backgrounds
+    QString onSurfaceVariant;   // Secondary text color on surface backgrounds
+    QString onPrimary;          // Text color on primary/accent buttons
+    QString secondary;          // Secondary accent color (e.g., for hover states)
+    QString surfaceVariant;     // Background color for photo placeholders
+    // Add other relevant colors as needed
+};
+
+
 struct User {
     QString id;
     QString name;
-    QImage photo;
+    QByteArray photoData;
     QString idCardNumber;
     QString department;
     QString className;
     QString section;
     QString phone;
     QString email;
+    QByteArray passwordHashAndSalt; // Renamed from digitalSignature for password storage
     UserRole role = UserRole::Observer;
     QStringList permissions;
-    QByteArray digitalSignature;
+    QByteArray digitalSignature; // Re-added for actual digital signature if needed
     QByteArray qrCode;
     bool isActive = true;
     QDateTime createdAt;
@@ -95,13 +111,21 @@ struct User {
         QJsonObject o;
         o["id"] = id;
         o["name"] = name;
+        o["photoData"] = QString(photoData.toBase64());
+        o["idCardNumber"] = idCardNumber;
         o["department"] = department;
         o["class"] = className;
         o["section"] = section;
         o["phone"] = phone;
         o["email"] = email;
+        // Do NOT serialize passwordHashAndSalt for security reasons
         o["role"] = static_cast<int>(role);
+        o["permissions"] = QJsonArray::fromStringList(permissions);
+        o["digitalSignature"] = QString(digitalSignature.toBase64());
+        o["qrCode"] = QString(qrCode.toBase64());
         o["isActive"] = isActive;
+        o["createdAt"] = createdAt.toString(Qt::ISODate);
+        o["lastLogin"] = lastLogin.toString(Qt::ISODate);
         return o;
     }
 };
@@ -109,7 +133,7 @@ struct User {
 struct Student {
     QString id;
     QString name;
-    QImage photo;
+    QByteArray photoData;
     QString admissionNumber;
     QString rollNumber;
     QString className;
@@ -133,6 +157,7 @@ struct Student {
         QJsonObject o;
         o["id"] = id;
         o["name"] = name;
+        o["photoData"] = QString(photoData.toBase64());
         o["admissionNumber"] = admissionNumber;
         o["rollNumber"] = rollNumber;
         o["class"] = className;
@@ -142,9 +167,15 @@ struct Student {
         o["email"] = email;
         o["phone"] = phone;
         o["parentName"] = parentName;
+        o["qrCode"] = QString(qrCode.toBase64());
+        o["rfidTag"] = rfidTag;
+        o["barcode"] = QString(barcode.toBase64());
         o["uniqueVotingId"] = uniqueVotingId;
         o["hasVoted"] = hasVoted;
         o["isVerified"] = isVerified;
+        o["verifiedAt"] = verifiedAt.toString(Qt::ISODate);
+        o["verifiedBy"] = verifiedBy;
+        o["registeredAt"] = registeredAt.toString(Qt::ISODate);
         return o;
     }
 };
@@ -153,14 +184,14 @@ struct Candidate {
     QString id;
     QString electionId;
     QString name;
-    QImage photo;
+    QByteArray photoData;
     QString manifesto;
     QString party;
     QString className;
     QString section;
     QString symbol;
     QString videoUrl;
-    QImage campaignPoster;
+    QByteArray campaignPosterData;
     bool isApproved = false;
     QDateTime registeredAt;
 
@@ -169,13 +200,16 @@ struct Candidate {
         o["id"] = id;
         o["electionId"] = electionId;
         o["name"] = name;
+        o["photoData"] = QString(photoData.toBase64());
         o["manifesto"] = manifesto;
         o["party"] = party;
         o["class"] = className;
         o["section"] = section;
         o["symbol"] = symbol;
         o["videoUrl"] = videoUrl;
+        o["campaignPosterData"] = QString(campaignPosterData.toBase64());
         o["isApproved"] = isApproved;
+        o["registeredAt"] = registeredAt.toString(Qt::ISODate);
         return o;
     }
 };
@@ -205,6 +239,10 @@ struct Election {
         o["state"] = static_cast<int>(state);
         o["isActive"] = isActive;
         o["createdBy"] = createdBy;
+        o["createdAt"] = createdAt.toString(Qt::ISODate);
+        o["eligibleClasses"] = QJsonArray::fromStringList(eligibleClasses);
+        o["eligibleDepartments"] = QJsonArray::fromStringList(eligibleDepartments);
+        o["maxVotesPerStudent"] = maxVotesPerStudent;
         o["requireVerification"] = requireVerification;
         return o;
     }
@@ -214,7 +252,7 @@ struct Vote {
     QString id;
     QString electionId;
     QString studentId;
-    QString encryptedCandidateId;
+    QString candidateId;
     QByteArray voteHash;
     QByteArray digitalSignature;
     QDateTime timestamp;
@@ -225,9 +263,13 @@ struct Vote {
         QJsonObject o;
         o["id"] = id;
         o["electionId"] = electionId;
-        o["encryptedCandidateId"] = encryptedCandidateId;
+        o["studentId"] = studentId;
+        o["candidateId"] = candidateId;
+        o["voteHash"] = QString(voteHash.toBase64());
+        o["digitalSignature"] = QString(digitalSignature.toBase64());
         o["timestamp"] = timestamp.toString(Qt::ISODate);
         o["machineId"] = machineId;
+        o["isAudited"] = isAudited;
         return o;
     }
 };
@@ -254,6 +296,8 @@ struct AuditLogEntry {
         o["details"] = details;
         o["ipAddress"] = ipAddress;
         o["machineId"] = machineId;
+        o["hash"] = QString(hash.toBase64());
+        o["isImmutable"] = isImmutable;
         return o;
     }
 };
@@ -267,6 +311,19 @@ struct MachineInfo {
     QString osVersion;
     QString appVersion;
     bool isOnline = false;
+
+    QJsonObject toJson() const {
+        QJsonObject o;
+        o["id"] = id;
+        o["name"] = name;
+        o["isMaster"] = isMaster;
+        o["lastSeen"] = lastSeen.toString(Qt::ISODate);
+        o["ipAddress"] = ipAddress;
+        o["osVersion"] = osVersion;
+        o["appVersion"] = appVersion;
+        o["isOnline"] = isOnline;
+        return o;
+    }
 };
 
 struct SystemSettings {
@@ -282,9 +339,29 @@ struct SystemSettings {
     bool auditAllActions = true;
     bool encryptionEnabled = true;
     bool tamperDetection = true;
-    QString theme = "dark";
+    QString theme = "Modern"; // Changed default to "Modern"
     QString accentColor = "#0078d4";
     QString language = "en";
+
+    QJsonObject toJson() const {
+        QJsonObject o;
+        o["masterMachineId"] = masterMachineId;
+        o["votingStatus"] = static_cast<int>(votingStatus);
+        o["allowResultsPreview"] = allowResultsPreview;
+        o["autoBackupEnabled"] = autoBackupEnabled;
+        o["backupIntervalHours"] = backupIntervalHours;
+        o["sessionTimeoutMinutes"] = sessionTimeoutMinutes;
+        o["failedLoginAttempts"] = failedLoginAttempts;
+        o["lockoutDurationMinutes"] = lockoutDurationMinutes;
+        o["requireStrongPassword"] = requireStrongPassword;
+        o["auditAllActions"] = auditAllActions;
+        o["encryptionEnabled"] = encryptionEnabled;
+        o["tamperDetection"] = tamperDetection;
+        o["theme"] = theme;
+        o["accentColor"] = accentColor;
+        o["language"] = language;
+        return o;
+    }
 };
 
 struct ElectionResult {
@@ -294,6 +371,17 @@ struct ElectionResult {
     QString party;
     int voteCount = 0;
     double percentage = 0.0;
+
+    QJsonObject toJson() const {
+        QJsonObject o;
+        o["electionId"] = electionId;
+        o["candidateId"] = candidateId;
+        o["candidateName"] = candidateName;
+        o["party"] = party;
+        o["voteCount"] = voteCount;
+        o["percentage"] = percentage;
+        return o;
+    }
 };
 
 struct BackupEntry {
@@ -305,6 +393,19 @@ struct BackupEntry {
     QByteArray checksum;
     QString storagePath;
     bool isEncrypted = true;
+
+    QJsonObject toJson() const {
+        QJsonObject o;
+        o["id"] = id;
+        o["name"] = name;
+        o["createdAt"] = createdAt.toString(Qt::ISODate);
+        o["sizeBytes"] = sizeBytes;
+        o["type"] = type;
+        o["checksum"] = QString(checksum.toBase64());
+        o["storagePath"] = storagePath;
+        o["isEncrypted"] = isEncrypted;
+        return o;
+    }
 };
 
 } // namespace Ballot::Core

@@ -13,10 +13,12 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network Charts Svg Pri
 set(SOURCES
     main.cpp
     src/core/SystemManager.cpp
-    src/security/AES256Provider.cpp
-    src/security/HashProvider.cpp
-    src/security/DigitalSignature.cpp
-    src/security/TamperDetector.cpp
+    src/core/ThemeManager.cpp
+    # Updated paths for security modules
+    src/modules/security/AES256Provider.cpp
+    src/modules/security/HashProvider.cpp
+    src/modules/security/DigitalSignature.cpp
+    src/modules/security/TamperDetector.cpp
     src/modules/storage/providers/SQLiteStorageProvider.cpp
     src/modules/storage/TestAdmissionStorage.cpp
     src/modules/auth/AuthManager.cpp
@@ -50,13 +52,15 @@ set(SOURCES
 set(HEADERS
     src/core/Models.h
     src/core/SystemManager.h
+    src/core/ThemeManager.h
     src/core/Utils.h
     src/core/Constants.h
-    src/security/IEncryptionProvider.h
-    src/security/AES256Provider.h
-    src/security/HashProvider.h
-    src/security/DigitalSignature.h
-    src/security/TamperDetector.h
+    # Updated paths for security modules
+    src/modules/security/IEncryptionProvider.h
+    src/modules/security/AES256Provider.h
+    src/modules/security/HashProvider.h
+    src/modules/security/DigitalSignature.h
+    src/modules/security/TamperDetector.h
     src/modules/storage/interfaces/IStorageProvider.h
     src/modules/storage/providers/SQLiteStorageProvider.h
     src/modules/storage/TestAdmissionStorage.h
@@ -96,7 +100,7 @@ set(RESOURCES
     resources.qrc
 )
 
-add_executable(TheRealCampusBallot ${SOURCES} ${HEADERS} ${RESOURCES})
+add_executable(TheRealCampusBallot ${SOURCES} ${RESOURCES}) # Removed ${HEADERS} from here
 
 target_link_libraries(TheRealCampusBallot PRIVATE 
     Qt6::Core 

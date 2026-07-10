@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <memory>
+#include <QPropertyAnimation> // For view transitions
+#include <QGraphicsOpacityEffect> // For fade effect
 #include "src/ui/components/Sidebar.h"
 #include "SetupWizard.h" // Include SetupWizard header
 
@@ -12,6 +14,8 @@ namespace Ballot::UI {
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
+    Q_PROPERTY(QString currentViewId READ currentViewId NOTIFY currentViewIdChanged) // New property for active view
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override = default;
@@ -19,10 +23,16 @@ public:
     Q_INVOKABLE void switchToView(const QString& viewId);
     void setUserAuthenticated(const QString& userName, const QString& role);
 
+    QString currentViewId() const { return m_currentViewId; } // Getter for the new property
+
+signals:
+    void currentViewIdChanged(); // Signal for the new property
+
 private:
     void setupUi();
     void setupSidebar();
     void connectSignals();
+    void animateViewTransition(int newIndex); // Method for animating transitions
 
     QStackedWidget *m_stackedWidget;
     Sidebar *m_sidebar;
@@ -33,12 +43,16 @@ private:
     class AdminPanel *m_adminPanel;
     class UserManagementView *m_userManagement;
     class SettingsView *m_settingsView;
-    class SetupWizard *m_setupWizard; // Add SetupWizard member
+    class SetupWizard *m_setupWizard;
 
     // ViewModels
     class ViewModels::DashboardViewModel *m_dashboardViewModel;
     class ViewModels::AuthViewModel *m_authViewModel;
     class ViewModels::ResultsViewModel *m_resultsViewModel;
+
+    QString m_currentViewId; // Member to store the current view ID
+    QPropertyAnimation *m_fadeAnimation; // Animation for view transitions
+    QGraphicsOpacityEffect *m_opacityEffect; // Opacity effect for transitions
 };
 
 } // namespace Ballot::UI

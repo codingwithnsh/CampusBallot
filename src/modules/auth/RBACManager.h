@@ -4,6 +4,7 @@
 #include <QHash>
 #include <QSet>
 #include <QString>
+#include <QStringList>
 #include "src/core/Models.h"
 
 namespace Ballot::Auth {

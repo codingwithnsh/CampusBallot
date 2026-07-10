@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QString>
+#include <QStringList>
+#include <QByteArray>
 #include <QVariantMap>
 #include <optional>
 #include "src/core/Models.h"

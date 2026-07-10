@@ -7,6 +7,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QSlider>
+#include "src/core/ThemeManager.h" // Include ThemeManager
 
 namespace Ballot::UI {
 
@@ -14,6 +15,9 @@ class SettingsView : public QWidget {
     Q_OBJECT
 public:
     explicit SettingsView(QWidget *parent = nullptr);
+
+private slots:
+    void onThemeChanged(int index); // Slot to handle theme changes
 
 private:
     void setupUi();

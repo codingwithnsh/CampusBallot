@@ -49,7 +49,7 @@ private:
     QPushButton* m_saveBtn = nullptr;
     QPushButton* m_cancelBtn = nullptr;
 
-    QImage m_candidatePhoto;
+    QByteArray m_candidatePhotoData;
     bool m_isEditing = false;
     Core::Candidate m_originalCandidate;
 };

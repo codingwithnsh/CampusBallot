@@ -1,1 +1,0 @@
-D:\Qt\6.11.1\mingw_64\bin\qt-cmake.bat -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=D:/Qt/6.11.1/mingw_64

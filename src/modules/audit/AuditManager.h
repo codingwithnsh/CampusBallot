@@ -13,7 +13,7 @@ public:
 
     void initialize();
     void log(Core::AuditAction action, const QString& details, const QString& userId = QString());
-    void log(const Core::AuditLogEntry& entry);
+    void log(Core::AuditLogEntry& entry);
 
     QList<Core::AuditLogEntry> getLogs(const QDateTime& from = QDateTime(), const QDateTime& to = QDateTime()) const;
     QList<Core::AuditLogEntry> getLogsByUser(const QString& userId) const;
@@ -28,7 +28,7 @@ public:
 
 signals:
     void logAdded(const Core::AuditLogEntry& entry);
-    void integrityViolation(const QString& details);
+    void integrityViolation(const QString& details) const;
 
 private:
     AuditManager();

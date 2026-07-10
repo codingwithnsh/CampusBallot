@@ -1,8 +1,10 @@
 #include "VotingKiosk.h"
 #include "src/core/SystemManager.h"
 #include "src/ui/components/ToastNotification.h" // For error messages
-#include "src/modules/election/ElectionManager.h" // For casting votes
-#include "src/modules/storage/TestAdmissionStorage.h"
+#include "src/modules/election/ElectionManager.h" // For election state
+#include "src/modules/election/VoteManager.h"     // For casting votes
+#include "src/modules/storage/TestAdmissionStorage.h" // For test mode
+#include "src/core/Utils.h" // For IdGenerator
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -13,38 +15,56 @@
 #include <QApplication>
 #include <QDebug> // For debugging
 #include <QCheckBox>
-#include <QUuid>
+#include <QUuid> // Still included for QJsonDocument::Indented or if needed elsewhere
+#include <QPixmap> // For candidate photos
+#include <QBuffer> // For QImage to QByteArray conversion
 
 namespace Ballot::UI {
 
 VotingKiosk::VotingKiosk(QWidget *parent) : QWidget(parent) {
     setupUi();
+    qDebug() << "VotingKiosk: Initialized.";
 
     m_stateTimer = new QTimer(this);
+    m_stateTimer->setInterval(Core::Constants::VOTING_STATE_POLL_MS); // Use constant for polling interval
     connect(m_stateTimer, &QTimer::timeout, this, &VotingKiosk::updateVotingState);
-    m_stateTimer->start(2000); // Check voting state every 2 seconds
+    m_stateTimer->start(); // Start polling immediately
 
     updateVotingState(); // Initial check
 }
 
+VotingKiosk::~VotingKiosk() {
+    qDebug() << "VotingKiosk: Destroyed.";
+}
+
+/**
+ * @brief Sets the test mode for the kiosk.
+ * @param enabled True to enable test mode, false to disable.
+ */
 void VotingKiosk::setTestMode(bool enabled) {
+    if (m_testMode == enabled) return; // No change
     m_testMode = enabled;
     Storage::TestAdmissionStorage::instance().setTestMode(enabled);
     if (m_testModeCheck) {
         m_testModeCheck->setChecked(enabled);
     }
+    qInfo() << "VotingKiosk: Test mode set to" << enabled;
 }
 
+/**
+ * @brief Sets up the user interface for the voting kiosk.
+ */
 void VotingKiosk::setupUi() {
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    // Header bar
+    // --- Header bar ---
     auto *header = new QFrame(this);
     header->setFixedHeight(60);
     header->setStyleSheet("background-color: #1a1a2e; border-bottom: 1px solid #2d2d44;");
     auto *headerLayout = new QHBoxLayout(header);
+    headerLayout->setContentsMargins(16, 0, 8, 0);
 
     auto *title = new QLabel("🗳️  Campus Ballot - Voting Kiosk", header);
     title->setStyleSheet("font-size: 18px; font-weight: 600; color: #e0e0e0; background: transparent;");
@@ -57,10 +77,11 @@ void VotingKiosk::setupUi() {
     closeBtn->setStyleSheet("font-size: 20px; color: #9a9ab0; background: transparent; border: none; padding: 8px;");
     closeBtn->setCursor(Qt::PointingHandCursor);
     connect(closeBtn, &QPushButton::clicked, this, [this]() {
+        qInfo() << "VotingKiosk: Close button clicked. Resetting kiosk and returning to dashboard.";
         resetKiosk(); // Reset kiosk state on close
-        auto* mw = window();
+        auto* mw = window(); // Get the parent QMainWindow
         if (mw) {
-            mw->showNormal();
+            mw->showNormal(); // Exit fullscreen
             QMetaObject::invokeMethod(mw, "switchToView", Qt::QueuedConnection, Q_ARG(QString, "dashboard"));
         }
     });
@@ -68,46 +89,63 @@ void VotingKiosk::setupUi() {
 
     layout->addWidget(header);
 
-    // Pages
+    // --- Pages Stack ---
     m_pages = new QStackedWidget(this);
     m_pages->setStyleSheet("background-color: #1a1a2e;");
-    m_pages->addWidget(createWaitingPage()); // Index 0
-    m_pages->addWidget(createScanIdPage()); // Index 1
-    m_pages->addWidget(createVerifyPhotoPage()); // Index 2
-    m_pages->addWidget(createChooseCandidatePage()); // Index 3
-    m_pages->addWidget(createConfirmVotePage()); // Index 4
-    m_pages->addWidget(createSuccessPage()); // Index 5
+    m_pages->addWidget(createWaitingPage());        // Index 0
+    m_pages->addWidget(createScanIdPage());         // Index 1
+    m_pages->addWidget(createVerifyPhotoPage());    // Index 2
+    m_pages->addWidget(createChooseCandidatePage());// Index 3
+    m_pages->addWidget(createConfirmVotePage());    // Index 4
+    m_pages->addWidget(createSuccessPage());        // Index 5
 
     layout->addWidget(m_pages, 1);
+    qDebug() << "VotingKiosk: UI setup complete.";
 }
 
+/**
+ * @brief Starts the kiosk process, resetting its state and moving to the first interactive step.
+ */
+void VotingKiosk::start() {
+    qInfo() << "VotingKiosk: Starting kiosk.";
+    resetKiosk(); // Ensure kiosk is reset before starting
+    m_currentStep = 1; // Start at scan ID page
+    m_pages->setCurrentIndex(1);
+    updateVotingState(); // Re-evaluate state in case voting has already started
+}
+
+/**
+ * @brief Periodically updates the voting state based on the active election.
+ * This ensures the kiosk reacts to election start/end/pause events.
+ */
 void VotingKiosk::updateVotingState() {
+    qDebug() << "VotingKiosk: Updating voting state...";
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) {
-        qWarning() << "VotingKiosk: Storage not available.";
+    if (!storage || !storage->isConnected()) {
+        qWarning() << "VotingKiosk: Storage not available. Cannot update voting state.";
+        // Keep on waiting page with appropriate message
+        m_pages->setCurrentIndex(0);
+        auto *label = m_pages->widget(0)->findChild<QLabel*>("statusMsg");
+        if (label) label->setText("System storage is not available.\nPlease contact an administrator.");
         return;
     }
 
-    auto settings = storage->getSystemSettings();
-    if (!settings) {
-        qWarning() << "VotingKiosk: System settings not available.";
-        return;
-    }
-
-    // Get the active election
     m_activeElection = Election::ElectionManager::instance().getActiveElection();
 
     if (m_activeElection && m_activeElection->state == Core::VotingState::Voting) {
         if (m_pages->currentIndex() == 0) { // If currently on waiting page, transition to scan ID
+            qInfo() << "VotingKiosk: Election" << m_activeElection->title << "is now active. Moving to scan ID.";
             m_currentStep = 1;
             m_pages->setCurrentIndex(1);
-            loadCandidates(); // Load candidates when voting starts
+            // loadCandidates(); // Candidates are loaded when createChooseCandidatePage is shown or nextStep is called
         }
     } else {
         // If voting is not in progress, always show the waiting page
-        m_currentStep = 0;
-        m_pages->setCurrentIndex(0);
-        QLabel *label = m_pages->widget(0)->findChild<QLabel*>("statusMsg");
+        if (m_pages->currentIndex() != 0) {
+            qInfo() << "VotingKiosk: Voting is not active. Returning to waiting page.";
+            resetKiosk(); // Reset to waiting page
+        }
+        auto *label = m_pages->widget(0)->findChild<QLabel*>("statusMsg");
         if (label) {
             if (!m_activeElection) {
                 label->setText("No election is currently configured or active.\nPlease contact an administrator.");
@@ -122,10 +160,15 @@ void VotingKiosk::updateVotingState() {
     }
 }
 
+/**
+ * @brief Advances the kiosk to the next step/page.
+ */
 void VotingKiosk::nextStep() {
     if (m_currentStep < m_pages->count() - 1) {
         m_currentStep++;
         m_pages->setCurrentIndex(m_currentStep);
+        qDebug() << "VotingKiosk: Moving to step" << m_currentStep;
+
         // Special handling for candidate page to ensure candidates are loaded
         if (m_currentStep == 3) {
             loadCandidates();
@@ -134,102 +177,146 @@ void VotingKiosk::nextStep() {
         if (m_currentStep == 4 && m_candidateNameLabel && m_selectedCandidate) {
             m_candidateNameLabel->setText(m_selectedCandidate->name);
         }
+    } else {
+        qWarning() << "VotingKiosk: Attempted to go past last step.";
     }
 }
 
+/**
+ * @brief Moves the kiosk to the previous step/page.
+ */
 void VotingKiosk::prevStep() {
     if (m_currentStep > 0) {
         m_currentStep--;
         m_pages->setCurrentIndex(m_currentStep);
+        qDebug() << "VotingKiosk: Moving to previous step" << m_currentStep;
+    } else {
+        qWarning() << "VotingKiosk: Attempted to go before first step.";
     }
 }
 
+/**
+ * @brief Resets the kiosk to its initial waiting state, clearing all session data.
+ */
 void VotingKiosk::resetKiosk() {
+    qInfo() << "VotingKiosk: Resetting kiosk state.";
     m_currentStep = 0;
     m_currentVoter.reset();
     m_selectedCandidate.reset();
     m_availableCandidates.clear();
     m_activeElection.reset();
-    if (m_idInputEdit) m_idInputEdit->clear(); // Clear ID input
+    if (m_idInputEdit) m_idInputEdit->clear(); // Clear ID input field
     m_pages->setCurrentIndex(0); // Go back to waiting page
     updateVotingState(); // Re-evaluate state in case voting has already started
 }
 
+/**
+ * @brief Processes the entered admission number or scanned ID.
+ * @param admissionNumber The admission number or ID scanned.
+ */
 void VotingKiosk::processScanId(const QString& admissionNumber) {
+    qInfo() << "VotingKiosk: Processing scanned ID:" << admissionNumber;
     if (admissionNumber.isEmpty()) {
         ToastNotification::show(this, "Please enter an admission number.", ToastNotification::Warning);
         return;
     }
 
     auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) {
-        ToastNotification::show(this, "System storage not available.", ToastNotification::Error);
+    if (!storage || !storage->isConnected()) {
+        ToastNotification::show(this, "System storage not available. Please contact an administrator.", ToastNotification::Error);
+        qCritical() << "VotingKiosk: Storage not available during ID scan.";
         return;
     }
 
-    if (!m_activeElection) {
+    if (!m_activeElection || m_activeElection->state != Core::VotingState::Voting) {
         ToastNotification::show(this, "No active election to vote in.", ToastNotification::Warning);
+        qWarning() << "VotingKiosk: No active election during ID scan.";
         resetKiosk();
         return;
     }
 
-    // Check test mode first
+    // --- Test Mode Handling ---
     if (m_testMode) {
         auto& testStorage = Storage::TestAdmissionStorage::instance();
         if (testStorage.hasVoted(admissionNumber)) {
             ToastNotification::show(this, "This admission number has already voted in test mode.", ToastNotification::Warning);
+            qWarning() << "VotingKiosk: Duplicate test vote attempt for:" << admissionNumber;
             if (m_idInputEdit) m_idInputEdit->clear();
             return;
         }
-        
+
         // Create a mock student for test mode
         Core::Student student;
-        student.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        student.id = Core::IdGenerator::generateId();
         student.name = "Test Student (" + admissionNumber + ")";
         student.admissionNumber = admissionNumber;
         student.hasVoted = false;
         student.isVerified = true;
-        
+
         m_currentVoter = student;
         ToastNotification::show(this, "Test student verified: " + student.name, ToastNotification::Success);
-        nextStep();
+        qInfo() << "VotingKiosk: Test student" << student.name << "verified.";
+        nextStep(); // Move to next step (Verify Photo or Choose Candidate)
         return;
     }
 
-    std::optional<Core::Student> student = storage->getStudentByAdmission(admissionNumber);
+    // --- Production Mode Handling ---
+    std::optional<Core::Student> studentOpt = storage->getStudentByAdmission(admissionNumber); // Assuming admission number is the primary ID for kiosk
 
-    if (!student) {
+    if (!studentOpt) {
         ToastNotification::show(this, "Invalid admission number or student not found.", ToastNotification::Error);
+        qWarning() << "VotingKiosk: Student not found for admission number:" << admissionNumber;
         if (m_idInputEdit) m_idInputEdit->clear();
         return;
     }
+    Core::Student student = *studentOpt;
 
     // Check if student has already voted in this election
-    if (storage->hasStudentVoted(student->id, m_activeElection->id)) {
+    if (Election::VoteManager::instance().hasStudentVoted(student.id, m_activeElection->id)) {
         ToastNotification::show(this, "You have already voted in this election.", ToastNotification::Warning);
+        qWarning() << "VotingKiosk: Student" << student.id << "already voted in election" << m_activeElection->id;
         if (m_idInputEdit) m_idInputEdit->clear();
         return;
     }
 
+    // Check if student is eligible for this election (e.g., by class, department)
+    // This logic should ideally be in ElectionManager or a dedicated eligibility service
+    bool isEligible = true;
+    if (!m_activeElection->eligibleClasses.isEmpty() && !m_activeElection->eligibleClasses.contains(student.className)) {
+        isEligible = false;
+    }
+    // Add department check if student struct has department field
+    // if (!m_activeElection->eligibleDepartments.isEmpty() && !m_activeElection->eligibleDepartments.contains(student.department)) {
+    //     isEligible = false;
+    // }
+
+    if (!isEligible) {
+        ToastNotification::show(this, "You are not eligible to vote in this election.", ToastNotification::Warning);
+        qWarning() << "VotingKiosk: Student" << student.id << "not eligible for election" << m_activeElection->id;
+        if (m_idInputEdit) m_idInputEdit->clear();
+        return;
+    }
+
+
     m_currentVoter = student;
-    ToastNotification::show(this, "Student verified: " + student->name, ToastNotification::Success);
-    nextStep();
+    ToastNotification::show(this, "Student verified: " + student.name, ToastNotification::Success);
+    qInfo() << "VotingKiosk: Student" << student.name << "(" << student.id << ") verified.";
+    nextStep(); // Move to next step (Verify Photo or Choose Candidate)
 }
 
+/**
+ * @brief Loads candidates for the active election and populates the candidate grid.
+ */
 void VotingKiosk::loadCandidates() {
     m_availableCandidates.clear();
     if (!m_activeElection) {
-        qWarning() << "No active election to load candidates for.";
+        qWarning() << "VotingKiosk: No active election to load candidates for.";
+        ToastNotification::show(this, "No active election to load candidates.", ToastNotification::Error);
         return;
     }
 
-    auto* storage = Core::SystemManager::instance().storage();
-    if (!storage) {
-        qWarning() << "Storage not available to load candidates.";
-        return;
-    }
-
-    m_availableCandidates = storage->getCandidates(m_activeElection->id);
+    m_availableCandidates = Election::ElectionManager::instance().getCandidates(m_activeElection->id);
+    qInfo() << "VotingKiosk: Loaded" << m_availableCandidates.size() << "candidates for election" << m_activeElection->id;
 
     // Clear existing candidate cards from the grid layout
     if (m_candidatesGrid) {
@@ -247,13 +334,10 @@ void VotingKiosk::loadCandidates() {
             card->setCursor(Qt::PointingHandCursor);
             card->setStyleSheet(R"(
                 QFrame {
-                    background-color: #25253a;
-                    border: 2px solid #3d3d5c;
-                    border-radius: 16px;
+                    background-color: #25253a; border: 2px solid #3d3d5c; border-radius: 16px;
                 }
                 QFrame:hover {
-                    border-color: #0078d4;
-                    background-color: rgba(0, 120, 212, 0.08);
+                    border-color: #0078d4; background-color: rgba(0, 120, 212, 0.08);
                 }
             )");
 
@@ -267,11 +351,26 @@ void VotingKiosk::loadCandidates() {
             vbox->setContentsMargins(16, 16, 16, 16);
             vbox->setSpacing(8);
 
-            // Photo placeholder (can be replaced with actual image later)
-            auto *photo = new QFrame(card);
-            photo->setFixedSize(120, 120);
-            photo->setStyleSheet("background-color: #555; border-radius: 60px;"); // Generic color
-            vbox->addWidget(photo, 0, Qt::AlignCenter);
+            // Candidate Photo
+            auto* photoLabel = new QLabel(card);
+            photoLabel->setFixedSize(120, 120);
+            photoLabel->setAlignment(Qt::AlignCenter);
+            photoLabel->setStyleSheet("background-color: #1a1a2e; border-radius: 60px;");
+            if (!candidate.photoData.isEmpty()) {
+                QPixmap pixmap;
+                if (pixmap.loadFromData(candidate.photoData)) {
+                    photoLabel->setPixmap(pixmap.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                } else {
+                    photoLabel->setText("👤"); // Fallback icon
+                    photoLabel->setStyleSheet("font-size: 48px; color: #9a9ab0; background-color: #1a1a2e; border-radius: 60px;");
+                    qWarning() << "VotingKiosk: Failed to load photo for candidate" << candidate.name;
+                }
+            } else {
+                photoLabel->setText("👤"); // Fallback icon
+                photoLabel->setStyleSheet("font-size: 48px; color: #9a9ab0; background-color: #1a1a2e; border-radius: 60px;");
+            }
+            vbox->addWidget(photoLabel, 0, Qt::AlignCenter);
+
 
             auto *name = new QLabel(candidate.name, card);
             name->setStyleSheet("font-size: 20px; font-weight: 700; color: #ffffff; background: transparent;");
@@ -292,7 +391,8 @@ void VotingKiosk::loadCandidates() {
 
             connect(selectBtn, &QPushButton::clicked, this, [this, candidate]() {
                 m_selectedCandidate = candidate;
-                nextStep();
+                qInfo() << "VotingKiosk: Candidate" << candidate.name << "selected.";
+                nextStep(); // Move to confirm vote page
             });
 
             m_candidatesGrid->addWidget(card, row, col);
@@ -306,22 +406,29 @@ void VotingKiosk::loadCandidates() {
     }
 }
 
+/**
+ * @brief Confirms and casts the vote.
+ */
 void VotingKiosk::confirmVote() {
+    qInfo() << "VotingKiosk: Confirming vote.";
     if (!m_currentVoter || !m_selectedCandidate || !m_activeElection) {
-        ToastNotification::show(this, "Error: Missing voter, candidate, or election information.", ToastNotification::Error);
+        ToastNotification::show(this, "Error: Missing voter, candidate, or election information. Please restart.", ToastNotification::Error);
+        qCritical() << "VotingKiosk: Critical error: Missing voter, candidate, or election info during vote confirmation.";
         resetKiosk();
         return;
     }
 
-    // In test mode, mark admission number as voted locally
+    // --- Test Mode Handling ---
     if (m_testMode) {
         Storage::TestAdmissionStorage::instance().markAsVoted(m_currentVoter->admissionNumber);
         ToastNotification::show(this, "Test vote successfully recorded!", ToastNotification::Success);
+        qInfo() << "VotingKiosk: Test vote recorded for" << m_currentVoter->admissionNumber;
         nextStep(); // Go to success page
         return;
     }
 
-    bool success = Election::ElectionManager::instance().castVote(
+    // --- Production Mode Handling ---
+    bool success = Election::VoteManager::instance().castVote(
         m_activeElection->id,
         m_currentVoter->id,
         m_selectedCandidate->id
@@ -329,18 +436,24 @@ void VotingKiosk::confirmVote() {
 
     if (success) {
         ToastNotification::show(this, "Vote successfully recorded!", ToastNotification::Success);
+        qInfo() << "VotingKiosk: Vote recorded for student" << m_currentVoter->id << "for candidate" << m_selectedCandidate->id;
         nextStep(); // Go to success page
     } else {
-        ToastNotification::show(this, "Failed to record vote. Please try again.", ToastNotification::Error);
-        resetKiosk(); // Go back to start
+        ToastNotification::show(this, "Failed to record vote. Please try again or contact an administrator.", ToastNotification::Error);
+        qCritical() << "VotingKiosk: Failed to record vote for student" << m_currentVoter->id << "for candidate" << m_selectedCandidate->id;
+        resetKiosk(); // Go back to start on failure
     }
 }
 
-
+/**
+ * @brief Creates the waiting page for the kiosk.
+ * @return The waiting page widget.
+ */
 QWidget* VotingKiosk::createWaitingPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(60, 60, 60, 60);
+    layout->setAlignment(Qt::AlignCenter);
 
     layout->addStretch(2);
 
@@ -355,7 +468,7 @@ QWidget* VotingKiosk::createWaitingPage() {
     layout->addWidget(title);
 
     auto *desc = new QLabel("Please wait for the election session to start.", page);
-    desc->setObjectName("statusMsg");
+    desc->setObjectName("statusMsg"); // Used to update text dynamically
     desc->setStyleSheet("font-size: 24px; color: #9a9ab0; margin: 20px; background: transparent;");
     desc->setAlignment(Qt::AlignCenter);
     layout->addWidget(desc);
@@ -364,11 +477,16 @@ QWidget* VotingKiosk::createWaitingPage() {
     return page;
 }
 
+/**
+ * @brief Creates the scan ID page for the kiosk.
+ * @return The scan ID page widget.
+ */
 QWidget* VotingKiosk::createScanIdPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(60, 30, 60, 30);
     layout->setSpacing(20);
+    layout->setAlignment(Qt::AlignCenter);
 
     layout->addWidget(createStepIndicator(1, 4));
 
@@ -387,10 +505,11 @@ QWidget* VotingKiosk::createScanIdPage() {
     desc->setAlignment(Qt::AlignCenter);
     layout->addWidget(desc);
 
-    m_idInputEdit = new QLineEdit(page); // Assign to member variable
+    m_idInputEdit = new QLineEdit(page);
     m_idInputEdit->setPlaceholderText("Enter admission number or scan ID...");
-    m_idInputEdit->setFixedHeight(50); // Set fixed height for consistency
+    m_idInputEdit->setFixedHeight(50);
     m_idInputEdit->setStyleSheet("font-size: 18px; text-align: center;");
+    m_idInputEdit->setAlignment(Qt::AlignCenter);
     layout->addWidget(m_idInputEdit, 0, Qt::AlignCenter);
 
     // Test mode checkbox
@@ -403,7 +522,7 @@ QWidget* VotingKiosk::createScanIdPage() {
     layout->addSpacing(20);
 
     auto *btn = new QPushButton("Continue →", page);
-    btn->setFixedHeight(60); // Set fixed height for consistency
+    btn->setFixedHeight(60);
     btn->setStyleSheet("font-size: 22px; font-weight: 600; border-radius: 12px;");
     layout->addWidget(btn, 0, Qt::AlignCenter);
 
@@ -414,16 +533,20 @@ QWidget* VotingKiosk::createScanIdPage() {
         processScanId(m_idInputEdit->text().trimmed());
     });
 
-
     layout->addStretch();
     return page;
 }
 
+/**
+ * @brief Creates the verify photo page for the kiosk.
+ * @return The verify photo page widget.
+ */
 QWidget* VotingKiosk::createVerifyPhotoPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(60, 30, 60, 30);
     layout->setSpacing(20);
+    layout->setAlignment(Qt::AlignCenter);
 
     layout->addWidget(createStepIndicator(2, 4));
 
@@ -442,9 +565,9 @@ QWidget* VotingKiosk::createVerifyPhotoPage() {
     desc->setAlignment(Qt::AlignCenter);
     layout->addWidget(desc);
 
-    // Camera placeholder
+    // Camera placeholder (future: integrate actual camera feed)
     auto *cameraFrame = new QFrame(page);
-    cameraFrame->setFixedSize(320, 240); // Keep fixed size for camera feed for now
+    cameraFrame->setFixedSize(320, 240);
     cameraFrame->setStyleSheet("background-color: #000000; border: 2px solid #0078d4; border-radius: 12px;");
     auto *camLayout = new QVBoxLayout(cameraFrame);
     auto *camIcon = new QLabel("📷", cameraFrame);
@@ -471,17 +594,22 @@ QWidget* VotingKiosk::createVerifyPhotoPage() {
     layout->addLayout(btnLayout);
 
     connect(verifyBtn, &QPushButton::clicked, this, &VotingKiosk::nextStep);
-    connect(cancelBtn, &QPushButton::clicked, this, &VotingKiosk::prevStep); // Go back to scan ID
+    connect(cancelBtn, &QPushButton::clicked, this, &VotingKiosk::prevStep);
 
     layout->addStretch();
     return page;
 }
 
+/**
+ * @brief Creates the choose candidate page for the kiosk.
+ * @return The choose candidate page widget.
+ */
 QWidget* VotingKiosk::createChooseCandidatePage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(40, 20, 40, 20);
     layout->setSpacing(16);
+    layout->setAlignment(Qt::AlignCenter);
 
     layout->addWidget(createStepIndicator(3, 4));
 
@@ -500,20 +628,22 @@ QWidget* VotingKiosk::createChooseCandidatePage() {
     m_candidatesGrid->setSpacing(16);
     m_candidatesGrid->setAlignment(Qt::AlignTop | Qt::AlignHCenter); // Align candidates to top and center
 
-    // Candidates will be loaded dynamically by loadCandidates() when this page is shown
-    // For now, ensure the grid is created.
-
     scroll->setWidget(content);
     layout->addWidget(scroll, 1);
 
     return page;
 }
 
+/**
+ * @brief Creates the confirm vote page for the kiosk.
+ * @return The confirm vote page widget.
+ */
 QWidget* VotingKiosk::createConfirmVotePage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(60, 30, 60, 30);
     layout->setSpacing(20);
+    layout->setAlignment(Qt::AlignCenter);
 
     layout->addWidget(createStepIndicator(4, 4));
 
@@ -560,17 +690,22 @@ QWidget* VotingKiosk::createConfirmVotePage() {
     btnLayout->addStretch();
     layout->addLayout(btnLayout);
 
-    connect(confirmBtn, &QPushButton::clicked, this, &VotingKiosk::confirmVote); // Connect to confirmVote
+    connect(confirmBtn, &QPushButton::clicked, this, &VotingKiosk::confirmVote);
     connect(cancelBtn, &QPushButton::clicked, this, &VotingKiosk::resetKiosk); // Reset kiosk on cancel
 
     layout->addStretch();
     return page;
 }
 
+/**
+ * @brief Creates the success page for the kiosk.
+ * @return The success page widget.
+ */
 QWidget* VotingKiosk::createSuccessPage() {
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     layout->setContentsMargins(60, 60, 60, 60);
+    layout->setAlignment(Qt::AlignCenter);
 
     layout->addStretch(2);
 
@@ -596,6 +731,7 @@ QWidget* VotingKiosk::createSuccessPage() {
     btn->setStyleSheet("font-size: 20px; font-weight: 600; border-radius: 12px;");
     layout->addWidget(btn, 0, Qt::AlignCenter);
     connect(btn, &QPushButton::clicked, this, [this]() {
+        qInfo() << "VotingKiosk: Return to Dashboard button clicked.";
         resetKiosk(); // Reset kiosk state
         auto* mw = window();
         if (mw) {
@@ -608,11 +744,18 @@ QWidget* VotingKiosk::createSuccessPage() {
     return page;
 }
 
+/**
+ * @brief Creates a step indicator widget.
+ * @param current The current step number.
+ * @param total The total number of steps.
+ * @return The step indicator widget.
+ */
 QWidget* VotingKiosk::createStepIndicator(int current, int total) {
     auto *widget = new QWidget(this);
     auto *layout = new QHBoxLayout(widget);
     layout->setAlignment(Qt::AlignCenter);
     layout->setSpacing(8);
+    layout->setContentsMargins(0,0,0,0);
 
     for (int i = 1; i <= total; ++i) {
         // Dot indicator
@@ -638,13 +781,6 @@ QWidget* VotingKiosk::createStepIndicator(int current, int total) {
     layout->addWidget(label);
 
     return widget;
-}
-
-void VotingKiosk::start() {
-    resetKiosk(); // Ensure kiosk is reset before starting
-    m_currentStep = 1;
-    m_pages->setCurrentIndex(1);
-    updateVotingState(); // Re-evaluate state in case voting has already started
 }
 
 } // namespace Ballot::UI

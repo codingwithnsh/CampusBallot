@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QSplashScreen>
+#include <QWidget>
 #include <QProgressBar>
 #include <QLabel>
 #include <QTimer>
@@ -8,11 +8,12 @@
 
 namespace Ballot::UI {
 
-class SplashScreen : public QSplashScreen {
+class SplashScreen : public QWidget {
     Q_OBJECT
 public:
-    explicit SplashScreen();
+    explicit SplashScreen(QWidget* parent = nullptr);
     void startLoading();
+    void finish(QWidget* mainWindow);
 
 signals:
     void loadingFinished();

@@ -18,7 +18,7 @@ public:
     bool deleteBackup(const QString& backupId);
 
     QList<Core::BackupEntry> getBackups() const;
-    Core::BackupEntry getBackup(const QString& backupId) const;
+    std::optional<Core::BackupEntry> getBackup(const QString& backupId) const;
 
     void setAutoBackup(bool enabled, int intervalHours = 24);
     bool isAutoBackupEnabled() const;

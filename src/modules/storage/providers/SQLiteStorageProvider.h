@@ -17,6 +17,11 @@ public:
     Core::StorageProviderType providerType() const override { return Core::StorageProviderType::SQLite; }
     bool testConnection() override;
 
+    // Transaction Management
+    bool beginTransaction() override;
+    bool commitTransaction() override;
+    bool rollbackTransaction() override;
+
     bool createElection(const Core::Election& election) override;
     bool updateElection(const Core::Election& election) override;
     bool deleteElection(const QString& id) override;
@@ -49,6 +54,7 @@ public:
     std::optional<Core::User> getUserByEmail(const QString& email) override;
     QList<Core::User> getUsers() override;
     QList<Core::User> getUsersByRole(Core::UserRole role) override;
+    bool updateUserPassword(const QString& userId, const QByteArray& newPasswordHashAndSalt) override;
 
     bool castVote(const Core::Vote& vote) override;
     bool hasStudentVoted(const QString& studentId, const QString& electionId) override;
@@ -74,6 +80,7 @@ public:
 
     bool saveBackupRecord(const Core::BackupEntry& backup) override;
     QList<Core::BackupEntry> getBackupHistory() override;
+    std::optional<Core::BackupEntry> getBackup(const QString& id) override;
     bool deleteBackupRecord(const QString& id) override;
 
     bool bulkAddStudents(const QList<Core::Student>& students) override;

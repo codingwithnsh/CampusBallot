@@ -1,0 +1,144 @@
+/* src/ui/styles/dark.qss */
+
+QWidget {
+    background-color: #1e1e1e; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    selection-background-color: #0078d4; /* Accent color for selections */
+    selection-color: #ffffff;
+}
+
+QLabel {
+    color: #e0e0e0;
+}
+
+QPushButton {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border: 1px solid #505050;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #4a4a4a;
+}
+
+QPushButton:pressed {
+    background-color: #2a2a2a;
+}
+
+QLineEdit, QTextEdit {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border: 1px solid #505050;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+QComboBox {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border: 1px solid #505050;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+QComboBox::drop-down {
+    border: 0px; /* No border for the arrow part */
+}
+
+QComboBox::down-arrow {
+    image: url(:/assets/icons/arrow-down-light.svg); /* Assuming light arrow icon for dark theme */
+}
+
+QCheckBox {
+    color: #e0e0e0;
+}
+
+QRadioButton {
+    color: #e0e0e0;
+}
+
+QTabWidget::pane {
+    border: 1px solid #505050;
+    background-color: #1e1e1e;
+}
+
+QTabBar::tab {
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border: 1px solid #505050;
+    border-bottom-color: #3a3a3a; /* Same as pane color */
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 8px;
+}
+
+QTabBar::tab:selected {
+    background: #1e1e1e;
+    border-bottom-color: #1e1e1e;
+}
+
+QMenuBar {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+QMenuBar::item:selected {
+    background-color: #0078d4;
+}
+
+QMenu {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border: 1px solid #505050;
+}
+
+QMenu::item:selected {
+    background-color: #0078d4;
+}
+
+QStatusBar {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+/* Specific styles for elements in VotingKiosk.cpp */
+QFrame#header { /* Assuming header has objectName "header" */
+    background-color: #282828;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+QLabel#title { /* Assuming title has objectName "title" */
+    color: #ffffff;
+}
+
+QPushButton#iconButton { /* Assuming close button has objectName "iconButton" */
+    color: #b0b0b0;
+}
+
+QStackedWidget {
+    background-color: #1e1e1e;
+}
+
+QFrame {
+    background-color: #252525;
+    border: 2px solid #3d3d3d;
+    border-radius: 16px;
+}
+
+QFrame:hover {
+    border-color: #0078d4;
+    background-color: rgba(0, 120, 212, 0.08);
+}
+
+QLabel {
+    color: #e0e0e0;
+}
+
+/* Placeholder for specific elements that might need adjustment */
+/* For example, if you have a specific card background */
+QFrame.Card {
+    background-color: #2d2d2d;
+    border: 1px solid #4a4a4a;
+}
