@@ -7,8 +7,24 @@
 #include <QFile>
 #include <QUuid> // Still included for QJsonDocument::Indented or if needed elsewhere
 #include <QDebug>
+#include <algorithm>
 
 namespace Ballot::Audit {
+namespace {
+
+QByteArray csvCell(const QString& value) {
+    QString safe = value;
+    if (!safe.isEmpty()) {
+        const QChar first = safe.at(0);
+        if (first == '=' || first == '+' || first == '-' || first == '@' || first == '\t' || first == '\r') {
+            safe.prepend('\'');
+        }
+    }
+    safe.replace("\"", "\"\"");
+    return QString("\"%1\"").arg(safe).toUtf8();
+}
+
+} // namespace
 
 AuditManager& AuditManager::instance() {
     static AuditManager inst;
@@ -47,11 +63,8 @@ void AuditManager::initialize() {
     // Load all logs to reconstruct the chain hash
     QList<Core::AuditLogEntry> allLogs = storage->getAuditLogs(QDateTime(), QDateTime()); // Get all logs
     if (!allLogs.isEmpty()) {
-        // The chain hash should be the hash of the *last* entry in the chain
-        // assuming getAuditLogs returns them in chronological order (oldest first).
-        // If it returns newest first, we need to reverse or get the first element.
-        // Assuming getAuditLogs returns newest first (DESC order by timestamp),
-        // so the first element is the latest.
+        // Storage returns newest first for audit logs. The latest persisted hash
+        // is the current chain head.
         m_chainHash = allLogs.first().hash;
         qDebug() << "AuditManager: Initial chain hash set from latest log entry.";
     } else {
@@ -193,17 +206,19 @@ bool AuditManager::exportLogs(const QString& filePath, const QString& format) {
     } else if (format.toLower() == "csv") {
         data.append("ID,Timestamp,User ID,User Name,Action,Details,IP Address,Machine ID,Hash,Immutable\n");
         for (const auto& log : logs) {
-            data.append(QString("\"%1\",\"%2\",\"%3\",\"%4\",%5,\"%6\",\"%7\",\"%8\",\"%9\",%10\n")
-                .arg(log.id,
-                     log.timestamp.toString(Qt::ISODate),
-                     log.userId,
-                     log.userName,
-                     QString::number(static_cast<int>(log.action)),
-                     QString(log.details).replace("\"", "\"\""), // Escape quotes for CSV
-                     log.ipAddress,
-                     log.machineId,
-                     QString(log.hash.toHex()),
-                     log.isImmutable ? "1" : "0").toUtf8());
+            QByteArrayList row;
+            row << csvCell(log.id)
+                << csvCell(log.timestamp.toString(Qt::ISODate))
+                << csvCell(log.userId)
+                << csvCell(log.userName)
+                << csvCell(QString::number(static_cast<int>(log.action)))
+                << csvCell(log.details)
+                << csvCell(log.ipAddress)
+                << csvCell(log.machineId)
+                << csvCell(QString(log.hash.toHex()))
+                << csvCell(log.isImmutable ? "1" : "0");
+            data.append(row.join(','));
+            data.append('\n');
         }
     } else {
         qWarning() << "AuditManager: Unsupported export format:" << format;
@@ -254,10 +269,10 @@ bool AuditManager::verifyLogIntegrity() const {
         return true;
     }
 
-    // Sort logs by timestamp to ensure chronological order for chain verification
-    std::sort(logs.begin(), logs.end(), [](const Core::AuditLogEntry& a, const Core::AuditLogEntry& b) {
-        return a.timestamp < b.timestamp;
-    });
+    // Storage returns newest first. Reverse to rebuild the hash chain in the
+    // original append order; random UUIDs and equal timestamps are not reliable
+    // ordering anchors.
+    std::reverse(logs.begin(), logs.end());
 
     QByteArray expectedPreviousHash; // Starts as empty (genesis hash)
     bool integrityOK = true;

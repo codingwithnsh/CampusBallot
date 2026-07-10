@@ -4,12 +4,100 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGraphicsDropShadowEffect>
-#include <QInputDialog>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
 #include <QMessageBox>
 #include <QPixmap>
+#include <QRegularExpression>
 #include <QDebug> // For logging
 
 namespace Ballot::UI {
+namespace {
+
+bool isValidEmailAddress(const QString& email) {
+    static const QRegularExpression emailRegex(
+        R"(^[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}$)",
+        QRegularExpression::CaseInsensitiveOption);
+    return emailRegex.match(email.trimmed()).hasMatch();
+}
+
+QString promptForRecoveryEmail(QWidget* parent, const QString& initialEmail) {
+    QDialog dialog(parent);
+    dialog.setWindowTitle("Recover Password");
+    dialog.setModal(true);
+    dialog.setMinimumWidth(460);
+    dialog.setStyleSheet(R"(
+        QDialog { background-color: #1e1e34; }
+        QLabel { color: #e0e0e0; background: transparent; font-size: 13px; }
+        QLineEdit {
+            background-color: #25253a; border: 1px solid #3d3d5c; border-radius: 8px;
+            padding: 10px; color: #ffffff; font-size: 14px; min-height: 24px;
+        }
+        QLineEdit:focus { border-color: #38bdf8; }
+        QLabel#errorLabel { color: #f87171; font-weight: 600; }
+        QPushButton {
+            background-color: #0078d4; color: white; border: none; border-radius: 8px;
+            padding: 9px 16px; font-size: 14px; font-weight: 600;
+        }
+        QPushButton:hover { background-color: #1a8ae8; }
+        QPushButton:disabled { background-color: #34344a; color: #77778c; }
+    )");
+
+    auto* layout = new QVBoxLayout(&dialog);
+    layout->setContentsMargins(24, 22, 24, 22);
+    layout->setSpacing(14);
+
+    auto* title = new QLabel("Password recovery request", &dialog);
+    title->setStyleSheet("font-size: 20px; font-weight: 700; color: #ffffff;");
+    layout->addWidget(title);
+
+    auto* instructions = new QLabel(
+        "Enter your registered email. If an active account exists, an election administrator can complete a secure password reset after verifying your identity.",
+        &dialog);
+    instructions->setWordWrap(true);
+    instructions->setStyleSheet("color: #a8a8bd;");
+    layout->addWidget(instructions);
+
+    auto* emailEdit = new QLineEdit(&dialog);
+    emailEdit->setPlaceholderText("name@example.edu");
+    emailEdit->setText(initialEmail.trimmed());
+    emailEdit->setClearButtonEnabled(true);
+    emailEdit->setAccessibleName("Registered email for password recovery");
+
+    auto* form = new QFormLayout();
+    form->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+    form->addRow("Registered email", emailEdit);
+    layout->addLayout(form);
+
+    auto* errorLabel = new QLabel("Enter a valid email address.", &dialog);
+    errorLabel->setObjectName("errorLabel");
+    errorLabel->setVisible(false);
+    layout->addWidget(errorLabel);
+
+    auto* buttons = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok, &dialog);
+    buttons->button(QDialogButtonBox::Ok)->setText("Continue");
+    layout->addWidget(buttons);
+
+    QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, [&]() {
+        if (!isValidEmailAddress(emailEdit->text())) {
+            errorLabel->setVisible(true);
+            emailEdit->setFocus();
+            emailEdit->selectAll();
+            return;
+        }
+        dialog.accept();
+    });
+    QObject::connect(emailEdit, &QLineEdit::textChanged, errorLabel, &QLabel::hide);
+
+    if (dialog.exec() != QDialog::Accepted) {
+        return {};
+    }
+    return emailEdit->text().trimmed();
+}
+
+} // namespace
 
 LoginView::LoginView(QWidget *parent) : QWidget(parent) {
     setupUi();
@@ -246,14 +334,8 @@ void LoginView::setupUi() {
 
     connect(recoverPasswordBtn, &QPushButton::clicked, this, [this]() {
         qInfo() << "LoginView: Recover password requested.";
-        bool ok = false;
-        const QString email = QInputDialog::getText(this,
-                                                    "Recover Password",
-                                                    "Enter your registered email:",
-                                                    QLineEdit::Normal,
-                                                    m_emailEdit->text(),
-                                                    &ok).trimmed();
-        if (!ok || email.isEmpty()) {
+        const QString email = promptForRecoveryEmail(this, m_emailEdit->text());
+        if (email.isEmpty()) {
             qDebug() << "LoginView: Password recovery cancelled or empty email provided.";
             return;
         }
@@ -273,7 +355,7 @@ void LoginView::setupUi() {
             qWarning() << "LoginView: Password recovery attempt for non-existent email:" << email;
             QMessageBox::information(this,
                                      "Recover Password",
-                                     "No active account was found for that email. Please check the spelling or contact your election administrator for assistance.");
+                                     "If an active account exists for that email, an election administrator can complete the reset after verifying your identity.");
             Audit::AuditManager::instance().log(Core::AuditAction::FailedLogin, QString("Password recovery failed: User %1 not found.").arg(email), "UI");
             return;
         }
@@ -281,7 +363,7 @@ void LoginView::setupUi() {
         qInfo() << "LoginView: Password recovery initiated for user:" << email;
         QMessageBox::information(this,
                                  "Recover Password",
-                                 "A password reset for your account (" + email + ") must be completed by an election administrator. Please share this email with them to securely reset your account.");
+                                 "If an active account exists for that email, an election administrator can complete the reset after verifying your identity.");
         Audit::AuditManager::instance().log(Core::AuditAction::FailedLogin, QString("Password recovery initiated for user: %1 (Admin action required).").arg(email), user->id);
     });
 

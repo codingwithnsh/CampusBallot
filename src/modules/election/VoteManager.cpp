@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QDebug> // For logging
 #include <QMutex> // For thread safety
+#include <stdexcept>
 
 namespace Ballot::Election {
 
@@ -23,6 +24,16 @@ QByteArray deriveVoteEncryptionKey() {
         .arg(system.settings().masterMachineId,
              system.machineId(),
              Core::SystemInfo::getMachineId());
+    return Security::HashProvider::sha256(material.toUtf8());
+}
+
+QByteArray deriveVoteSigningKey(const QString& electionId) {
+    const auto& system = Core::SystemManager::instance();
+    const QString material = QStringLiteral("CampusBallot::VoteSignature::v1|%1|%2|%3|%4")
+        .arg(system.settings().masterMachineId,
+             system.machineId(),
+             Core::SystemInfo::getMachineId(),
+             electionId);
     return Security::HashProvider::sha256(material.toUtf8());
 }
 
@@ -173,11 +184,13 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
     vote.voteHash = Security::HashProvider::sha256(dataToHash);
 
     try {
-        // TODO: Key generation should be managed securely, not generated on the fly for each vote.
-        // For now, using a placeholder for demonstration.
-        QPair<QByteArray, QByteArray> keys = Security::DigitalSignature::generateKeyPair(); // This should ideally be election-specific or system-wide
+        const QByteArray signingKey = deriveVoteSigningKey(electionId);
+        if (signingKey.size() != 32) {
+            throw std::runtime_error("Derived vote signing key has invalid size");
+        }
+
         vote.digitalSignature = Security::DigitalSignature::sign(
-            vote.voteHash, keys.first); // Sign the hash of the vote data
+            vote.voteHash, signingKey); // Sign the hash of the vote data
         qDebug() << "VoteManager: Digital signature generated for vote" << vote.id;
     } catch (const std::exception& e) {
         qCritical() << "VoteManager: Failed to generate digital signature for vote" << vote.id << ". Error:" << e.what();

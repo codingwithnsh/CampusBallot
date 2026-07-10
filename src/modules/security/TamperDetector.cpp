@@ -8,6 +8,7 @@
 #include <QCryptographicHash>
 #include <QProcess>
 #include <QDebug>
+#include <QSet>
 #include <stdexcept> // For std::runtime_error
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -34,14 +35,17 @@ public:
         if (!monitoring) return; // Ensure monitoring is still active
 
         qDebug() << "TamperDetector: Performing periodic file integrity check in" << monitoredDir;
-        QDirIterator it(monitoredDir, QDir::Files, QDirIterator::Subdirectories);
+        QSet<QString> seenFiles;
+        QDirIterator it(monitoredDir, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         bool allOk = true;
         while (it.hasNext()) {
             QString path = it.next();
+            seenFiles.insert(path);
             if (fileChecksums.contains(path)) {
                 QByteArray current = calculateChecksum(path);
                 if (current.isEmpty()) {
                     qWarning() << "TamperDetector: Could not calculate checksum for" << path << ". Skipping.";
+                    allOk = false;
                     continue;
                 }
                 if (current != fileChecksums[path]) {
@@ -54,15 +58,26 @@ public:
                 }
             } else {
                 // New file detected in monitored directory
-                qWarning() << "TamperDetector: New file detected in monitored directory:" << path << ". Consider updating baseline.";
-                // Depending on policy, this could also be a tamper detection
+                qCritical() << "TamperDetector: Tamper detected! New file detected in monitored directory:" << path;
+                emit q->tamperDetected(QString("Unexpected file created: %1").arg(path));
+                allOk = false;
             }
         }
+
+        for (auto it = fileChecksums.constBegin(); it != fileChecksums.constEnd(); ++it) {
+            if (!seenFiles.contains(it.key())) {
+                qCritical() << "TamperDetector: Tamper detected! Baseline file missing:" << it.key();
+                emit q->tamperDetected(QString("Baseline file deleted: %1").arg(it.key()));
+                allOk = false;
+            }
+        }
+
         if (allOk) {
             qDebug() << "TamperDetector: File integrity check passed.";
             emit q->integrityCheckPassed();
         } else {
             qCritical() << "TamperDetector: File integrity check FAILED.";
+            emit q->integrityCheckFailed("Monitored directory integrity check failed.");
         }
     }
 
@@ -169,34 +184,90 @@ bool TamperDetector::verifyFileIntegrity(const QString& filePath, const QByteArr
 
 /**
  * @brief Verifies a chain of checksums, typically for audit logs.
- * This method is a placeholder and needs a more robust implementation for true chain verification.
+ * The method computes a deterministic chain digest where each link is:
+ * SHA256(previous_chain_digest || current_file_checksum). If a sidecar file
+ * named "<logfile>.chain" exists, it must contain the expected chain digest in
+ * hex for that link. For multi-file chains without sidecars, each file after
+ * the first must contain the previous chain digest or previous file checksum in
+ * hex, which catches broken append-chain exports.
  * @param logFiles A list of file paths representing the log chain.
  * @return True if the chain appears intact, false otherwise.
- * @warning This implementation is simplistic and needs to be aligned with AuditManager's chain hashing logic.
  */
 bool TamperDetector::verifyChecksumChain(const QStringList& logFiles) {
-    qWarning() << "TamperDetector: verifyChecksumChain is a simplistic placeholder and needs robust implementation aligned with AuditManager's chain hashing.";
-    QByteArray previousHash;
+    if (logFiles.isEmpty()) {
+        qWarning() << "TamperDetector: Cannot verify an empty checksum chain.";
+        emit integrityCheckFailed("Checksum chain is empty.");
+        return false;
+    }
+
+    QByteArray previousChainDigest;
+    QByteArray previousFileChecksum;
+    bool hasAnchors = false;
+
     for (const QString& file : logFiles) {
-        QByteArray currentHash = d->calculateChecksum(file);
-        if (currentHash.isEmpty()) {
-            qCritical() << "TamperDetector: Failed to calculate checksum for log file:" << file;
+        QFileInfo info(file);
+        if (!info.exists() || !info.isFile()) {
+            qCritical() << "TamperDetector: Missing log file in checksum chain:" << file;
+            emit tamperDetected(QString("Missing log file in checksum chain: %1").arg(file));
             return false;
         }
-        // This logic is flawed for a true chain. It should check if the *content* of the current file
-        // contains the *hash of the previous file's content*.
-        // The current implementation checks if the current file's content contains the *hash of the previous file itself*.
-        // This needs to be re-evaluated based on how the audit log chain is actually constructed.
-        if (!previousHash.isEmpty()) {
-            // Placeholder logic: This is not how a true hash chain works.
-            // A true chain would involve the current log entry's hash being calculated
-            // using the previous log entry's hash as part of its input.
-            // The AuditManager::verifyLogIntegrity is the correct place for this.
-            qDebug() << "TamperDetector: Skipping detailed chain verification in this placeholder method.";
+
+        QByteArray currentChecksum = d->calculateChecksum(file);
+        if (currentChecksum.isEmpty()) {
+            qCritical() << "TamperDetector: Failed to calculate checksum for log file:" << file;
+            emit integrityCheckFailed(QString("Could not checksum log file: %1").arg(file));
+            return false;
         }
-        previousHash = currentHash;
+
+        if (!previousChainDigest.isEmpty()) {
+            QFile currentFile(file);
+            if (!currentFile.open(QIODevice::ReadOnly)) {
+                qCritical() << "TamperDetector: Failed to read chained log file:" << file << "-" << currentFile.errorString();
+                emit integrityCheckFailed(QString("Could not read chained log file: %1").arg(file));
+                return false;
+            }
+            const QByteArray content = currentFile.readAll();
+            currentFile.close();
+
+            if (!content.contains(previousChainDigest.toHex()) &&
+                !content.contains(previousFileChecksum.toHex())) {
+                qCritical() << "TamperDetector: Broken checksum chain link at" << file;
+                emit tamperDetected(QString("Broken checksum chain link: %1").arg(file));
+                return false;
+            }
+        }
+
+        const QByteArray chainDigest = HashProvider::sha256(previousChainDigest + currentChecksum);
+        const QString sidecarPath = file + ".chain";
+        QFile sidecar(sidecarPath);
+        if (sidecar.exists()) {
+            hasAnchors = true;
+            if (!sidecar.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                qCritical() << "TamperDetector: Failed to open checksum chain sidecar:" << sidecarPath << "-" << sidecar.errorString();
+                emit integrityCheckFailed(QString("Could not read checksum chain sidecar: %1").arg(sidecarPath));
+                return false;
+            }
+            const QByteArray expected = sidecar.readAll().trimmed().toLower();
+            sidecar.close();
+            if (expected != chainDigest.toHex()) {
+                qCritical() << "TamperDetector: Checksum chain sidecar mismatch for" << file;
+                emit tamperDetected(QString("Checksum chain anchor mismatch: %1").arg(file));
+                return false;
+            }
+        }
+
+        previousFileChecksum = currentChecksum;
+        previousChainDigest = chainDigest;
     }
-    qInfo() << "TamperDetector: Simplistic checksum chain verification completed.";
+
+    if (!hasAnchors && logFiles.size() == 1) {
+        qWarning() << "TamperDetector: Single-file checksum chain has no sidecar anchor; integrity cannot be proven.";
+        emit integrityCheckFailed("Single-file checksum chain has no trusted anchor.");
+        return false;
+    }
+
+    qInfo() << "TamperDetector: Checksum chain verification completed. Final digest:" << previousChainDigest.toHex();
+    emit integrityCheckPassed();
     return true;
 }
 

@@ -1122,11 +1122,11 @@ QList<Core::AuditLogEntry> SQLiteStorageProvider::getAuditLogs(const QDateTime& 
     QSqlQuery query(m_db);
     QString sql = "SELECT * FROM audit_logs";
     if (from.isValid() && to.isValid()) {
-        query.prepare(sql + " WHERE timestamp BETWEEN ? AND ? ORDER BY timestamp DESC");
+        query.prepare(sql + " WHERE timestamp BETWEEN ? AND ? ORDER BY rowid DESC");
         query.addBindValue(from);
         query.addBindValue(to);
     } else {
-        query.prepare(sql + " ORDER BY timestamp DESC LIMIT 1000"); // Limit for performance if no range specified
+        query.prepare(sql + " ORDER BY rowid DESC");
     }
 
     if (query.exec()) {

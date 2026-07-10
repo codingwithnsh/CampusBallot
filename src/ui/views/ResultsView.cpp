@@ -9,19 +9,145 @@
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QPainter> // For custom painting if needed
+#include <QPainterPath>
 #include <QLocale>
 #include <QScrollArea>
 #include <QDebug> // For logging
-
-// QtCharts includes (if actually used, otherwise keep as placeholder)
-// #include <QtCharts/QChartView>
-// #include <QtCharts/QBarSeries>
-// #include <QtCharts/QBarSet>
-// #include <QtCharts/QLegend>
-// #include <QtCharts/QBarCategoryAxis>
-// #include <QtCharts/QValueAxis>
+#include <algorithm>
 
 namespace Ballot::UI {
+namespace {
+
+class ResultsChartWidget final : public QFrame {
+public:
+    explicit ResultsChartWidget(QWidget* parent = nullptr)
+        : QFrame(parent) {
+        setMinimumHeight(320);
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+        setAccessibleName("Vote distribution chart");
+    }
+
+    void setResults(const QList<Core::ElectionResult>& results, int totalVotes) {
+        m_results = results;
+        m_totalVotes = totalVotes;
+        update();
+    }
+
+protected:
+    void paintEvent(QPaintEvent* event) override {
+        QFrame::paintEvent(event);
+
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const QRectF card = rect().adjusted(0.5, 0.5, -0.5, -0.5);
+        QPainterPath cardPath;
+        cardPath.addRoundedRect(card, 12, 12);
+        painter.fillPath(cardPath, QColor("#2a2a3e"));
+
+        const int margin = 24;
+        QRectF content = rect().adjusted(margin, margin, -margin, -margin);
+
+        QFont titleFont = painter.font();
+        titleFont.setPointSize(14);
+        titleFont.setBold(true);
+        painter.setFont(titleFont);
+        painter.setPen(QColor("#e0e0e0"));
+        painter.drawText(content.left(), content.top(), content.width(), 26, Qt::AlignLeft | Qt::AlignVCenter, "Vote Distribution");
+
+        QFont captionFont = painter.font();
+        captionFont.setPointSize(9);
+        captionFont.setBold(false);
+        painter.setFont(captionFont);
+        painter.setPen(QColor("#9a9ab0"));
+        painter.drawText(content.left(), content.top() + 28, content.width(), 20, Qt::AlignLeft | Qt::AlignVCenter,
+                         m_totalVotes > 0
+                             ? QString("%1 total votes across %2 candidate%3")
+                                   .arg(QLocale().toString(m_totalVotes))
+                                   .arg(m_results.size())
+                                   .arg(m_results.size() == 1 ? "" : "s")
+                             : "No votes have been recorded for this election yet.");
+
+        QRectF chartArea = content.adjusted(0, 68, 0, 0);
+        if (m_results.isEmpty() || m_totalVotes <= 0) {
+            painter.setPen(QColor("#6f6f86"));
+            painter.drawText(chartArea, Qt::AlignCenter, "Results will appear here once votes are counted.");
+            return;
+        }
+
+        int maxVotes = 1;
+        for (const auto& result : m_results) {
+            maxVotes = std::max(maxVotes, result.voteCount);
+        }
+
+        const int rowHeight = 46;
+        const int gap = 12;
+        const int visibleRows = std::max(1, static_cast<int>(chartArea.height()) / (rowHeight + gap));
+        const int rows = std::min(m_results.size(), visibleRows);
+        const qreal labelWidth = std::min<qreal>(220, chartArea.width() * 0.34);
+        const qreal barStart = chartArea.left() + labelWidth + 16;
+        const qreal barMaxWidth = std::max<qreal>(40, chartArea.right() - barStart - 92);
+
+        QFont labelFont = painter.font();
+        labelFont.setPointSize(10);
+        labelFont.setBold(true);
+        QFont valueFont = painter.font();
+        valueFont.setPointSize(10);
+        valueFont.setBold(false);
+
+        for (int i = 0; i < rows; ++i) {
+            const auto& result = m_results.at(i);
+            const qreal y = chartArea.top() + i * (rowHeight + gap);
+            const qreal ratio = maxVotes > 0 ? static_cast<qreal>(result.voteCount) / maxVotes : 0;
+            const qreal barWidth = std::max<qreal>(result.voteCount > 0 ? 4 : 0, barMaxWidth * ratio);
+
+            QRectF labelRect(chartArea.left(), y, labelWidth, rowHeight);
+            painter.setFont(labelFont);
+            painter.setPen(QColor("#ffffff"));
+            painter.drawText(labelRect, Qt::AlignLeft | Qt::AlignVCenter,
+                             painter.fontMetrics().elidedText(result.candidateName, Qt::ElideRight, static_cast<int>(labelRect.width())));
+
+            QColor accent = i == 0 ? QColor("#38bdf8") : QColor("#0078d4");
+            QColor track("#1e1e34");
+            QRectF trackRect(barStart, y + 9, barMaxWidth, 18);
+            QRectF barRect(barStart, y + 9, barWidth, 18);
+
+            QPainterPath trackPath;
+            trackPath.addRoundedRect(trackRect, 9, 9);
+            painter.fillPath(trackPath, track);
+
+            if (barWidth > 0) {
+                QPainterPath barPath;
+                barPath.addRoundedRect(barRect, 9, 9);
+                painter.fillPath(barPath, accent);
+            }
+
+            painter.setFont(valueFont);
+            painter.setPen(QColor("#d6d6e8"));
+            painter.drawText(QRectF(barStart, y + 28, barMaxWidth, 16),
+                             Qt::AlignLeft | Qt::AlignVCenter,
+                             QString("%1 • %2%")
+                                 .arg(QLocale().toString(result.voteCount))
+                                 .arg(QString::number(result.percentage, 'f', 1)));
+        }
+
+        if (m_results.size() > rows) {
+            painter.setFont(captionFont);
+            painter.setPen(QColor("#9a9ab0"));
+            painter.drawText(QRectF(chartArea.left(), chartArea.bottom() - 18, chartArea.width(), 18),
+                             Qt::AlignRight | Qt::AlignVCenter,
+                             QString("+%1 more candidate%2 in the detailed table")
+                                 .arg(m_results.size() - rows)
+                                 .arg((m_results.size() - rows) == 1 ? "" : "s"));
+        }
+    }
+
+private:
+    QList<Core::ElectionResult> m_results;
+    int m_totalVotes = 0;
+};
+
+} // namespace
 
 ResultsView::ResultsView(QWidget *parent) : QWidget(parent) {
     setupUi();
@@ -320,39 +446,19 @@ void ResultsView::updateUi() {
         m_resultsTable->setItem(i, 2, new QTableWidgetItem(QLocale().toString(r.voteCount)));
         m_resultsTable->setItem(i, 3, new QTableWidgetItem(QString::number(r.percentage, 'f', 1) + "%"));
     }
+    if (auto* chart = static_cast<ResultsChartWidget*>(m_chartWidget)) {
+        chart->setResults(results, m_viewModel->totalVotes());
+    }
     qDebug() << "ResultsView: UI update complete.";
     updateExportAvailability();
 }
 
 /**
- * @brief Creates a placeholder widget for displaying charts.
+ * @brief Creates a chart widget for displaying vote distribution.
  * @return The chart widget.
  */
 QWidget* ResultsView::createChartWidget() {
-    auto *widget = new QFrame(this);
-    widget->setObjectName("card");
-    widget->setStyleSheet("QFrame#card { background-color: #2a2a3e; border-radius: 12px; padding: 16px; }");
-    widget->setMinimumHeight(300);
-
-    auto *layout = new QVBoxLayout(widget);
-    auto *header = new QLabel("Results Chart", this);
-    header->setObjectName("sectionTitle");
-    header->setStyleSheet("font-size: 18px; font-weight: 600; color: #e0e0e0; margin-bottom: 10px;");
-    layout->addWidget(header);
-
-    // Placeholder for chart - in production use QtCharts
-    auto *chartPlaceholder = new QFrame(widget);
-    chartPlaceholder->setStyleSheet("background-color: #1e1e34; border-radius: 8px; border: 1px solid #2d2d44;");
-    chartPlaceholder->setMinimumHeight(250);
-
-    auto *chartLayout = new QVBoxLayout(chartPlaceholder);
-    auto *chartLabel = new QLabel("Live results chart will render here using QtCharts", chartPlaceholder);
-    chartLabel->setStyleSheet("color: #9a9ab0; font-size: 14px; background: transparent;");
-    chartLabel->setAlignment(Qt::AlignCenter);
-    chartLayout->addWidget(chartLabel);
-
-    layout->addWidget(chartPlaceholder);
-    return widget;
+    return new ResultsChartWidget(this);
 }
 
 } // namespace Ballot::UI

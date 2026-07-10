@@ -18,9 +18,9 @@
 #include <QUuid> // Still included for QJsonDocument::Indented or if needed elsewhere
 #include <QMessageBox>
 #include <QLocale>
-#include <QInputDialog>
 #include <QDateTime>
 #include <QDebug> // For logging
+#include <QDialog>
 #include <QWizard>
 #include <QWizardPage>
 #include <QFormLayout>
@@ -239,28 +239,117 @@ void AdminPanel::setupUi() {
         QString electionId = m_electionsTable->item(row, 0)->data(Qt::UserRole).toString();
         QString electionTitle = m_electionsTable->item(row, 0)->text();
 
-        auto candidates = Election::ElectionManager::instance().getCandidates(electionId);
-        QStringList actions = {"Add candidate"};
-        if (!candidates.isEmpty()) actions << "Edit candidate" << "Delete candidate";
+        QDialog dialog(this);
+        dialog.setWindowTitle("Manage Candidates - " + electionTitle);
+        dialog.setModal(true);
+        dialog.resize(900, 560);
+        dialog.setStyleSheet(R"(
+            QDialog { background-color: #1e1e34; }
+            QLabel { color: #e0e0e0; background: transparent; }
+            QTableWidget {
+                background-color: #1e1e34; alternate-background-color: #25253a;
+                border: 1px solid #3d3d5c; border-radius: 10px; color: #e0e0e0;
+                font-size: 14px; gridline-color: #3d3d5c;
+            }
+            QHeaderView::section {
+                background-color: #2d2d44; color: #ffffff; padding: 8px;
+                border: 1px solid #3d3d5c; font-weight: 600;
+            }
+            QTableWidget::item { padding: 8px; }
+            QPushButton {
+                background-color: #0078d4; color: white; border: none; border-radius: 8px;
+                padding: 10px 18px; font-size: 14px; font-weight: 600;
+            }
+            QPushButton:hover { background-color: #1a8ae8; }
+            QPushButton:disabled { background-color: #34344a; color: #77778c; }
+            QPushButton#dangerButton { background-color: #d32f2f; }
+            QPushButton#dangerButton:hover { background-color: #ef5350; }
+            QPushButton#ghostButton {
+                background-color: transparent; color: #c6c6d8; border: 1px solid #3d3d5c;
+            }
+            QPushButton#ghostButton:hover { background-color: #2a2a42; }
+        )");
 
-        bool ok = false;
-        const QString action = QInputDialog::getItem(this, "Manage Candidates - " + electionTitle,
-                                                      "Action:", actions, 0, false, &ok);
-        if (!ok) {
-            qDebug() << "AdminPanel: Manage Candidates action cancelled.";
-            return;
-        }
+        auto* dialogLayout = new QVBoxLayout(&dialog);
+        dialogLayout->setContentsMargins(24, 20, 24, 20);
+        dialogLayout->setSpacing(14);
 
-        if (action == "Add candidate") {
+        auto* titleLabel = new QLabel(QString("Candidates for %1").arg(electionTitle), &dialog);
+        titleLabel->setStyleSheet("font-size: 22px; font-weight: 700; color: #ffffff;");
+        dialogLayout->addWidget(titleLabel);
+
+        auto* helperLabel = new QLabel("Manage candidate profiles, approval state, party details, manifestos, media, and visibility from one place.", &dialog);
+        helperLabel->setWordWrap(true);
+        helperLabel->setStyleSheet("font-size: 13px; color: #a8a8bd;");
+        dialogLayout->addWidget(helperLabel);
+
+        auto* candidatesTable = new QTableWidget(&dialog);
+        candidatesTable->setColumnCount(5);
+        candidatesTable->setHorizontalHeaderLabels({"Candidate", "Party", "Class", "Section", "Status"});
+        candidatesTable->horizontalHeader()->setStretchLastSection(true);
+        candidatesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        candidatesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+        candidatesTable->setSelectionMode(QAbstractItemView::SingleSelection);
+        candidatesTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        candidatesTable->setAlternatingRowColors(true);
+        candidatesTable->setAccessibleName("Candidates table");
+        dialogLayout->addWidget(candidatesTable, 1);
+
+        auto* footerLayout = new QHBoxLayout();
+        auto* addBtn = new QPushButton("+ Add Candidate", &dialog);
+        auto* editBtn = new QPushButton("Edit Selected", &dialog);
+        auto* deleteBtn = new QPushButton("Delete Selected", &dialog);
+        deleteBtn->setObjectName("dangerButton");
+        auto* closeBtn = new QPushButton("Close", &dialog);
+        closeBtn->setObjectName("ghostButton");
+
+        footerLayout->addWidget(addBtn);
+        footerLayout->addWidget(editBtn);
+        footerLayout->addWidget(deleteBtn);
+        footerLayout->addStretch();
+        footerLayout->addWidget(closeBtn);
+        dialogLayout->addLayout(footerLayout);
+
+        QList<Core::Candidate> candidates;
+        auto reloadCandidates = [&]() {
+            candidates = Election::ElectionManager::instance().getCandidates(electionId);
+            candidatesTable->setRowCount(candidates.size());
+            for (int i = 0; i < candidates.size(); ++i) {
+                const auto& c = candidates.at(i);
+                auto* nameItem = new QTableWidgetItem(c.name);
+                nameItem->setData(Qt::UserRole, c.id);
+                candidatesTable->setItem(i, 0, nameItem);
+                candidatesTable->setItem(i, 1, new QTableWidgetItem(c.party));
+                candidatesTable->setItem(i, 2, new QTableWidgetItem(c.className));
+                candidatesTable->setItem(i, 3, new QTableWidgetItem(c.section.isEmpty() ? "—" : c.section));
+                candidatesTable->setItem(i, 4, new QTableWidgetItem(c.isApproved ? "Approved" : "Pending"));
+            }
+            candidatesTable->resizeRowsToContents();
+            const bool hasSelection = candidatesTable->currentRow() >= 0 && candidatesTable->currentRow() < candidates.size();
+            editBtn->setEnabled(hasSelection);
+            deleteBtn->setEnabled(hasSelection);
+        };
+
+        auto selectedCandidate = [&]() -> std::optional<Core::Candidate> {
+            const int selectedRow = candidatesTable->currentRow();
+            if (selectedRow < 0 || selectedRow >= candidates.size()) {
+                return std::nullopt;
+            }
+            return candidates.at(selectedRow);
+        };
+
+        auto addCandidate = [&]() {
             CandidateFormDialog dialog(this);
             dialog.setWindowTitle("Add Candidate - " + electionTitle);
 
-            connect(&dialog, &CandidateFormDialog::candidateSaved, this, [this, electionId, electionTitle](const Core::Candidate& candidate) {
+            connect(&dialog, &CandidateFormDialog::candidateSaved, this, [&, this](const Core::Candidate& candidate) {
                 Core::Candidate c = candidate;
                 c.electionId = electionId; // Ensure candidate is linked to the selected election
                 if (Election::ElectionManager::instance().addCandidate(c)) {
                     ToastNotification::show(this, "Candidate added successfully.", ToastNotification::Success);
                     Audit::AuditManager::instance().log(Core::AuditAction::CandidateAdded, QString("Candidate '%1' added to election '%2'.").arg(c.name, electionTitle), Auth::AuthManager::instance().currentUserId());
+                    reloadCandidates();
+                    refreshData();
                 } else {
                     ToastNotification::show(this, "Failed to add candidate.", ToastNotification::Error);
                     Audit::AuditManager::instance().log(Core::AuditAction::CandidateAdded, QString("Failed to add candidate '%1' to election '%2'.").arg(c.name, electionTitle), Auth::AuthManager::instance().currentUserId());
@@ -268,33 +357,24 @@ void AdminPanel::setupUi() {
             });
 
             dialog.exec();
-            return;
-        }
+        };
 
-        QStringList candidateLabels;
-        for (const auto& candidate : candidates) {
-            candidateLabels << QString("%1 (%2)").arg(candidate.name, candidate.id.left(8));
-        }
-        const QString selected = QInputDialog::getItem(this, action, "Candidate:", candidateLabels, 0, false, &ok);
-        if (!ok) {
-            qDebug() << "AdminPanel: Candidate selection cancelled.";
-            return;
-        }
-        const int candidateIndex = candidateLabels.indexOf(selected);
-        if (candidateIndex < 0) {
-            qWarning() << "AdminPanel: Selected candidate not found in list.";
-            return;
-        }
-        Core::Candidate candidate = candidates.at(candidateIndex);
-
-        if (action == "Edit candidate") {
+        auto editCandidate = [&]() {
+            const auto candidateOpt = selectedCandidate();
+            if (!candidateOpt) {
+                ToastNotification::show(this, "Select a candidate to edit.", ToastNotification::Warning);
+                return;
+            }
+            const Core::Candidate candidate = *candidateOpt;
             CandidateFormDialog dialog(candidate, this);
             dialog.setWindowTitle("Edit Candidate - " + electionTitle);
 
-            connect(&dialog, &CandidateFormDialog::candidateSaved, this, [this, electionTitle](const Core::Candidate& updatedCandidate) {
+            connect(&dialog, &CandidateFormDialog::candidateSaved, this, [&, this](const Core::Candidate& updatedCandidate) {
                 if (Election::ElectionManager::instance().updateCandidate(updatedCandidate)) {
                     ToastNotification::show(this, "Candidate updated successfully.", ToastNotification::Success);
                     Audit::AuditManager::instance().log(Core::AuditAction::CandidateModified, QString("Candidate '%1' updated in election '%2'.").arg(updatedCandidate.name, electionTitle), Auth::AuthManager::instance().currentUserId());
+                    reloadCandidates();
+                    refreshData();
                 } else {
                     ToastNotification::show(this, "Failed to update candidate.", ToastNotification::Error);
                     Audit::AuditManager::instance().log(Core::AuditAction::CandidateModified, QString("Failed to update candidate '%1' in election '%2'.").arg(updatedCandidate.name, electionTitle), Auth::AuthManager::instance().currentUserId());
@@ -302,17 +382,44 @@ void AdminPanel::setupUi() {
             });
 
             dialog.exec();
-        } else if (QMessageBox::question(this, "Delete Candidate",
-                                          "Are you sure you want to delete '" + candidate.name + "' from '" + electionTitle + "'?",
-                                          QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+        };
+
+        auto deleteCandidate = [&]() {
+            const auto candidateOpt = selectedCandidate();
+            if (!candidateOpt) {
+                ToastNotification::show(this, "Select a candidate to delete.", ToastNotification::Warning);
+                return;
+            }
+            const Core::Candidate candidate = *candidateOpt;
+            if (QMessageBox::question(&dialog, "Delete Candidate",
+                                      "Are you sure you want to delete '" + candidate.name + "' from '" + electionTitle + "'?",
+                                      QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) {
+                return;
+            }
             if (Election::ElectionManager::instance().deleteCandidate(candidate.id)) {
                 ToastNotification::show(this, "Candidate deleted successfully.", ToastNotification::Success);
                 Audit::AuditManager::instance().log(Core::AuditAction::CandidateDeleted, QString("Candidate '%1' deleted from election '%2'.").arg(candidate.name, electionTitle), Auth::AuthManager::instance().currentUserId());
+                reloadCandidates();
+                refreshData();
             } else {
                 ToastNotification::show(this, "Failed to delete candidate.", ToastNotification::Error);
                 Audit::AuditManager::instance().log(Core::AuditAction::CandidateDeleted, QString("Failed to delete candidate '%1' from election '%2'.").arg(candidate.name, electionTitle), Auth::AuthManager::instance().currentUserId());
             }
-        }
+        };
+
+        connect(addBtn, &QPushButton::clicked, &dialog, addCandidate);
+        connect(editBtn, &QPushButton::clicked, &dialog, editCandidate);
+        connect(deleteBtn, &QPushButton::clicked, &dialog, deleteCandidate);
+        connect(closeBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
+        connect(candidatesTable, &QTableWidget::itemDoubleClicked, &dialog, [editCandidate](QTableWidgetItem*) { editCandidate(); });
+        connect(candidatesTable->selectionModel(), &QItemSelectionModel::selectionChanged, &dialog, [&]() {
+            const bool hasSelection = candidatesTable->currentRow() >= 0 && candidatesTable->currentRow() < candidates.size();
+            editBtn->setEnabled(hasSelection);
+            deleteBtn->setEnabled(hasSelection);
+        });
+
+        reloadCandidates();
+        dialog.exec();
     });
 
     refreshData(); // Initial data load

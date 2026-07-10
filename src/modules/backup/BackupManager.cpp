@@ -15,6 +15,23 @@
 #include <stdexcept> // For std::runtime_error
 
 namespace Ballot::Backup {
+namespace {
+
+const QByteArray kBackupFormatMagic = "CBALLOT_BACKUP_V2\n";
+
+QByteArray deriveBackupEncryptionKey() {
+    QByteArray material;
+    material.append("CampusBallot::BackupEncryption::v2::");
+    material.append(Core::SystemInfo::getMachineId().toUtf8());
+    material.append("::");
+    material.append(Core::SystemInfo::getMachineName().toUtf8());
+    material.append("::");
+    material.append(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toUtf8());
+
+    return Security::HashProvider::sha256(material);
+}
+
+} // namespace
 
 BackupManager& BackupManager::instance() {
     static BackupManager inst;
@@ -191,14 +208,9 @@ bool BackupManager::restoreBackup(const QString& backupId) {
 
     emit restoreStarted(backupId);
 
-    // Disconnect from the current database before attempting to overwrite it
-    if (storage->isConnected()) {
-        qInfo() << "BackupManager: Disconnecting from current database for restore operation.";
-        storage->disconnect();
-    }
-
     QString tempDecryptedPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + QUuid::createUuid().toString(QUuid::WithoutBraces) + ".db";
     QString originalDbPath = Core::Constants::DB_FILENAME;
+    QString rollbackDbPath = originalDbPath + ".restore-backup-" + QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmsszzz");
 
     if (decryptBackupFile(b.storagePath, tempDecryptedPath)) {
         // Verify checksum of the decrypted file against the stored original DB checksum
@@ -213,29 +225,50 @@ bool BackupManager::restoreBackup(const QString& backupId) {
 
         if (computedChecksum == b.checksum) {
             qInfo() << "BackupManager: Decrypted backup checksum verified successfully.";
-            // Replace the current database file with the restored one
-            if (QFile::remove(originalDbPath)) { // Remove existing DB
-                if (QFile::copy(tempDecryptedPath, originalDbPath)) { // Copy restored DB
-                    qInfo() << "BackupManager: Database restored successfully from" << b.name;
-                    Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, QString("Database restored from backup: %1").arg(b.name), "System");
-                    emit restoreCompleted(backupId);
-                    QFile::remove(tempDecryptedPath); // Clean up temp file
-                    // Reconnect to the newly restored database
-                    if (!storage->connect(QVariantMap())) { // Reconnect with default config
-                        qCritical() << "BackupManager: Failed to reconnect to database after restore!";
-                        Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Restore completed but failed to reconnect to DB.", "System");
-                        // This is a critical state, application might need to restart
-                    }
-                    return true;
-                } else {
-                    qCritical() << "BackupManager: Failed to copy decrypted database to original path:" << originalDbPath;
-                    emit restoreFailed("Failed to copy decrypted database.");
-                    Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Restore failed: File copy error.", "System");
+
+            // Disconnect from the current database only after the backup has
+            // decrypted and passed integrity validation.
+            if (storage->isConnected()) {
+                qInfo() << "BackupManager: Disconnecting from current database for restore operation.";
+                storage->disconnect();
+            }
+
+            bool originalMoved = true;
+            if (QFile::exists(originalDbPath)) {
+                QFile::remove(rollbackDbPath);
+                originalMoved = QFile::rename(originalDbPath, rollbackDbPath);
+            }
+
+            if (!originalMoved) {
+                qCritical() << "BackupManager: Failed to move existing database to rollback path:" << rollbackDbPath;
+                emit restoreFailed("Failed to prepare existing database for restore.");
+                Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Restore failed: Existing DB rollback preparation error.", "System");
+            } else if (QFile::copy(tempDecryptedPath, originalDbPath)) {
+                qInfo() << "BackupManager: Database restored successfully from" << b.name;
+                Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, QString("Database restored from backup: %1").arg(b.name), "System");
+                emit restoreCompleted(backupId);
+                QFile::remove(tempDecryptedPath);
+                QFile::remove(rollbackDbPath);
+
+                // Reconnect to the newly restored database
+                if (!storage->connect(QVariantMap())) { // Reconnect with default config
+                    qCritical() << "BackupManager: Failed to reconnect to database after restore!";
+                    Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Restore completed but failed to reconnect to DB.", "System");
+                    // This is a critical state, application might need to restart
                 }
+                return true;
             } else {
-                qCritical() << "BackupManager: Failed to remove existing database file:" << originalDbPath;
-                emit restoreFailed("Failed to remove existing database.");
-                Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Restore failed: Existing DB removal error.", "System");
+                qCritical() << "BackupManager: Failed to copy decrypted database to original path:" << originalDbPath;
+                emit restoreFailed("Failed to copy decrypted database.");
+                Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Restore failed: File copy error.", "System");
+
+                if (QFile::exists(rollbackDbPath)) {
+                    QFile::remove(originalDbPath);
+                    if (!QFile::rename(rollbackDbPath, originalDbPath)) {
+                        qCritical() << "BackupManager: Failed to roll back original database after restore copy failure.";
+                        Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Restore failed: Original DB rollback failed.", "System");
+                    }
+                }
             }
         } else {
             qCritical() << "BackupManager: Checksum mismatch for decrypted backup" << b.name << ". Backup may be corrupted.";
@@ -281,7 +314,7 @@ bool BackupManager::deleteBackup(const QString& backupId) {
     }
     Core::BackupEntry b = *backupOpt;
 
-    bool fileRemoved = QFile::remove(b.storagePath);
+    bool fileRemoved = !QFile::exists(b.storagePath) || QFile::remove(b.storagePath);
     if (!fileRemoved) {
         qWarning() << "BackupManager: Failed to remove backup file:" << b.storagePath << ". It might not exist or permissions are an issue.";
     } else {
@@ -290,7 +323,7 @@ bool BackupManager::deleteBackup(const QString& backupId) {
 
     // Also remove the checksum file
     QString checksumFilePath = QFileInfo(b.storagePath).path() + "/" + b.id + ".sha256";
-    bool checksumFileRemoved = QFile::remove(checksumFilePath);
+    bool checksumFileRemoved = !QFile::exists(checksumFilePath) || QFile::remove(checksumFilePath);
     if (!checksumFileRemoved) {
         qWarning() << "BackupManager: Failed to remove backup checksum file:" << checksumFilePath << ". It might not exist or permissions are an issue.";
     } else {
@@ -299,11 +332,11 @@ bool BackupManager::deleteBackup(const QString& backupId) {
 
     if (storage->deleteBackupRecord(backupId)) {
         qInfo() << "BackupManager: Backup record" << b.name << "(" << b.id << ") deleted successfully.";
-        Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, QString("Backup deleted: %1").arg(b.name), "System"); // Using BackupRestored as closest
+        Audit::AuditManager::instance().log(Core::AuditAction::BackupDeleted, QString("Backup deleted: %1").arg(b.name), "System");
         return true;
     } else {
         qCritical() << "BackupManager: Failed to delete backup record from storage for" << b.name;
-        Audit::AuditManager::instance().log(Core::AuditAction::BackupRestored, "Backup deletion failed: Storage record error.", "System");
+        Audit::AuditManager::instance().log(Core::AuditAction::BackupDeleted, "Backup deletion failed: Storage record error.", "System");
         return false;
     }
 }
@@ -413,6 +446,19 @@ bool BackupManager::importBackup(const QString& filePath) {
         return false;
     }
 
+    QString tempDecryptedPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + QUuid::createUuid().toString(QUuid::WithoutBraces) + ".db";
+    QByteArray decryptedChecksum;
+    if (decryptBackupFile(newStoragePath, tempDecryptedPath)) {
+        decryptedChecksum = Security::HashProvider::sha256File(tempDecryptedPath);
+        QFile::remove(tempDecryptedPath);
+    }
+
+    if (decryptedChecksum.isEmpty()) {
+        qCritical() << "BackupManager: Imported backup failed decrypt/checksum validation:" << filePath;
+        QFile::remove(newStoragePath);
+        return false;
+    }
+
     Core::BackupEntry entry;
     entry.id = newBackupId;
     entry.name = "Imported " + info.fileName();
@@ -422,11 +468,10 @@ bool BackupManager::importBackup(const QString& filePath) {
     entry.type = "full"; // Assuming full backup
     entry.isEncrypted = true; // Assuming imported backups are encrypted
 
-    // Calculate checksum of the imported file (which is the encrypted backup)
-    entry.checksum = Security::HashProvider::sha256File(newStoragePath);
-    if (entry.checksum.isEmpty()) {
-        qWarning() << "BackupManager: Failed to calculate checksum for imported encrypted backup. Proceeding without checksum.";
-    }
+    // Store the decrypted database checksum. Restore validates the decrypted
+    // payload, not the encrypted wrapper, so imported backups must use the same
+    // checksum contract as locally created backups.
+    entry.checksum = decryptedChecksum;
 
     if (storage->saveBackupRecord(entry)) {
         qInfo() << "BackupManager: Imported backup recorded successfully:" << entry.name << "(" << entry.id << ")";
@@ -444,9 +489,9 @@ bool BackupManager::importBackup(const QString& filePath) {
  * @param sourcePath The path to the unencrypted source file (e.g., database).
  * @param targetPath The path where the encrypted file will be saved.
  * @return True if encryption is successful, false otherwise.
- * @warning The encryption key is generated randomly and prepended to the encrypted data.
- * This is INSECURE for production as the key is stored with the ciphertext.
- * A secure key management solution is required.
+ * The encryption key is derived from machine/install scoped material and is not
+ * stored with the ciphertext. Files created by older builds that prepended a
+ * random key are still accepted by decryptBackupFile() for restore compatibility.
  */
 bool BackupManager::encryptBackupFile(const QString& sourcePath, const QString& targetPath) {
     qDebug() << "BackupManager: Encrypting" << sourcePath << "to" << targetPath;
@@ -460,7 +505,7 @@ bool BackupManager::encryptBackupFile(const QString& sourcePath, const QString& 
 
     try {
         Security::AES256Provider crypto;
-        QByteArray key = crypto.generateKey(32); // Generate a new random key
+        QByteArray key = deriveBackupEncryptionKey();
         QByteArray encrypted = crypto.encrypt(data, key);
 
         QFile target(targetPath);
@@ -468,10 +513,10 @@ bool BackupManager::encryptBackupFile(const QString& sourcePath, const QString& 
             qCritical() << "BackupManager: Failed to open target file for encryption:" << targetPath << "-" << target.errorString();
             return false;
         }
-        target.write(key); // Prepend the key to the encrypted data (INSECURE)
+        target.write(kBackupFormatMagic);
         target.write(encrypted);
         target.close();
-        qInfo() << "BackupManager: File encrypted successfully. Key stored with ciphertext (INSECURE).";
+        qInfo() << "BackupManager: File encrypted successfully using protected backup format.";
         return true;
     } catch (const std::exception& e) {
         qCritical() << "BackupManager: Encryption failed for" << sourcePath << ":" << e.what();
@@ -487,8 +532,8 @@ bool BackupManager::encryptBackupFile(const QString& sourcePath, const QString& 
  * @param sourcePath The path to the encrypted source file.
  * @param targetPath The path where the decrypted file will be saved.
  * @return True if decryption is successful, false otherwise.
- * @warning This function assumes the encryption key is prepended to the encrypted data,
- * which is INSECURE for production.
+ * Supports the current protected backup format and legacy backups whose random
+ * key was prepended to the encrypted payload.
  */
 bool BackupManager::decryptBackupFile(const QString& sourcePath, const QString& targetPath) {
     qDebug() << "BackupManager: Decrypting" << sourcePath << "to" << targetPath;
@@ -497,14 +542,28 @@ bool BackupManager::decryptBackupFile(const QString& sourcePath, const QString& 
         qCritical() << "BackupManager: Failed to open source file for decryption:" << sourcePath << "-" << source.errorString();
         return false;
     }
-    QByteArray key = source.read(32); // Read the prepended key
+    QByteArray fileData = source.readAll();
+    source.close();
+
+    QByteArray key;
+    QByteArray encrypted;
+    if (fileData.startsWith(kBackupFormatMagic)) {
+        key = deriveBackupEncryptionKey();
+        encrypted = fileData.mid(kBackupFormatMagic.size());
+    } else {
+        // Legacy compatibility: older backups prepended the raw encryption key.
+        if (fileData.size() <= 32) {
+            qCritical() << "BackupManager: Invalid legacy backup size:" << sourcePath;
+            return false;
+        }
+        key = fileData.left(32);
+        encrypted = fileData.mid(32);
+    }
+
     if (key.size() != 32) {
-        qCritical() << "BackupManager: Invalid key size read from encrypted file:" << sourcePath;
-        source.close();
+        qCritical() << "BackupManager: Invalid backup encryption key size for:" << sourcePath;
         return false;
     }
-    QByteArray encrypted = source.readAll();
-    source.close();
 
     try {
         Security::AES256Provider crypto;

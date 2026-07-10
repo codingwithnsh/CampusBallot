@@ -71,7 +71,8 @@ enum class AuditAction {
     CandidateAdded,
     CandidateModified,
     CandidateDeleted,
-    VoteCast
+    VoteCast,
+    BackupDeleted
 };
 
 // Struct to hold theme-related colors for UI components
