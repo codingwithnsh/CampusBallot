@@ -18,23 +18,23 @@ QPushButton#ghostButton:hover { background-color: rgba(0,0,0,0.05); }
 
 QLineEdit {
     background-color: #ffffff;
-    border: 1.5px solid #e0e0e0;
+    border: none;
     color: #1a1a2e;
 }
-QLineEdit:focus { border-color: #0078d4; }
+QLineEdit:focus { border: none; }
 
 QComboBox {
     background-color: #ffffff;
-    border: 1.5px solid #e0e0e0;
+    border: none;
     color: #1a1a2e;
 }
-QComboBox:focus { border-color: #0078d4; }
+QComboBox:focus { border: none; }
 QComboBox QAbstractItemView { background-color: #ffffff; border: 1px solid #e0e0e0; }
 
-QTextEdit, QPlainTextEdit { background-color: #ffffff; border: 1.5px solid #e0e0e0; color: #1a1a2e; }
-QTextEdit:focus, QPlainTextEdit:focus { border-color: #0078d4; }
+QTextEdit, QPlainTextEdit { background-color: #ffffff; border: none; color: #1a1a2e; }
+QTextEdit:focus, QPlainTextEdit:focus { border: none; }
 
-QSpinBox, QDoubleSpinBox { background-color: #ffffff; border: 1.5px solid #e0e0e0; color: #1a1a2e; }
+QSpinBox, QDoubleSpinBox { background-color: #ffffff; border: none; color: #1a1a2e; }
 
 QLabel { color: #1a1a2e; }
 QLabel#title { color: #1a1a2e; }
@@ -65,7 +65,7 @@ QTabWidget::pane { background-color: #f5f5f5; border-top: 1px solid #e0e0e0; }
 QTabBar::tab { color: #616161; }
 QTabBar::tab:selected { color: #0078d4; }
 
-QDateEdit, QTimeEdit, QDateTimeEdit { background-color: #ffffff; border: 1.5px solid #e0e0e0; color: #1a1a2e; }
+QDateEdit, QTimeEdit, QDateTimeEdit { background-color: #ffffff; border: none; color: #1a1a2e; }
 
 QCheckBox { color: #1a1a2e; }
 QRadioButton { color: #1a1a2e; }

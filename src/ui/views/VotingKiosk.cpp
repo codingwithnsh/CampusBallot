@@ -133,6 +133,23 @@ void VotingKiosk::updateVotingState() {
     m_activeElection = Election::ElectionManager::instance().getActiveElection();
 
     if (m_activeElection && m_activeElection->state == Core::VotingState::Voting) {
+        // Update Step 1 page UI based on verification setting
+        if (m_scanIdTitle && m_scanIdDesc && m_idInputContainer && m_continueBtn && m_startVotingBtn) {
+            if (m_activeElection->verifyStudents) {
+                m_scanIdTitle->setText("Step 1: Scan ID Card");
+                m_scanIdDesc->setText("Please place your student ID card on the scanner\nor enter your admission number below.");
+                m_idInputContainer->setVisible(true);
+                m_continueBtn->setVisible(true);
+                m_startVotingBtn->setVisible(false);
+            } else {
+                m_scanIdTitle->setText("Step 1: Start Voting");
+                m_scanIdDesc->setText("Verification is not required for this election.\nClick the button below to start your voting session.");
+                m_idInputContainer->setVisible(false);
+                m_continueBtn->setVisible(false);
+                m_startVotingBtn->setVisible(true);
+            }
+        }
+
         if (m_pages->currentIndex() == 0) { // If currently on waiting page, transition to scan ID
             qInfo() << "VotingKiosk: Election" << m_activeElection->title << "is now active. Moving to scan ID.";
             m_currentStep = 1;
@@ -166,6 +183,11 @@ void VotingKiosk::updateVotingState() {
 void VotingKiosk::nextStep() {
     if (m_currentStep < m_pages->count() - 1) {
         m_currentStep++;
+        
+        // Skip VerifyPhoto page (index 2) if verification is bypassed
+        if (m_currentStep == 2 && m_activeElection && !m_activeElection->verifyStudents) {
+            m_currentStep++;
+        }
         
         m_pages->setCurrentIndex(m_currentStep);
         qDebug() << "VotingKiosk: Moving to step" << m_currentStep;
@@ -211,6 +233,11 @@ void VotingKiosk::prevStep() {
     if (m_currentStep > 0) {
         m_currentStep--;
 
+        // Skip VerifyPhoto page (index 2) if verification is bypassed
+        if (m_currentStep == 2 && m_activeElection && !m_activeElection->verifyStudents) {
+            m_currentStep--;
+        }
+
         m_pages->setCurrentIndex(m_currentStep);
         qDebug() << "VotingKiosk: Moving to previous step" << m_currentStep;
     } else {
@@ -239,11 +266,7 @@ void VotingKiosk::resetKiosk() {
  */
 void VotingKiosk::processScanId(const QString& admissionNumber) {
     qInfo() << "VotingKiosk: Processing scanned ID:" << admissionNumber;
-    if (admissionNumber.isEmpty()) {
-        ToastNotification::show(this, "Please enter an admission number.", ToastNotification::Warning);
-        return;
-    }
-
+    
     auto* storage = Core::SystemManager::instance().storage();
     if (!storage || !storage->isConnected()) {
         ToastNotification::show(this, "System storage not available. Please contact an administrator.", ToastNotification::Error);
@@ -255,6 +278,11 @@ void VotingKiosk::processScanId(const QString& admissionNumber) {
         ToastNotification::show(this, "No active election to vote in.", ToastNotification::Warning);
         qWarning() << "VotingKiosk: No active election during ID scan.";
         resetKiosk();
+        return;
+    }
+
+    if (m_activeElection->verifyStudents && admissionNumber.isEmpty()) {
+        ToastNotification::show(this, "Please enter an admission number.", ToastNotification::Warning);
         return;
     }
 
@@ -534,42 +562,61 @@ QWidget* VotingKiosk::createScanIdPage() {
     icon->setAlignment(Qt::AlignCenter);
     layout->addWidget(icon);
 
-    auto *title = new QLabel("Step 1: Scan ID Card", page);
-    title->setStyleSheet("font-size: 36px; font-weight: 700; color: #ffffff; background: transparent;");
-    title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title);
+    m_scanIdTitle = new QLabel("Step 1: Scan ID Card", page);
+    m_scanIdTitle->setStyleSheet("font-size: 36px; font-weight: 700; color: #ffffff; background: transparent;");
+    m_scanIdTitle->setAlignment(Qt::AlignCenter);
+    layout->addWidget(m_scanIdTitle);
 
-    auto *desc = new QLabel("Please place your student ID card on the scanner\nor enter your admission number below.", page);
-    desc->setStyleSheet("font-size: 18px; color: #9a9ab0; line-height: 1.5; background: transparent;");
-    desc->setAlignment(Qt::AlignCenter);
-    layout->addWidget(desc);
+    m_scanIdDesc = new QLabel("Please place your student ID card on the scanner\nor enter your admission number below.", page);
+    m_scanIdDesc->setStyleSheet("font-size: 18px; color: #9a9ab0; line-height: 1.5; background: transparent;");
+    m_scanIdDesc->setAlignment(Qt::AlignCenter);
+    layout->addWidget(m_scanIdDesc);
 
-    m_idInputEdit = new QLineEdit(page);
+    m_idInputContainer = new QWidget(page);
+    auto* inputLayout = new QVBoxLayout(m_idInputContainer);
+    inputLayout->setContentsMargins(0, 0, 0, 0);
+    inputLayout->setAlignment(Qt::AlignCenter);
+
+    m_idInputEdit = new QLineEdit(m_idInputContainer);
     m_idInputEdit->setPlaceholderText("Enter admission number or scan ID...");
     m_idInputEdit->setFixedHeight(50);
+    m_idInputEdit->setFixedWidth(400);
     m_idInputEdit->setStyleSheet("font-size: 18px; text-align: center;");
     m_idInputEdit->setAlignment(Qt::AlignCenter);
-    layout->addWidget(m_idInputEdit, 0, Qt::AlignCenter);
+    inputLayout->addWidget(m_idInputEdit);
 
     // Test mode checkbox
-    m_testModeCheck = new QCheckBox("🧪 Test Mode (Local File Storage)", page);
+    m_testModeCheck = new QCheckBox("🧪 Test Mode (Local File Storage)", m_idInputContainer);
     m_testModeCheck->setStyleSheet("font-size: 14px; color: #9a9ab0; background: transparent;");
     m_testModeCheck->setToolTip("Enable test mode to use local file storage for admission numbers instead of database");
     connect(m_testModeCheck, &QCheckBox::toggled, this, &VotingKiosk::setTestMode);
-    layout->addWidget(m_testModeCheck, 0, Qt::AlignCenter);
+    inputLayout->addWidget(m_testModeCheck, 0, Qt::AlignCenter);
+
+    layout->addWidget(m_idInputContainer);
 
     layout->addSpacing(20);
 
-    auto *btn = new QPushButton("Continue →", page);
-    btn->setFixedHeight(60);
-    btn->setStyleSheet("font-size: 22px; font-weight: 600; border-radius: 12px;");
-    layout->addWidget(btn, 0, Qt::AlignCenter);
+    m_continueBtn = new QPushButton("Continue →", page);
+    m_continueBtn->setFixedHeight(60);
+    m_continueBtn->setFixedWidth(200);
+    m_continueBtn->setStyleSheet("font-size: 22px; font-weight: 600; border-radius: 12px;");
+    layout->addWidget(m_continueBtn, 0, Qt::AlignCenter);
 
-    connect(btn, &QPushButton::clicked, this, [this]() {
+    m_startVotingBtn = new QPushButton("Start Voting →", page);
+    m_startVotingBtn->setFixedHeight(80);
+    m_startVotingBtn->setFixedWidth(300);
+    m_startVotingBtn->setStyleSheet("font-size: 28px; font-weight: 700; border-radius: 16px; background-color: #0078d4; color: white;");
+    m_startVotingBtn->setVisible(false);
+    layout->addWidget(m_startVotingBtn, 0, Qt::AlignCenter);
+
+    connect(m_continueBtn, &QPushButton::clicked, this, [this]() {
         processScanId(m_idInputEdit->text().trimmed());
     });
     connect(m_idInputEdit, &QLineEdit::returnPressed, this, [this]() {
         processScanId(m_idInputEdit->text().trimmed());
+    });
+    connect(m_startVotingBtn, &QPushButton::clicked, this, [this]() {
+        processScanId(""); // Process empty ID for bypass
     });
 
     layout->addStretch();

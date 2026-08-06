@@ -213,15 +213,15 @@ void ResultsView::setupUi() {
     m_electionSelector->setMinimumWidth(250);
     m_electionSelector->setStyleSheet(R"(
         QComboBox {
-            background-color: #25253a; color: #ffffff; border: 1px solid #3d3d5c;
+            background-color: #25253a; color: #ffffff; border: none;
             border-radius: 8px; padding: 8px 12px; font-size: 14px;
         }
         QComboBox::drop-down { border: 0px; }
         QComboBox::down-arrow { width: 16px; height: 16px; }
-        QComboBox:hover { border: 1px solid #6b7280; }
+        QComboBox:hover { border: none; }
         QComboBox QAbstractItemView {
             background-color: #25253a; color: #ffffff; selection-background-color: #0078d4;
-            border: 1px solid #3d3d5c; border-radius: 8px;
+            border: none; border-radius: 8px;
         }
     )");
     headerLayout->addWidget(m_electionSelector);

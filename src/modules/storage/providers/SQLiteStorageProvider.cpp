@@ -934,7 +934,11 @@ bool SQLiteStorageProvider::castVote(const Core::Vote& vote) {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?))");
     query.addBindValue(vote.id);
     query.addBindValue(vote.electionId);
-    query.addBindValue(vote.studentId);
+    if (vote.studentId.isEmpty()) {
+        query.addBindValue(QVariant(QVariant::String)); // Bind NULL
+    } else {
+        query.addBindValue(vote.studentId);
+    }
     query.addBindValue(vote.candidateId); // Now using the unencrypted candidateId
     query.addBindValue(vote.voteHash);
     query.addBindValue(vote.digitalSignature);

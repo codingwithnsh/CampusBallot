@@ -142,6 +142,25 @@ int main(int argc, char *argv[])
 
     QSettings settings; // Moved settings here to be accessible for theme loading
 
+    bool isFirstRun = settings.value("first_run", true).toBool();
+    bool resetRequested = settings.value("reset_requested", false).toBool();
+
+    if (resetRequested) {
+        qInfo() << "Main: Reset requested. Deleting database and resetting first_run flag.";
+        QString dbPath = normalizeDbPath(settings.value("db_path", Core::Constants::DB_FILENAME));
+        if (QFile::exists(dbPath)) {
+            if (QFile::remove(dbPath)) {
+                qInfo() << "Main: Database deleted successfully at" << dbPath;
+            } else {
+                qWarning() << "Main: Failed to delete database at" << dbPath;
+            }
+        }
+        settings.setValue("reset_requested", false);
+        settings.setValue("first_run", true);
+        isFirstRun = true;
+        settings.sync();
+    }
+
     // Apply theme using ThemeManager
     QString savedThemeName = settings.value(
         "theme",
@@ -158,8 +177,6 @@ int main(int argc, char *argv[])
     UI::SplashScreen splash;
     splash.show();
     qApp->processEvents(); // Use qApp
-
-    bool isFirstRun = settings.value("first_run", true).toBool();
 
     // When splash finishes, proceed with main initialization
     auto* settingsPtr = &settings;

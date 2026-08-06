@@ -52,7 +52,7 @@ void CandidateDialog::setupUi() {
     // Photo preview
     m_photoLabel = new QLabel(this);
     m_photoLabel->setFixedSize(150, 150);
-    m_photoLabel->setStyleSheet("background-color: #374151; border: 2px dashed #4b5563; border-radius: 12px;");
+    m_photoLabel->setStyleSheet("background-color: #374151; border: none; border-radius: 12px;");
     m_photoLabel->setAlignment(Qt::AlignCenter);
     m_photoLabel->setText("No Photo\nClick to add");
     m_photoLabel->setStyleSheet(m_photoLabel->styleSheet() + "color: #9a9ab0; font-size: 14px;");
@@ -88,14 +88,14 @@ void CandidateDialog::setupUi() {
     auto inputStyle = R"(
         QLineEdit, QTextEdit {
             background-color: #374151;
-            border: 1px solid #4b5563;
+            border: none;
             border-radius: 8px;
             padding: 10px 12px;
             color: #ffffff;
             font-size: 14px;
         }
         QLineEdit:focus, QTextEdit:focus {
-            border-color: #0078d4;
+            border: none;
         }
     )";
 
@@ -195,7 +195,7 @@ void CandidateDialog::loadCandidateData() {
     if (!m_candidate.photo.isNull()) {
         m_photoLabel->setPixmap(m_candidate.photo.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_photoLabel->setText("");
-        m_photoLabel->setStyleSheet("background-color: #374151; border: 2px solid #0078d4; border-radius: 12px;");
+        m_photoLabel->setStyleSheet("background-color: #374151; border: none; border-radius: 12px;");
     }
 }
 
@@ -212,7 +212,7 @@ void CandidateDialog::selectPhoto() {
             m_candidate.photo = pixmap.toImage();
             m_photoLabel->setPixmap(pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
             m_photoLabel->setText("");
-            m_photoLabel->setStyleSheet("background-color: #374151; border: 2px solid #0078d4; border-radius: 12px;");
+            m_photoLabel->setStyleSheet("background-color: #374151; border: none; border-radius: 12px;");
         } else {
             ToastNotification::show(this, "Failed to load image.", ToastNotification::Error);
         }

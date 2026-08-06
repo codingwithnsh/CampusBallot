@@ -54,12 +54,12 @@ void CandidateFormDialog::setupUi() {
     // Consolidated stylesheet for better readability
     setStyleSheet(R"(
         QDialog { background-color: #1e1e34; }
-        QLabel { color: #e0e0e0; background: transparent; }
+        QLabel { color: #e0e0e0; background: transparent; border: none; }
         QLineEdit, QTextEdit, QComboBox {
-            background-color: #25253a; border: 1px solid #3d3d5c; border-radius: 8px;
+            background-color: #25253a; border: none; border-radius: 8px;
             padding: 10px; color: #ffffff; font-size: 14px;
         }
-        QLineEdit:focus, QTextEdit:focus { border-color: #0078d4; }
+        QLineEdit:focus, QTextEdit:focus { border: none; }
         QPushButton {
             background-color: #0078d4; color: white; border: none; border-radius: 8px;
             padding: 12px 24px; font-size: 15px; font-weight: 600;
@@ -133,7 +133,7 @@ void CandidateFormDialog::setupUi() {
     m_photoLabel->setStyleSheet(R"(
         QLabel {
             background-color: #1a1a2e;
-            border: 2px dashed #3d3d5c;
+            border: none;
             border-radius: 12px;
             color: #555;
             font-size: 48px;

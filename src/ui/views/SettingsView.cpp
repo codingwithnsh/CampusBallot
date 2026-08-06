@@ -11,6 +11,9 @@
 #include <QGroupBox>
 #include <QFormLayout>
 #include <QFile>
+#include <QSettings>
+#include <QMessageBox>
+#include <QApplication>
 #include <QDebug> // For logging
 #include <QSignalBlocker>
 
@@ -55,7 +58,7 @@ void SettingsView::setupUi() {
     // Keep theme names aligned with the persisted configuration values.
     m_themeCombo->addItems({"Modern", "Light", "Dark"});
     m_themeCombo->setStyleSheet(R"(
-        QComboBox { background-color: #1e1e34; color: #e0e0e0; border: 1px solid #3d3d5c; border-radius: 4px; padding: 5px; }
+        QComboBox { background-color: #1e1e34; color: #e0e0e0; border: none; border-radius: 4px; padding: 5px; }
         QComboBox::drop-down { border: 0px; }
         QComboBox::down-arrow { width: 12px; height: 12px; }
         QComboBox QAbstractItemView { background-color: #1e1e34; color: #e0e0e0; selection-background-color: #0078d4; }
@@ -67,7 +70,7 @@ void SettingsView::setupUi() {
     m_languageCombo = new QComboBox(appearanceGroup);
     m_languageCombo->addItems({"English", "Spanish", "French", "Arabic", "Hindi"});
     m_languageCombo->setStyleSheet(R"(
-        QComboBox { background-color: #1e1e34; color: #e0e0e0; border: 1px solid #3d3d5c; border-radius: 4px; padding: 5px; }
+        QComboBox { background-color: #1e1e34; color: #e0e0e0; border: none; border-radius: 4px; padding: 5px; }
         QComboBox::drop-down { border: 0px; }
         QComboBox::down-arrow { width: 12px; height: 12px; }
         QComboBox QAbstractItemView { background-color: #1e1e34; color: #e0e0e0; selection-background-color: #0078d4; }
@@ -89,7 +92,7 @@ void SettingsView::setupUi() {
     m_storageCombo->addItems({"Local Device", "Firebase", "PostgreSQL", "MySQL", "SQL Server", "REST API", "Custom Server"});
     m_storageCombo->setEnabled(true); 
     m_storageCombo->setStyleSheet(R"(
-        QComboBox { background-color: #1e1e34; color: #e0e0e0; border: 1px solid #3d3d5c; border-radius: 4px; padding: 5px; }
+        QComboBox { background-color: #1e1e34; color: #e0e0e0; border: none; border-radius: 4px; padding: 5px; }
         QComboBox::drop-down { border: 0px; }
         QComboBox::down-arrow { width: 12px; height: 12px; }
         QComboBox QAbstractItemView { background-color: #1e1e34; color: #e0e0e0; selection-background-color: #0078d4; }
@@ -126,7 +129,7 @@ void SettingsView::setupUi() {
     m_sessionTimeoutSpin->setRange(1, 480); // 1 minute to 8 hours
     m_sessionTimeoutSpin->setSuffix(" minutes");
     m_sessionTimeoutSpin->setStyleSheet(R"(
-        QSpinBox { background-color: #1e1e34; color: #e0e0e0; border: 1px solid #3d3d5c; border-radius: 4px; padding: 5px; }
+        QSpinBox { background-color: #1e1e34; color: #e0e0e0; border: none; border-radius: 4px; padding: 5px; }
         QSpinBox::up-button, QSpinBox::down-button { width: 20px; }
     )");
     securityLayout->addRow("Session timeout:", m_sessionTimeoutSpin);
@@ -152,12 +155,50 @@ void SettingsView::setupUi() {
     m_backupIntervalSpin->setSuffix(" hours");
     m_backupIntervalSpin->setValue(24);
     m_backupIntervalSpin->setStyleSheet(R"(
-        QSpinBox { background-color: #1e1e34; color: #e0e0e0; border: 1px solid #3d3d5c; border-radius: 4px; padding: 5px; }
+        QSpinBox { background-color: #1e1e34; color: #e0e0e0; border: none; border-radius: 4px; padding: 5px; }
         QSpinBox::up-button, QSpinBox::down-button { width: 20px; }
     )");
     backupLayout->addRow("Backup interval:", m_backupIntervalSpin);
 
     mainLayout->addWidget(backupGroup);
+
+    // --- System Maintenance Group ---
+    auto *maintenanceGroup = new QGroupBox("System Maintenance", this);
+    maintenanceGroup->setStyleSheet(R"(
+        QGroupBox { background-color: #25253a; border: 1px solid #f87171; border-radius: 12px; padding: 20px; margin-top: 16px; color: #f87171; font-weight: 600; }
+        QGroupBox::title { subcontrol-origin: margin; left: 16px; padding: 0 8px; }
+    )");
+    auto *maintenanceLayout = new QVBoxLayout(maintenanceGroup);
+    
+    auto *resetDesc = new QLabel("Resetting the system will delete all current data (elections, candidates, votes, students) and return to the Setup Wizard.", maintenanceGroup);
+    resetDesc->setWordWrap(true);
+    resetDesc->setStyleSheet("color: #9a9ab0; font-size: 13px; margin-bottom: 10px;");
+    maintenanceLayout->addWidget(resetDesc);
+
+    auto *resetBtn = new QPushButton("Factory Reset & Run Setup Wizard", maintenanceGroup);
+    resetBtn->setFixedHeight(40);
+    resetBtn->setStyleSheet(R"(
+        QPushButton { background-color: #7f1d1d; color: #f87171; border: 1px solid #f87171; border-radius: 6px; font-weight: 600; }
+        QPushButton:hover { background-color: #991b1b; color: white; }
+        QPushButton:pressed { background-color: #450a0a; }
+    )");
+    maintenanceLayout->addWidget(resetBtn);
+    mainLayout->addWidget(maintenanceGroup);
+
+    connect(resetBtn, &QPushButton::clicked, this, [this]() {
+        auto reply = QMessageBox::critical(this, "Factory Reset", 
+            "Are you absolutely sure you want to reset the system?\n\nThis will PERMANENTLY DELETE all data and restart the application to the Setup Wizard.",
+            QMessageBox::Yes | QMessageBox::No);
+        
+        if (reply == QMessageBox::Yes) {
+            QSettings settings;
+            settings.setValue("reset_requested", true);
+            settings.sync();
+            
+            QMessageBox::information(this, "Restart Required", "The system has been prepared for reset. The application will now close. Please restart it to begin the setup process.");
+            qApp->quit();
+        }
+    });
 
     // --- Save button ---
     auto *btnLayout = new QHBoxLayout();

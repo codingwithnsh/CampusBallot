@@ -489,6 +489,7 @@ QToolButton:hover {
 QLabel {
     color: #e0e0e0;
     background: transparent;
+    border: none;
 }
 
 QLabel#title {

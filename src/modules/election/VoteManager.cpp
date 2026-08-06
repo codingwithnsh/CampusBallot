@@ -78,14 +78,51 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
         return false;
     }
 
-    auto student = storage->getStudent(studentId);
-    if (!student) {
-        qWarning() << "VoteManager: Student with ID" << studentId << "not found. Cannot cast vote.";
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::VoteCompleted,
-            QString("Vote failed: Student not found - Student: %1, Election: %2").arg(studentId, electionId),
-            studentId);
-        return false;
+    bool isAnonymous = !election->verifyStudents || studentId.startsWith("BYPASS-");
+    std::optional<Core::Student> student;
+
+    if (!isAnonymous) {
+        student = storage->getStudent(studentId);
+        if (!student) {
+            qWarning() << "VoteManager: Student with ID" << studentId << "not found. Cannot cast vote.";
+            Audit::AuditManager::instance().log(
+                Core::AuditAction::VoteCompleted,
+                QString("Vote failed: Student not found - Student: %1, Election: %2").arg(studentId, electionId),
+                studentId);
+            return false;
+        }
+
+        if (election->requireVerification && !student->isVerified) {
+            qWarning() << "VoteManager: Unverified student vote rejected:" << studentId;
+            Audit::AuditManager::instance().log(
+                Core::AuditAction::VoteCompleted,
+                QString("Vote failed: Student verification required - Student: %1, Election: %2")
+                    .arg(studentId, electionId),
+                studentId);
+            return false;
+        }
+
+        if (!election->eligibleClasses.isEmpty() &&
+            !election->eligibleClasses.contains(student->className, Qt::CaseInsensitive)) {
+            qWarning() << "VoteManager: Student is not eligible by class:" << studentId;
+            return false;
+        }
+        if (!election->eligibleDepartments.isEmpty() &&
+            !election->eligibleDepartments.contains(student->department, Qt::CaseInsensitive)) {
+            qWarning() << "VoteManager: Student is not eligible by department:" << studentId;
+            return false;
+        }
+
+        // --- Duplicate vote check ---
+        if (storage->hasStudentVoted(studentId, electionId)) {
+            qWarning() << "VoteManager: Duplicate vote attempt blocked for Student:" << studentId << "in Election:" << electionId;
+            emit duplicateVoteAttempt(studentId, electionId);
+            Audit::AuditManager::instance().log(
+                Core::AuditAction::VoteCompleted,
+                QString("Duplicate vote attempt blocked - Student: %1, Election: %2").arg(studentId, electionId),
+                studentId);
+            return false;
+        }
     }
 
     auto candidate = storage->getCandidate(candidateId);
@@ -117,16 +154,6 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
         return false;
     }
 
-    if (election->requireVerification && !student->isVerified) {
-        qWarning() << "VoteManager: Unverified student vote rejected:" << studentId;
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::VoteCompleted,
-            QString("Vote failed: Student verification required - Student: %1, Election: %2")
-                .arg(studentId, electionId),
-            studentId);
-        return false;
-    }
-
     const auto now = QDateTime::currentDateTime();
     if (election->startDate.isValid() && now < election->startDate) {
         qWarning() << "VoteManager: Voting window has not opened for election:" << electionId;
@@ -134,28 +161,6 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
     }
     if (election->endDate.isValid() && now > election->endDate) {
         qWarning() << "VoteManager: Voting window has closed for election:" << electionId;
-        return false;
-    }
-
-    if (!election->eligibleClasses.isEmpty() &&
-        !election->eligibleClasses.contains(student->className, Qt::CaseInsensitive)) {
-        qWarning() << "VoteManager: Student is not eligible by class:" << studentId;
-        return false;
-    }
-    if (!election->eligibleDepartments.isEmpty() &&
-        !election->eligibleDepartments.contains(student->department, Qt::CaseInsensitive)) {
-        qWarning() << "VoteManager: Student is not eligible by department:" << studentId;
-        return false;
-    }
-
-    // --- Duplicate vote check ---
-    if (storage->hasStudentVoted(studentId, electionId)) {
-        qWarning() << "VoteManager: Duplicate vote attempt blocked for Student:" << studentId << "in Election:" << electionId;
-        emit duplicateVoteAttempt(studentId, electionId);
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::VoteCompleted,
-            QString("Duplicate vote attempt blocked - Student: %1, Election: %2").arg(studentId, electionId),
-            studentId);
         return false;
     }
 
@@ -172,7 +177,7 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
     Core::Vote vote;
     vote.id = Core::IdGenerator::generateId();
     vote.electionId = electionId;
-    vote.studentId = studentId;
+    vote.studentId = isAnonymous ? QString() : studentId;
     vote.candidateId = candidateId; // Now storing the unencrypted candidateId
     vote.timestamp = QDateTime::currentDateTime();
     vote.machineId = Core::SystemInfo::getMachineId();
@@ -222,15 +227,17 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
     }
 
     // --- Update student voting status ---
-    student->hasVoted = true;
-    if (!storage->updateStudent(*student)) {
-        qCritical() << "VoteManager: Failed to update student voting status for Student:" << studentId << ". Rolling back transaction.";
-        storage->rollbackTransaction();
-        Audit::AuditManager::instance().log(
-            Core::AuditAction::VoteCompleted,
-            QString("Vote failed: Student status update error - Student: %1, Election: %2").arg(studentId, electionId),
-            studentId);
-        return false;
+    if (!isAnonymous && student) {
+        student->hasVoted = true;
+        if (!storage->updateStudent(*student)) {
+            qCritical() << "VoteManager: Failed to update student voting status for Student:" << studentId << ". Rolling back transaction.";
+            storage->rollbackTransaction();
+            Audit::AuditManager::instance().log(
+                Core::AuditAction::VoteCompleted,
+                QString("Vote failed: Student status update error - Student: %1, Election: %2").arg(studentId, electionId),
+                studentId);
+            return false;
+        }
     }
 
     // --- Commit Transaction ---

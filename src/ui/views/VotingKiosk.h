@@ -121,6 +121,13 @@ private:
     QGridLayout* m_candidatesGrid = nullptr;
     QScrollArea* m_candidateScrollArea = nullptr;
     QPushButton* m_loadingOverlay = nullptr;
+
+    // Scan ID page components for toggling
+    QLabel* m_scanIdTitle = nullptr;
+    QLabel* m_scanIdDesc = nullptr;
+    QWidget* m_idInputContainer = nullptr;
+    QPushButton* m_startVotingBtn = nullptr;
+    QPushButton* m_continueBtn = nullptr;
     
     // State
     KioskState m_currentState = KioskState::Waiting;

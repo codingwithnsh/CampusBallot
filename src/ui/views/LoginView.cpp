@@ -31,10 +31,10 @@ QString promptForRecoveryEmail(QWidget* parent, const QString& initialEmail) {
         QDialog { background-color: #1e1e34; }
         QLabel { color: #e0e0e0; background: transparent; font-size: 13px; }
         QLineEdit {
-            background-color: #25253a; border: 1px solid #3d3d5c; border-radius: 8px;
+            background-color: #25253a; border: none; border-radius: 8px;
             padding: 10px; color: #ffffff; font-size: 14px; min-height: 24px;
         }
-        QLineEdit:focus { border-color: #38bdf8; }
+        QLineEdit:focus { border: none; }
         QLabel#errorLabel { color: #f87171; font-weight: 600; }
         QPushButton {
             background-color: #0078d4; color: white; border: none; border-radius: 8px;
@@ -206,16 +206,16 @@ void LoginView::setupUi() {
     m_authTypeComboBox->setFixedHeight(44);
     m_authTypeComboBox->setStyleSheet(R"(
         QComboBox {
-            background-color: #374151; color: #ffffff; border: 1px solid #4b5563;
+            background-color: #374151; color: #ffffff; border: none;
             border-radius: 8px; padding: 8px 12px; font-size: 15px; min-height: 24px;
         }
         QComboBox::drop-down { border: 0px; }
         QComboBox::down-arrow { width: 16px; height: 16px; }
-        QComboBox:hover { border: 1px solid #6b7280; }
-        QComboBox:on { border: 1px solid #38bdf8; }
+        QComboBox:hover { border: none; }
+        QComboBox:on { border: none; }
         QComboBox QAbstractItemView {
             background-color: #374151; color: #ffffff; selection-background-color: #38bdf8;
-            border: 1px solid #4b5563; border-radius: 8px;
+            border: none; border-radius: 8px;
         }
     )");
     layout->addWidget(m_authTypeComboBox);
