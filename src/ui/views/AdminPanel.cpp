@@ -29,6 +29,9 @@
 #include <QDateTimeEdit>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QRadioButton>
+#include <QButtonGroup>
+#include <QFileDialog>
 
 namespace Ballot::UI {
 
@@ -491,9 +494,52 @@ void AdminPanel::showCreateElectionWizard() {
     maxVotesSpin->setValue(1);
     maxVotesSpin->setAccessibleName("Maximum votes per student");
 
-    auto* verificationCheck = new QCheckBox("Require verified student identity before accepting a vote", schedulePage);
+    auto* verificationCheck = new QCheckBox("Require student verification before voting", schedulePage);
     verificationCheck->setChecked(true);
     verificationCheck->setAccessibleName("Require student verification");
+    verificationCheck->setStyleSheet("border: none;");
+
+    auto* photoOptionalCheck = new QCheckBox("Make taking photo optional", schedulePage);
+    photoOptionalCheck->setChecked(false);
+    photoOptionalCheck->setAccessibleName("Photo optional");
+    photoOptionalCheck->setStyleSheet("border: none;");
+
+    auto* verificationTypeGroup = new QGroupBox("Verification Method", schedulePage);
+    auto* verificationTypeLayout = new QVBoxLayout(verificationTypeGroup);
+    auto* noneRadio = new QRadioButton("No verification (Bypass)", verificationTypeGroup);
+    noneRadio->setStyleSheet("border: none;");
+    auto* databaseRadio = new QRadioButton("Verify against Database", verificationTypeGroup);
+    databaseRadio->setStyleSheet("border: none;");
+    auto* fileRadio = new QRadioButton("Verify against File (Excel/CSV)", verificationTypeGroup);
+    fileRadio->setStyleSheet("border: none;");
+    verificationTypeLayout->addWidget(noneRadio);
+    verificationTypeLayout->addWidget(databaseRadio);
+    verificationTypeLayout->addWidget(fileRadio);
+    databaseRadio->setChecked(true);
+
+    auto* filePickerWidget = new QWidget(schedulePage);
+    auto* filePickerLayout = new QHBoxLayout(filePickerWidget);
+    auto* filePathEdit = new QLineEdit(filePickerWidget);
+    filePathEdit->setReadOnly(true);
+    auto* browseBtn = new QPushButton("Browse...", filePickerWidget);
+    filePickerLayout->addWidget(filePathEdit);
+    filePickerLayout->addWidget(browseBtn);
+    filePickerWidget->setVisible(false);
+
+    auto* columnEdit = new QLineEdit(schedulePage);
+    columnEdit->setPlaceholderText("Column name to verify (e.g. AdmissionNumber)");
+    columnEdit->setVisible(false);
+
+    connect(verificationCheck, &QCheckBox::toggled, verificationTypeGroup, &QGroupBox::setEnabled);
+    connect(fileRadio, &QRadioButton::toggled, filePickerWidget, &QWidget::setVisible);
+    connect(fileRadio, &QRadioButton::toggled, columnEdit, &QWidget::setVisible);
+
+    connect(browseBtn, &QPushButton::clicked, this, [=, this]() {
+        QString path = QFileDialog::getOpenFileName(this, "Select Verification File", "", "Excel Files (*.xlsx *.xls);;CSV Files (*.csv)");
+        if (!path.isEmpty()) {
+            filePathEdit->setText(path);
+        }
+    });
 
     auto* scheduleLayout = new QFormLayout(schedulePage);
     scheduleLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
@@ -501,6 +547,10 @@ void AdminPanel::showCreateElectionWizard() {
     scheduleLayout->addRow("Voting ends", endEdit);
     scheduleLayout->addRow("Max votes per student", maxVotesSpin);
     scheduleLayout->addRow("", verificationCheck);
+    scheduleLayout->addRow("", photoOptionalCheck);
+    scheduleLayout->addRow(verificationTypeGroup);
+    scheduleLayout->addRow("Verification file", filePickerWidget);
+    scheduleLayout->addRow("Verification column", columnEdit);
     wizard.addPage(schedulePage);
 
     auto* reviewPage = new QWizardPage(&wizard);
@@ -570,6 +620,17 @@ void AdminPanel::showCreateElectionWizard() {
     election.eligibleDepartments = splitCsvValues(departmentsEdit->text());
     election.maxVotesPerStudent = maxVotesSpin->value();
     election.requireVerification = verificationCheck->isChecked();
+    election.photoOptional = photoOptionalCheck->isChecked();
+    election.verifyStudents = !noneRadio->isChecked() && verificationCheck->isChecked();
+    if (fileRadio->isChecked()) {
+        election.studentVerificationType = "File";
+        election.verificationFilePath = filePathEdit->text();
+        election.verificationColumn = columnEdit->text().trimmed();
+    } else if (databaseRadio->isChecked()) {
+        election.studentVerificationType = "Database";
+    } else {
+        election.studentVerificationType = "None";
+    }
 
     if (Election::ElectionManager::instance().createElection(election)) {
         ToastNotification::show(this, "Election '" + election.title + "' created successfully.", ToastNotification::Success);

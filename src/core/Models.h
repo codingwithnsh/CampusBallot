@@ -231,6 +231,11 @@ struct Election {
     QStringList eligibleDepartments;
     int maxVotesPerStudent = 1;
     bool requireVerification = true;
+    bool photoOptional = false;
+    bool verifyStudents = true;
+    QString studentVerificationType = "None"; // e.g., "File", "Database"
+    QString verificationFilePath;
+    QString verificationColumn;
 
     QJsonObject toJson() const {
         QJsonObject o;
@@ -247,6 +252,11 @@ struct Election {
         o["eligibleDepartments"] = QJsonArray::fromStringList(eligibleDepartments);
         o["maxVotesPerStudent"] = maxVotesPerStudent;
         o["requireVerification"] = requireVerification;
+        o["photoOptional"] = photoOptional;
+        o["verifyStudents"] = verifyStudents;
+        o["studentVerificationType"] = studentVerificationType;
+        o["verificationFilePath"] = verificationFilePath;
+        o["verificationColumn"] = verificationColumn;
         return o;
     }
 };
@@ -345,6 +355,7 @@ struct SystemSettings {
     QString theme = "Modern"; // Changed default to "Modern"
     QString accentColor = "#0078d4";
     QString language = "en";
+    QString storageType = "sqlite";
 
     QJsonObject toJson() const {
         QJsonObject o;
@@ -363,6 +374,7 @@ struct SystemSettings {
         o["theme"] = theme;
         o["accentColor"] = accentColor;
         o["language"] = language;
+        o["storageType"] = storageType;
         return o;
     }
 };

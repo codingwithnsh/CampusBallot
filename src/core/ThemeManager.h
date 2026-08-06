@@ -14,11 +14,14 @@ public:
     enum Theme {
         Modern,
         Light,
-        Dark // Placeholder for a future dark theme
+        Dark
     };
     Q_ENUM(Theme)
 
     static ThemeManager& instance();
+
+    static Theme fromString(const QString& themeName);
+    static QString toString(Theme theme);
 
     void applyTheme(Theme theme);
     void applyTheme(const QString& themeName);

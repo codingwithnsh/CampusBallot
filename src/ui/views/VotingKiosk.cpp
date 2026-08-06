@@ -166,6 +166,13 @@ void VotingKiosk::updateVotingState() {
 void VotingKiosk::nextStep() {
     if (m_currentStep < m_pages->count() - 1) {
         m_currentStep++;
+        
+        // Skip Verify Photo page if photoOptional is true
+        if (m_currentStep == 2 && m_activeElection && m_activeElection->photoOptional) {
+            qInfo() << "VotingKiosk: Skipping photo verification as it is optional.";
+            m_currentStep++;
+        }
+
         m_pages->setCurrentIndex(m_currentStep);
         qDebug() << "VotingKiosk: Moving to step" << m_currentStep;
 
@@ -188,6 +195,12 @@ void VotingKiosk::nextStep() {
 void VotingKiosk::prevStep() {
     if (m_currentStep > 0) {
         m_currentStep--;
+
+        // Skip Verify Photo page when going back if photoOptional is true
+        if (m_currentStep == 2 && m_activeElection && m_activeElection->photoOptional) {
+            m_currentStep--;
+        }
+
         m_pages->setCurrentIndex(m_currentStep);
         qDebug() << "VotingKiosk: Moving to previous step" << m_currentStep;
     } else {
@@ -261,7 +274,21 @@ void VotingKiosk::processScanId(const QString& admissionNumber) {
     }
 
     // --- Production Mode Handling ---
-    std::optional<Core::Student> studentOpt = storage->getStudentByAdmission(admissionNumber); // Assuming admission number is the primary ID for kiosk
+    if (!m_activeElection->verifyStudents) {
+        // Bypass verification
+        Core::Student student;
+        student.id = "BYPASS-" + admissionNumber;
+        student.name = "Voter " + admissionNumber;
+        student.admissionNumber = admissionNumber;
+        student.hasVoted = false;
+        student.isVerified = true;
+        m_currentVoter = student;
+        ToastNotification::show(this, "Student identity accepted (Verification Bypassed)", ToastNotification::Success);
+        nextStep();
+        return;
+    }
+
+    std::optional<Core::Student> studentOpt = storage->getStudentByAdmission(admissionNumber);
 
     if (!studentOpt) {
         ToastNotification::show(this, "Invalid admission number or student not found.", ToastNotification::Error);
@@ -299,7 +326,9 @@ void VotingKiosk::processScanId(const QString& admissionNumber) {
 
 
     m_currentVoter = student;
-    ToastNotification::show(this, "Student verified: " + student.name, ToastNotification::Success);
+    QString detailMsg = QString("Student verified: %1\nClass: %2\nSection: %3")
+        .arg(student.name, student.className, student.section);
+    ToastNotification::show(this, detailMsg, ToastNotification::Success);
     qInfo() << "VotingKiosk: Student" << student.name << "(" << student.id << ") verified.";
     nextStep(); // Move to next step (Verify Photo or Choose Candidate)
 }
@@ -593,7 +622,21 @@ QWidget* VotingKiosk::createVerifyPhotoPage() {
     btnLayout->addStretch();
     layout->addLayout(btnLayout);
 
-    connect(verifyBtn, &QPushButton::clicked, this, &VotingKiosk::nextStep);
+    connect(verifyBtn, &QPushButton::clicked, this, [this]() {
+        if (m_currentVoter && m_activeElection) {
+            QString photosDir = "data/photos/" + m_activeElection->id;
+            QDir().mkpath(photosDir);
+            QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss");
+            QString filename = QString("%1/%2_%3.jpg")
+                .arg(photosDir, m_currentVoter->admissionNumber, timestamp);
+            
+            // In a real app, capture from camera. Here we simulate saving.
+            // QImage photo = captureCamera(); 
+            // photo.save(filename, "JPG");
+            qInfo() << "VotingKiosk: Photo would be saved to" << filename;
+        }
+        nextStep();
+    });
     connect(cancelBtn, &QPushButton::clicked, this, &VotingKiosk::prevStep);
 
     layout->addStretch();

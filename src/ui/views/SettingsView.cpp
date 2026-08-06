@@ -1,5 +1,6 @@
 #include "SettingsView.h"
 #include "src/core/SystemManager.h"
+#include "src/core/ThemeManager.h"
 #include "src/modules/audit/AuditManager.h" // For audit logging
 #include "src/modules/auth/AuthManager.h"
 #include "src/modules/backup/BackupManager.h" // For auto-backup settings
@@ -86,7 +87,7 @@ void SettingsView::setupUi() {
 
     m_storageCombo = new QComboBox(storageGroup);
     m_storageCombo->addItems({"Local Device", "Firebase", "PostgreSQL", "MySQL", "SQL Server", "REST API", "Custom Server"});
-    m_storageCombo->setEnabled(false); // Make it non-editable as changing storage dynamically is complex
+    m_storageCombo->setEnabled(true); 
     m_storageCombo->setStyleSheet(R"(
         QComboBox { background-color: #1e1e34; color: #e0e0e0; border: 1px solid #3d3d5c; border-radius: 4px; padding: 5px; }
         QComboBox::drop-down { border: 0px; }
@@ -193,13 +194,8 @@ void SettingsView::loadSettings() {
     // Set current theme in combo box from the persisted application settings.
     // This keeps the UI aligned with the database-backed configuration rather
     // than a transient runtime state.
-    const QString normalizedTheme = [&settings]() {
-        const QString theme = settings.theme.trimmed();
-        if (theme.compare("dark", Qt::CaseInsensitive) == 0) return QStringLiteral("Dark");
-        if (theme.compare("light", Qt::CaseInsensitive) == 0) return QStringLiteral("Light");
-        if (theme.compare("modern", Qt::CaseInsensitive) == 0) return QStringLiteral("Modern");
-        return theme;
-    }();
+    const QString normalizedTheme = Core::ThemeManager::toString(
+        Core::ThemeManager::fromString(settings.theme));
 
     int index = m_themeCombo->findText(normalizedTheme);
     if (index != -1) {
@@ -262,6 +258,10 @@ void SettingsView::saveSettings() {
     settings.auditAllActions = m_auditAllCheck->isChecked();
     settings.encryptionEnabled = m_encryptionCheck->isChecked();
     settings.tamperDetection = m_tamperCheck->isChecked();
+
+    if (m_storageCombo->currentText() == "Local Device") settings.storageType = "sqlite";
+    else if (m_storageCombo->currentText() == "Firebase") settings.storageType = "firebase";
+    // Add other providers as needed
 
     if (Core::SystemManager::instance().updateSettings(settings)) {
         ToastNotification::show(this, "Settings saved successfully", ToastNotification::Success);

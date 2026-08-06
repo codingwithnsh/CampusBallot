@@ -95,13 +95,13 @@ set(HEADERS
     src/ui/dialogs/CandidateFormDialog.h
 )
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 set(RESOURCES
     resources.qrc
 )
 
-add_executable(TheRealCampusBallot ${SOURCES} ${RESOURCES}) # Removed ${HEADERS} from here
+add_executable(TheRealCampusBallot ${SOURCES} ${HEADERS} ${RESOURCES})
+
+target_include_directories(TheRealCampusBallot PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(TheRealCampusBallot PRIVATE 
     Qt6::Core 

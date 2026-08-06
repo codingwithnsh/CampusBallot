@@ -59,7 +59,7 @@ QString passwordValidationError(const QString& password) {
 } // namespace
 
 SetupWizard::SetupWizard(QWidget *parent) : QWidget(parent) {
-    setWindowTitle("Campus Ballot - Setup Wizard");
+    setWindowTitle("Campus Ballot - Set Up Wizard");
     setFixedSize(820, 620);
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint); // Frameless dialog
     setupUi();
@@ -81,7 +81,7 @@ void SetupWizard::setupUi() {
     auto *headerLayout = new QVBoxLayout(header);
     headerLayout->setContentsMargins(20, 10, 20, 10);
 
-    auto *title = new QLabel("Setup Wizard", header);
+    auto *title = new QLabel("Set Up Wizard", header);
     title->setStyleSheet("font-size: 24px; font-weight: 700; color: #ffffff; background: transparent;");
     headerLayout->addWidget(title);
 
@@ -169,27 +169,23 @@ void SetupWizard::nextStep() {
     int nextIndex = m_currentIndex + 1;
 
     // Page-specific validation and navigation logic
-    if (m_currentIndex == 1) { // Storage Selection Page
+    if (m_currentIndex == 1) { // Storage/Auth Selection Page
         int id = m_storageGroup->checkedId();
         if (id < 0) {
-            ToastNotification::show(this, "Please select a storage provider", ToastNotification::Warning);
-            qWarning() << "SetupWizard: No storage provider selected.";
+            ToastNotification::show(this, "Please select an authentication method", ToastNotification::Warning);
             return;
         }
-        QRadioButton* rb = qobject_cast<QRadioButton*>(m_storageGroup->button(id));
-        if (rb) {
-            QString selected = rb->text();
-            if (selected == "Firebase") {
-                m_config["storage_type"] = "firebase";
-                nextIndex = 2; // Go to Firebase Config
-            } else { // Local Device
-                m_config["storage_type"] = "sqlite";
-                // Default path if not changed in Local Config page
-                if (!m_config.contains("db_path")) {
-                    m_config["db_path"] = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
-                }
-                nextIndex = 3; // Go to Local Config
+        if (id == 1) { // Firebase
+            m_config["auth_type"] = "firebase";
+            m_config["storage_type"] = "firebase";
+            nextIndex = 2; // Go to Firebase Config
+        } else { // Local
+            m_config["auth_type"] = "local";
+            m_config["storage_type"] = "sqlite";
+            if (!m_config.contains("db_path")) {
+                m_config["db_path"] = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
             }
+            nextIndex = 3; // Go to Local Config
         }
     } else if (m_currentIndex == 2) { // Firebase Config Page
         if (m_firebaseApiKey.isEmpty() || m_firebaseProjectId.isEmpty()) {
@@ -363,25 +359,19 @@ QWidget* SetupWizard::createStorageSelectionPage() {
     layout->setContentsMargins(40, 30, 40, 30);
     layout->setAlignment(Qt::AlignCenter);
 
-    auto *title = new QLabel("Where should votes be stored?", page);
+    auto *title = new QLabel("Choose Authentication Method", page);
     title->setStyleSheet("font-size: 20px; font-weight: 600; color: #ffffff; margin-bottom: 20px; background: transparent;");
     layout->addWidget(title);
 
-    auto *desc = new QLabel("Select a storage provider for election data:", page);
+    auto *desc = new QLabel("Select how you want to authenticate users:", page);
     desc->setStyleSheet("font-size: 14px; color: #9a9ab0; margin-bottom: 20px; background: transparent;");
     layout->addWidget(desc);
 
     m_storageGroup = new QButtonGroup(page);
 
-    // SQLite is the only storage provider currently implemented by SystemManager.
-    // Other options are placeholders for future expansion.
     QList<QPair<QString, QString>> storageOptions = {
-        {"Local Device", "SQLite database stored on this device. All data stays local, no internet required."},
-        // {"PostgreSQL", "External PostgreSQL database. Requires database server setup."},
-        // {"MySQL", "External MySQL database. Requires database server setup."},
-        // {"SQL Server", "External SQL Server database. Requires database server setup."},
-        // {"REST API", "Custom REST API endpoint for data storage. Requires custom backend."},
-        // {"Custom Server", "Custom school server integration. Requires custom development."}
+        {"Local Authentication", "Authenticate users using local database. All data stays on this device."},
+        {"Firebase Authentication", "Authenticate users using Firebase. Requires internet connection."}
     };
 
     auto *grid = new QGridLayout();
@@ -423,6 +413,7 @@ QWidget* SetupWizard::createStorageSelectionPage() {
         auto *rb = new QRadioButton(card);
         rb->setText("");
         rb->setFixedSize(20, 20);
+        rb->setStyleSheet("border: none;");
         m_storageGroup->addButton(rb, i);
         rb->setChecked(selectedByDefault);
         cardLayout->addWidget(rb, 0, Qt::AlignRight | Qt::AlignBottom); // Position radio button at bottom right

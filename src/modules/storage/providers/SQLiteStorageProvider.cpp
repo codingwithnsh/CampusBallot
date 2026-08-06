@@ -136,7 +136,12 @@ bool SQLiteStorageProvider::initSchema() {
         is_active INTEGER DEFAULT 0, created_by TEXT, created_at DATETIME,
         eligible_classes TEXT, eligible_departments TEXT,
         max_votes_per_student INTEGER DEFAULT 1,
-        require_verification INTEGER DEFAULT 1
+        require_verification INTEGER DEFAULT 1,
+        photo_optional INTEGER DEFAULT 0,
+        verify_students INTEGER DEFAULT 1,
+        student_verification_type TEXT,
+        verification_file_path TEXT,
+        verification_column TEXT
     ))", "elections");
 
     ok &= exec(R"(CREATE TABLE IF NOT EXISTS candidates (
@@ -226,6 +231,13 @@ bool SQLiteStorageProvider::initSchema() {
         }
         return true;
     };
+
+    // Migrate elections table
+    ok &= addColumn("elections", "photo_optional", "INTEGER DEFAULT 0");
+    ok &= addColumn("elections", "verify_students", "INTEGER DEFAULT 1");
+    ok &= addColumn("elections", "student_verification_type", "TEXT");
+    ok &= addColumn("elections", "verification_file_path", "TEXT");
+    ok &= addColumn("elections", "verification_column", "TEXT");
 
     // Migrate candidates table
     ok &= addColumn("candidates", "photo_data", "BLOB");
@@ -353,9 +365,10 @@ bool SQLiteStorageProvider::initSchema() {
     ok &= insertDefaultSetting("audit_all_actions", "1");
     ok &= insertDefaultSetting("encryption_enabled", "1");
     ok &= insertDefaultSetting("tamper_detection", "1");
-    ok &= insertDefaultSetting("theme", "dark");
+    ok &= insertDefaultSetting("theme", "Modern");
     ok &= insertDefaultSetting("accent_color", "#0078d4");
     ok &= insertDefaultSetting("language", "en");
+    ok &= insertDefaultSetting("storage_type", "sqlite");
 
     return ok;
 }
@@ -364,8 +377,8 @@ bool SQLiteStorageProvider::initSchema() {
 
 bool SQLiteStorageProvider::createElection(const Core::Election& election) {
     QSqlQuery query(m_db);
-    query.prepare(R"(INSERT INTO elections (id, title, description, start_date, end_date, state, is_active, created_by, created_at, eligible_classes, eligible_departments, max_votes_per_student, require_verification)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?))");
+    query.prepare(R"(INSERT INTO elections (id, title, description, start_date, end_date, state, is_active, created_by, created_at, eligible_classes, eligible_departments, max_votes_per_student, require_verification, photo_optional, verify_students, student_verification_type, verification_file_path, verification_column)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?))");
     query.addBindValue(election.id);
     query.addBindValue(election.title);
     query.addBindValue(election.description);
@@ -379,6 +392,11 @@ bool SQLiteStorageProvider::createElection(const Core::Election& election) {
     query.addBindValue(election.eligibleDepartments.join(","));
     query.addBindValue(election.maxVotesPerStudent);
     query.addBindValue(election.requireVerification ? 1 : 0);
+    query.addBindValue(election.photoOptional ? 1 : 0);
+    query.addBindValue(election.verifyStudents ? 1 : 0);
+    query.addBindValue(election.studentVerificationType);
+    query.addBindValue(election.verificationFilePath);
+    query.addBindValue(election.verificationColumn);
     if (!query.exec()) {
         qCritical() << "SQLiteStorageProvider: Failed to create election:" << query.lastError().text();
         return false;
@@ -388,7 +406,7 @@ bool SQLiteStorageProvider::createElection(const Core::Election& election) {
 
 bool SQLiteStorageProvider::updateElection(const Core::Election& election) {
     QSqlQuery query(m_db);
-    query.prepare(R"(UPDATE elections SET title=?, description=?, start_date=?, end_date=?, state=?, is_active=?, eligible_classes=?, eligible_departments=?, max_votes_per_student=?, require_verification=? WHERE id=?)");
+    query.prepare(R"(UPDATE elections SET title=?, description=?, start_date=?, end_date=?, state=?, is_active=?, eligible_classes=?, eligible_departments=?, max_votes_per_student=?, require_verification=?, photo_optional=?, verify_students=?, student_verification_type=?, verification_file_path=?, verification_column=? WHERE id=?)");
     query.addBindValue(election.title);
     query.addBindValue(election.description);
     query.addBindValue(election.startDate);
@@ -399,6 +417,11 @@ bool SQLiteStorageProvider::updateElection(const Core::Election& election) {
     query.addBindValue(election.eligibleDepartments.join(","));
     query.addBindValue(election.maxVotesPerStudent);
     query.addBindValue(election.requireVerification ? 1 : 0);
+    query.addBindValue(election.photoOptional ? 1 : 0);
+    query.addBindValue(election.verifyStudents ? 1 : 0);
+    query.addBindValue(election.studentVerificationType);
+    query.addBindValue(election.verificationFilePath);
+    query.addBindValue(election.verificationColumn);
     query.addBindValue(election.id);
     if (!query.exec()) {
         qCritical() << "SQLiteStorageProvider: Failed to update election:" << query.lastError().text();
@@ -1246,6 +1269,7 @@ std::optional<Core::SystemSettings> SQLiteStorageProvider::getSystemSettings() {
             else if (key == "theme") settings.theme = value;
             else if (key == "accent_color") settings.accentColor = value;
             else if (key == "language") settings.language = value;
+            else if (key == "storage_type") settings.storageType = value;
         }
         return settings;
     } else {
@@ -1282,6 +1306,7 @@ bool SQLiteStorageProvider::updateSystemSettings(const Core::SystemSettings& set
     ok &= set("theme", settings.theme);
     ok &= set("accent_color", settings.accentColor);
     ok &= set("language", settings.language);
+    ok &= set("storage_type", settings.storageType);
     return ok;
 }
 
@@ -1399,6 +1424,11 @@ static Core::Election parseElection(const QSqlQuery& query) {
     e.eligibleDepartments = query.value("eligible_departments").toString().split(",", Qt::SkipEmptyParts);
     e.maxVotesPerStudent = query.value("max_votes_per_student").toInt();
     e.requireVerification = query.value("require_verification").toBool();
+    e.photoOptional = query.value("photo_optional").toBool();
+    e.verifyStudents = query.value("verify_students").toBool();
+    e.studentVerificationType = query.value("student_verification_type").toString();
+    e.verificationFilePath = query.value("verification_file_path").toString();
+    e.verificationColumn = query.value("verification_column").toString();
     return e;
 }
 

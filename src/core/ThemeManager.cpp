@@ -17,39 +17,56 @@ ThemeManager& ThemeManager::instance()
     return instance;
 }
 
+ThemeManager::Theme ThemeManager::fromString(const QString& themeName)
+{
+    const QString normalized = themeName.trimmed();
+    if (normalized.compare("Light", Qt::CaseInsensitive) == 0) {
+        return Theme::Light;
+    }
+    if (normalized.compare("Dark", Qt::CaseInsensitive) == 0) {
+        return Theme::Dark;
+    }
+    return Theme::Modern;
+}
+
+QString ThemeManager::toString(Theme theme)
+{
+    return QString::fromLatin1(QMetaEnum::fromType<Theme>().valueToKey(theme));
+}
+
 void ThemeManager::applyTheme(Theme theme)
 {
     QString stylesheetPath = getThemeStylesheet(theme);
     QFile file(stylesheetPath);
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
-        QString stylesheet = QLatin1String(file.readAll());
-        qApp->setStyleSheet(stylesheet);
-        m_currentTheme = theme;
-        qInfo() << "ThemeManager: Applied theme:" << QMetaEnum::fromType<Theme>().valueToKey(theme);
-        emit themeChanged(theme);
-
-        // Save the selected theme to QSettings
-        QSettings settings;
-        settings.setValue("theme", QMetaEnum::fromType<Theme>().valueToKey(theme));
-    } else {
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
         qWarning() << "ThemeManager: Could not open stylesheet file:" << stylesheetPath;
+        if (theme == Theme::Modern) {
+            return;
+        }
+
+        theme = Theme::Modern;
+        stylesheetPath = getThemeStylesheet(theme);
+        file.setFileName(stylesheetPath);
+        if (!file.open(QFile::ReadOnly | QFile::Text)) {
+            qCritical() << "ThemeManager: Failed to load fallback stylesheet:" << stylesheetPath;
+            return;
+        }
     }
+
+    const QString stylesheet = QString::fromUtf8(file.readAll());
+    qApp->setStyleSheet(stylesheet);
+    m_currentTheme = theme;
+    qInfo() << "ThemeManager: Applied theme:" << toString(theme);
+    emit themeChanged(theme);
+
+    // Save the selected theme to QSettings
+    QSettings settings;
+    settings.setValue("theme", toString(theme));
 }
 
 void ThemeManager::applyTheme(const QString& themeName)
 {
-    Theme theme = Theme::Modern; // Default to Modern if not found
-    if (themeName.compare("Light", Qt::CaseInsensitive) == 0) {
-        theme = Theme::Light;
-    } else if (themeName.compare("Dark", Qt::CaseInsensitive) == 0) {
-        // The legacy dark stylesheet applies borders to every QFrame, which
-        // creates boxes around arbitrary labels/layout helper widgets. Use the
-        // modern dark stylesheet for persisted "dark" settings instead.
-        theme = Theme::Modern;
-    }
-    // Add more themes here as they are implemented
-
-    applyTheme(theme);
+    applyTheme(fromString(themeName));
 }
 
 QString ThemeManager::getThemeStylesheet(Theme theme)
@@ -57,7 +74,7 @@ QString ThemeManager::getThemeStylesheet(Theme theme)
     switch (theme) {
         case Theme::Modern: return ":/src/ui/styles/modern.qss";
         case Theme::Light:  return ":/src/ui/styles/light.qss";
-        case Theme::Dark:   return ":/src/ui/styles/dark.qss"; // Assuming a dark.qss will be added
+        case Theme::Dark:   return ":/src/ui/styles/dark.qss";
         default:            return ":/src/ui/styles/modern.qss";
     }
 }

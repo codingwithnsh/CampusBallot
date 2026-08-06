@@ -143,7 +143,9 @@ int main(int argc, char *argv[])
     QSettings settings; // Moved settings here to be accessible for theme loading
 
     // Apply theme using ThemeManager
-    QString savedThemeName = settings.value("theme", "Modern").toString(); // Default to "Modern"
+    QString savedThemeName = settings.value(
+        "theme",
+        Core::ThemeManager::toString(Core::ThemeManager::Modern)).toString();
     Core::ThemeManager::instance().applyTheme(savedThemeName);
 
     // Load RBAC roles (can be done early as it doesn't depend on storage config)

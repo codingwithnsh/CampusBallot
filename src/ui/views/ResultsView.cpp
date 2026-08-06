@@ -83,7 +83,7 @@ protected:
         const int rowHeight = 46;
         const int gap = 12;
         const int visibleRows = std::max(1, static_cast<int>(chartArea.height()) / (rowHeight + gap));
-        const int rows = std::min(m_results.size(), visibleRows);
+        const int rows = std::min(static_cast<int>(m_results.size()), visibleRows);
         const qreal labelWidth = std::min<qreal>(220, chartArea.width() * 0.34);
         const qreal barStart = chartArea.left() + labelWidth + 16;
         const qreal barMaxWidth = std::max<qreal>(40, chartArea.right() - barStart - 92);
