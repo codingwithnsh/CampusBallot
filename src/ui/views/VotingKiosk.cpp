@@ -167,14 +167,29 @@ void VotingKiosk::nextStep() {
     if (m_currentStep < m_pages->count() - 1) {
         m_currentStep++;
         
-        // Skip Verify Photo page if photoOptional is true
-        if (m_currentStep == 2 && m_activeElection && m_activeElection->photoOptional) {
-            qInfo() << "VotingKiosk: Skipping photo verification as it is optional.";
-            m_currentStep++;
-        }
-
         m_pages->setCurrentIndex(m_currentStep);
         qDebug() << "VotingKiosk: Moving to step" << m_currentStep;
+
+        // Special handling for verification page to update student details
+        if (m_currentStep == 2 && m_currentVoter) {
+            auto* page = m_pages->widget(2);
+            auto* nameLabel = page->findChild<QLabel*>("voterName");
+            auto* idLabel = page->findChild<QLabel*>("voterId");
+            auto* classLabel = page->findChild<QLabel*>("voterClass");
+            auto* cameraFrame = page->findChild<QFrame*>("cameraFrame");
+            auto* descLabel = page->findChild<QLabel*>("descLabel"); // Wait, I didn't name the desc label
+
+            if (nameLabel) nameLabel->setText("Name: " + m_currentVoter->name);
+            if (idLabel) idLabel->setText("Admission: " + m_currentVoter->admissionNumber);
+            if (classLabel) classLabel->setText("Class: " + m_currentVoter->className + " - " + m_currentVoter->section);
+            
+            if (m_activeElection && m_activeElection->photoOptional) {
+                if (cameraFrame) cameraFrame->setVisible(false);
+                // Find and update description if needed
+            } else {
+                if (cameraFrame) cameraFrame->setVisible(true);
+            }
+        }
 
         // Special handling for candidate page to ensure candidates are loaded
         if (m_currentStep == 3) {
@@ -195,11 +210,6 @@ void VotingKiosk::nextStep() {
 void VotingKiosk::prevStep() {
     if (m_currentStep > 0) {
         m_currentStep--;
-
-        // Skip Verify Photo page when going back if photoOptional is true
-        if (m_currentStep == 2 && m_activeElection && m_activeElection->photoOptional) {
-            m_currentStep--;
-        }
 
         m_pages->setCurrentIndex(m_currentStep);
         qDebug() << "VotingKiosk: Moving to previous step" << m_currentStep;
@@ -589,13 +599,45 @@ QWidget* VotingKiosk::createVerifyPhotoPage() {
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
-    auto *desc = new QLabel("Look at the camera to verify your identity.", page);
+    auto *desc = new QLabel("Please verify your identity details below.", page);
     desc->setStyleSheet("font-size: 18px; color: #9a9ab0; background: transparent;");
     desc->setAlignment(Qt::AlignCenter);
     layout->addWidget(desc);
 
+    // --- Student Details Area ---
+    auto *detailsFrame = new QFrame(page);
+    detailsFrame->setObjectName("detailsCard");
+    detailsFrame->setStyleSheet(R"(
+        QFrame#detailsCard {
+            background-color: #25253a;
+            border: 1px solid #3d3d5c;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        QLabel { background: transparent; }
+    )");
+    auto *detailsLayout = new QVBoxLayout(detailsFrame);
+    
+    auto *nameLabel = new QLabel("Name: -", detailsFrame);
+    nameLabel->setObjectName("voterName");
+    nameLabel->setStyleSheet("font-size: 20px; font-weight: 600; color: #ffffff;");
+    
+    auto *idLabel = new QLabel("Admission: -", detailsFrame);
+    idLabel->setObjectName("voterId");
+    idLabel->setStyleSheet("font-size: 16px; color: #38bdf8;");
+    
+    auto *classLabel = new QLabel("Class: -", detailsFrame);
+    classLabel->setObjectName("voterClass");
+    classLabel->setStyleSheet("font-size: 16px; color: #e0e0e0;");
+    
+    detailsLayout->addWidget(nameLabel);
+    detailsLayout->addWidget(idLabel);
+    detailsLayout->addWidget(classLabel);
+    layout->addWidget(detailsFrame, 0, Qt::AlignCenter);
+
     // Camera placeholder (future: integrate actual camera feed)
     auto *cameraFrame = new QFrame(page);
+    cameraFrame->setObjectName("cameraFrame");
     cameraFrame->setFixedSize(320, 240);
     cameraFrame->setStyleSheet("background-color: #000000; border: 2px solid #0078d4; border-radius: 12px;");
     auto *camLayout = new QVBoxLayout(cameraFrame);

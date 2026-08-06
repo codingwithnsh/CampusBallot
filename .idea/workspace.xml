@@ -34,16 +34,8 @@
     <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="5 th comit working">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Models.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Models.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/ThemeManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ThemeManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/ThemeManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ThemeManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/styles/modern.qss" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/styles/modern.qss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/AdminPanel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/AdminPanel.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/ResultsView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/ResultsView.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -245,7 +237,7 @@
       <workItem from="1785305096761" duration="65000" />
       <workItem from="1785393862327" duration="226000" />
       <workItem from="1785952824231" duration="4321000" />
-      <workItem from="1785993455618" duration="2267000" />
+      <workItem from="1785993455618" duration="3228000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <option name="closed" value="true" />
@@ -311,7 +303,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783705354688</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="5 th comit working">
+      <option name="closed" value="true" />
+      <created>1785995867461</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1785995867461</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

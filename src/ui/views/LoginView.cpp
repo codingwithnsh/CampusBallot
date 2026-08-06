@@ -297,8 +297,8 @@ void LoginView::setupUi() {
     )");
     layout->addWidget(m_loginButton);
 
-    // Sign Up button
-    m_signupButton = new QPushButton("Sign Up", loginCard);
+    // Set Up button
+    m_signupButton = new QPushButton("Set Up", loginCard);
     m_signupButton->setFixedHeight(44);
     m_signupButton->setStyleSheet(R"(
         QPushButton {
