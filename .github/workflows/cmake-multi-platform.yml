@@ -36,6 +36,12 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: "6.8.2"
+          
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.2"
+          modules: "qtcharts"
 
       - name: Configure CMake
         run: >
