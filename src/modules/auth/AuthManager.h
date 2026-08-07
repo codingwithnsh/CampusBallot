@@ -7,10 +7,16 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QHash>
+#include <optional>
 #include "IAuthProvider.h"
 #include "src/core/Models.h"
 
 namespace Ballot::Auth {
+
+struct PasswordChangeResult {
+    bool success = false;
+    QString errorMessage;
+};
 
 class AuthManager : public QObject {
     Q_OBJECT
@@ -37,6 +43,7 @@ public:
 
     bool hasPermission(const QString& permission) const;
     bool changePassword(const QString& oldPassword, const QString& newPassword);
+    PasswordChangeResult changePasswordWithResult(const QString& oldPassword, const QString& newPassword);
 
     QStringList availableProviders() const;
     IAuthProvider* activeProvider() const;
@@ -53,6 +60,9 @@ private:
     AuthManager();
     void startSessionTimer();
     void resetSessionTimer();
+    void loadLockoutState();
+    void persistLockoutState() const;
+    void clearLockoutState(const QString& normalizedUsername);
 
     std::vector<std::unique_ptr<IAuthProvider>> m_providers;
     IAuthProvider* m_activeProvider = nullptr;

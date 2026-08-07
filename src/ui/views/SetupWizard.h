@@ -8,6 +8,7 @@
 #include <QRadioButton>
 #include <QJsonObject>
 #include <QLineEdit> // Include QLineEdit header
+#include <QPlainTextEdit>
 
 namespace Ballot::UI {
 
@@ -35,6 +36,8 @@ private:
     QWidget* createSummaryPage();
 
     bool processFirebaseConfig(const QString& filePath);
+    bool validateLocalConfiguration();
+    void refreshSummary();
 
     QStackedWidget *m_pages;
     QPushButton *m_nextButton;
@@ -55,6 +58,7 @@ private:
     QLineEdit *m_adminEmailEdit = nullptr;
     QLineEdit *m_adminPasswordEdit = nullptr;
     QLineEdit *m_adminConfirmEdit = nullptr;
+    QPlainTextEdit *m_summaryDetails = nullptr;
 };
 
 } // namespace Ballot::UI

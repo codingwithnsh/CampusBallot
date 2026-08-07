@@ -4,42 +4,47 @@ project(TheRealCampusBallot VERSION 1.0.0 LANGUAGES CXX)
 # Disable moc_predefs.h generation to avoid AutoMoc subprocess errors on some systems
 set(CMAKE_CXX_COMPILER_PREDEFINES_COMMAND "")
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network Charts Svg PrintSupport)
 
-set(SOURCES
+qt_add_executable(TheRealCampusBallot
     main.cpp
+    # Core
     src/core/SystemManager.cpp
     src/core/ThemeManager.cpp
     src/core/config/KioskConfiguration.cpp
-    # Updated paths for security modules
+    src/core/config/ApplicationBootstrap.cpp
+    # Security
     src/modules/security/AES256Provider.cpp
     src/modules/security/HashProvider.cpp
     src/modules/security/DigitalSignature.cpp
     src/modules/security/TamperDetector.cpp
+    # Storage
     src/modules/storage/providers/SQLiteStorageProvider.cpp
     src/modules/storage/TestAdmissionStorage.cpp
+    # Auth
     src/modules/auth/AuthManager.cpp
     src/modules/auth/RBACManager.cpp
+    # Business modules
     src/modules/audit/AuditManager.cpp
     src/modules/backup/BackupManager.cpp
     src/modules/election/ElectionManager.cpp
     src/modules/election/VoteManager.cpp
     src/modules/plugin/PluginManager.cpp
+    # UI components
     src/ui/components/AcrylicWidget.cpp
     src/ui/components/AnimatedButton.cpp
     src/ui/components/StatCard.cpp
     src/ui/components/ToastNotification.cpp
     src/ui/components/Sidebar.cpp
+    # View models
     src/ui/viewmodels/DashboardViewModel.cpp
     src/ui/viewmodels/AuthViewModel.cpp
     src/ui/viewmodels/ResultsViewModel.cpp
+    # Views
     src/ui/views/MainWindow.cpp
     src/ui/views/SplashScreen.cpp
     src/ui/views/SetupWizard.cpp
@@ -50,61 +55,20 @@ set(SOURCES
     src/ui/views/AdminPanel.cpp
     src/ui/views/UserManagementView.cpp
     src/ui/views/SettingsView.cpp
+    # Dialogs
     src/ui/dialogs/CandidateFormDialog.cpp
-)
-
-set(HEADERS
-    src/core/Models.h
-    src/core/SystemManager.h
-    src/core/ThemeManager.h
-    src/core/Utils.h
-    src/core/Constants.h
-    # Updated paths for security modules
-    src/modules/security/IEncryptionProvider.h
-    src/modules/security/AES256Provider.h
-    src/modules/security/HashProvider.h
-    src/modules/security/DigitalSignature.h
-    src/modules/security/TamperDetector.h
-    src/modules/storage/interfaces/IStorageProvider.h
-    src/modules/storage/providers/SQLiteStorageProvider.h
-    src/modules/storage/TestAdmissionStorage.h
-    src/modules/auth/IAuthProvider.h
-    src/modules/auth/AuthManager.h
-    src/modules/auth/RBACManager.h
-    src/modules/audit/AuditManager.h
-    src/modules/backup/BackupManager.h
-    src/modules/election/ElectionManager.h
-    src/modules/election/VoteManager.h
-    src/modules/plugin/IPlugin.h
-    src/modules/plugin/PluginManager.h
-    src/ui/components/AcrylicWidget.h
-    src/ui/components/AnimatedButton.h
-    src/ui/components/StatCard.h
-    src/ui/components/ToastNotification.h
-    src/ui/components/Sidebar.h
-    src/ui/viewmodels/DashboardViewModel.h
-    src/ui/viewmodels/AuthViewModel.h
-    src/ui/viewmodels/ResultsViewModel.h
-    src/ui/views/MainWindow.h
-    src/ui/views/SplashScreen.h
-    src/ui/views/SetupWizard.h
-    src/ui/views/LoginView.h
-    src/ui/views/DashboardView.h
-    src/ui/views/VotingKiosk.h
-    src/ui/views/ResultsView.h
-    src/ui/views/AdminPanel.h
-    src/ui/views/UserManagementView.h
-    src/ui/views/SettingsView.h
-    src/ui/dialogs/CandidateFormDialog.h
-)
-
-set(RESOURCES
     resources.qrc
 )
 
-add_executable(TheRealCampusBallot ${SOURCES} ${HEADERS} ${RESOURCES})
-
 target_include_directories(TheRealCampusBallot PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_compile_features(TheRealCampusBallot PRIVATE cxx_std_20)
+
+if(MSVC)
+    target_compile_options(TheRealCampusBallot PRIVATE /W4 /permissive-)
+else()
+    target_compile_options(TheRealCampusBallot PRIVATE -Wall -Wextra -Wpedantic)
+endif()
 
 target_link_libraries(TheRealCampusBallot PRIVATE 
     Qt6::Core 
@@ -117,21 +81,24 @@ target_link_libraries(TheRealCampusBallot PRIVATE
     Qt6::PrintSupport
 )
 
+include(GNUInstallDirs)
+
+install(TARGETS TheRealCampusBallot
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
 if(WIN32)
     set_target_properties(TheRealCampusBallot PROPERTIES
         WIN32_EXECUTABLE ON
     )
 
-    get_target_property(_qt_core_dll Qt6::Core LOCATION)
-    get_filename_component(_qt_bin_dir "${_qt_core_dll}" DIRECTORY)
-    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-
-    if(WINDEPLOYQT_EXECUTABLE)
-        add_custom_command(TARGET TheRealCampusBallot POST_BUILD
-            COMMAND "${WINDEPLOYQT_EXECUTABLE}"
-                    --compiler-runtime
-                    "$<TARGET_FILE:TheRealCampusBallot>"
-            COMMENT "Deploying Qt and MinGW dependencies..."
+    if(QT_VERSION_MAJOR EQUAL 6)
+        qt_generate_deploy_app_script(
+            TARGET TheRealCampusBallot
+            OUTPUT_SCRIPT qt_deploy_script
+            NO_UNSUPPORTED_PLATFORM_ERROR
         )
+
+        install(SCRIPT ${qt_deploy_script})
     endif()
 endif()

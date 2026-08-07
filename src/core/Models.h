@@ -356,6 +356,7 @@ struct SystemSettings {
     QString accentColor = "#0078d4";
     QString language = "en";
     QString storageType = "sqlite";
+    QString lockoutStateJson = "{}";
 
     QJsonObject toJson() const {
         QJsonObject o;
@@ -375,6 +376,7 @@ struct SystemSettings {
         o["accentColor"] = accentColor;
         o["language"] = language;
         o["storageType"] = storageType;
+        o["lockoutStateJson"] = lockoutStateJson;
         return o;
     }
 };

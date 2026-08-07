@@ -25,6 +25,8 @@
 #include <QPixmap>
 #include <QStyle>
 #include <QRegularExpression>
+#include <QStandardPaths>
+#include <QDir>
 #include <QUuid> // Still included for QJsonDocument::Indented or if needed elsewhere
 #include <QDebug> // For logging
 
@@ -150,6 +152,62 @@ void SetupWizard::setupUi() {
             border: 1px solid #3d3d5c;
             border-radius: 16px;
         }
+        QLineEdit,
+        QTextEdit,
+        QPlainTextEdit,
+        QSpinBox,
+        QDoubleSpinBox,
+        QDateEdit,
+        QTimeEdit,
+        QDateTimeEdit,
+        QComboBox {
+            background-color: #17172a;
+            color: #ffffff;
+            border: 2px solid #5a5a7a;
+            border-radius: 8px;
+            padding: 0 12px;
+            selection-background-color: #0078d4;
+        }
+        QLineEdit:hover,
+        QTextEdit:hover,
+        QPlainTextEdit:hover,
+        QSpinBox:hover,
+        QDoubleSpinBox:hover,
+        QDateEdit:hover,
+        QTimeEdit:hover,
+        QDateTimeEdit:hover,
+        QComboBox:hover {
+            border-color: #7a7aa0;
+        }
+        QLineEdit:focus,
+        QTextEdit:focus,
+        QPlainTextEdit:focus,
+        QSpinBox:focus,
+        QDoubleSpinBox:focus,
+        QDateEdit:focus,
+        QTimeEdit:focus,
+        QDateTimeEdit:focus,
+        QComboBox:focus {
+            border: 2px solid #0078d4;
+            background-color: #25253a;
+        }
+        QLineEdit:disabled,
+        QTextEdit:disabled,
+        QPlainTextEdit:disabled,
+        QSpinBox:disabled,
+        QDoubleSpinBox:disabled,
+        QDateEdit:disabled,
+        QTimeEdit:disabled,
+        QDateTimeEdit:disabled,
+        QComboBox:disabled {
+            color: #6f6f86;
+            border-color: #3d3d5c;
+            background-color: #19192b;
+        }
+        QComboBox::drop-down {
+            border: none;
+            width: 28px;
+        }
     )");
 
     connect(m_nextButton, &QPushButton::clicked, this, &SetupWizard::nextStep);
@@ -195,6 +253,9 @@ void SetupWizard::nextStep() {
         }
         nextIndex = 4; // Skip Local Config page
     } else if (m_currentIndex == 3) { // Local Config Page
+        if (!validateLocalConfiguration()) {
+            return;
+        }
         nextIndex = 4; // Go to Admin Account Page
     } else if (m_currentIndex == 4) { // Admin Account Page
         if (!m_adminNameEdit || m_adminNameEdit->text().isEmpty()) {
@@ -243,6 +304,7 @@ void SetupWizard::nextStep() {
         m_config.remove("admin_password");
         m_adminPasswordEdit->clear();
         m_adminConfirmEdit->clear();
+        refreshSummary();
         nextIndex = 5;
     }
 
@@ -310,6 +372,57 @@ void SetupWizard::updateNavigation() {
 
     m_stepIndicator->setText(QString("Step %1 of %2").arg(currentStepNum).arg(totalSteps));
     qDebug() << "SetupWizard: Navigation updated. Current step:" << currentStepNum << "of" << totalSteps;
+}
+
+bool SetupWizard::validateLocalConfiguration() {
+    const QString configuredPath = m_config.value("db_path").toString().trimmed();
+    const QString fallbackPath = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
+    const QString dbPath = configuredPath.isEmpty() ? fallbackPath : configuredPath;
+
+    const QFileInfo dbInfo(dbPath);
+    const QDir parentDir = dbInfo.dir();
+    if (!parentDir.exists() && !QDir().mkpath(parentDir.absolutePath())) {
+        ToastNotification::show(this, "The selected database folder could not be created", ToastNotification::Error);
+        qWarning() << "SetupWizard: Failed to create database directory:" << parentDir.absolutePath();
+        return false;
+    }
+
+    if (!dbInfo.fileName().endsWith(".db", Qt::CaseInsensitive)) {
+        ToastNotification::show(this, "Please select a database file ending in .db", ToastNotification::Warning);
+        qWarning() << "SetupWizard: Invalid database file extension:" << dbPath;
+        return false;
+    }
+
+    m_config["db_path"] = QDir::toNativeSeparators(dbInfo.absoluteFilePath());
+    return true;
+}
+
+void SetupWizard::refreshSummary() {
+    if (!m_summaryDetails) {
+        return;
+    }
+
+    const QString storageType = m_config.value("storage_type", "sqlite").toString();
+    QStringList lines;
+    lines << "Review the setup configuration before finishing."
+          << ""
+          << QString("Authentication: %1").arg(storageType == "firebase" ? "Firebase" : "Local SQLite")
+          << QString("Admin name: %1").arg(m_config.value("admin_name").toString())
+          << QString("Admin email: %1").arg(m_config.value("admin_email").toString());
+
+    if (storageType == "firebase") {
+        lines << QString("Project ID: %1").arg(m_config.value("project_id").toString())
+              << QString("Database URL: %1").arg(m_config.value("database_url").toString().isEmpty() ? "(not set)" : m_config.value("database_url").toString())
+              << ""
+              << "Note: Firebase was selected, but the current application backend only initializes SQLite storage at startup.";
+    } else {
+        lines << QString("Database path: %1").arg(m_config.value("db_path").toString());
+    }
+
+    lines << ""
+          << "The administrator password has been hashed and will not be shown here.";
+
+    m_summaryDetails->setPlainText(lines.join('\n'));
 }
 
 // ---- Pages Creation ----
@@ -794,17 +907,33 @@ QWidget* SetupWizard::createSummaryPage() {
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
-    auto *checkIcon = new QLabel("✅", page); // Unicode checkmark
-    checkIcon->setStyleSheet("font-size: 64px; color: #4caf50; background: transparent;");
+    auto *checkIcon = new QLabel("Ready", page);
+    checkIcon->setStyleSheet("font-size: 28px; font-weight: 800; color: #4caf50; background: transparent;");
     checkIcon->setAlignment(Qt::AlignCenter);
     layout->addWidget(checkIcon);
 
-    auto *summary = new QLabel("Your system is ready to use.\n"
-                                "You can change these settings later in the admin panel.", page);
+    auto *summary = new QLabel("Review the configuration below before finishing setup.", page);
     summary->setStyleSheet("font-size: 14px; color: #9a9ab0; line-height: 1.6; background: transparent;");
     summary->setAlignment(Qt::AlignCenter);
     summary->setWordWrap(true);
     layout->addWidget(summary);
+
+    m_summaryDetails = new QPlainTextEdit(page);
+    m_summaryDetails->setReadOnly(true);
+    m_summaryDetails->setMinimumHeight(220);
+    m_summaryDetails->setStyleSheet(R"(
+        QPlainTextEdit {
+            background-color: #17172a;
+            color: #e0e0e0;
+            border: 1px solid #3d3d5c;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+        }
+    )");
+    layout->addWidget(m_summaryDetails);
+
+    refreshSummary();
 
     layout->addStretch();
     return page;

@@ -5,6 +5,8 @@
 #include "src/core/Utils.h" // Include for Core::SystemInfo and Core::IdGenerator
 #include "src/modules/audit/AuditManager.h" // For AuditManager::instance().log
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QRegularExpression>
 
 namespace Ballot::Auth {
@@ -52,6 +54,7 @@ bool AuthManager::initialize(const QVariantMap& config) {
     // Never allow a malformed/legacy setting to disable session expiry or create
     // an immediately-expiring session.
     m_timeoutMinutes = qBound(1, Core::SystemManager::instance().settings().sessionTimeoutMinutes, 24 * 60);
+    loadLockoutState();
     qInfo() << "AuthManager: Initialized. Session timeout set to" << m_timeoutMinutes << "minutes.";
     return true;
 }
@@ -92,8 +95,7 @@ bool AuthManager::login(const QString& username, const QString& password) {
     }
 
     if (lockoutExpiry.isValid() && now >= lockoutExpiry) {
-        m_lockoutUntil.remove(normalizedUsername);
-        m_failedLoginCounts.remove(normalizedUsername);
+        clearLockoutState(normalizedUsername);
     }
 
     auto recordFailedLogin = [&]() {
@@ -104,6 +106,7 @@ bool AuthManager::login(const QString& username, const QString& password) {
             qWarning() << "AuthManager: Temporary lockout applied for user:" << normalizedUsername
                        << "after" << attempts << "failed attempts.";
         }
+        persistLockoutState();
     };
 
     std::optional<Core::User> userOpt = storage->getUserByEmail(normalizedUsername);
@@ -162,8 +165,7 @@ bool AuthManager::login(const QString& username, const QString& password) {
 
     m_currentUser = user;
     m_isAuthenticated = true;
-    m_failedLoginCounts.remove(normalizedUsername);
-    m_lockoutUntil.remove(normalizedUsername);
+    clearLockoutState(normalizedUsername);
     resetSessionTimer(); // Start/reset session timer on successful login
 
     Audit::AuditManager::instance().log(
@@ -229,13 +231,20 @@ bool AuthManager::hasPermission(const QString& permission) const {
 }
 
 bool AuthManager::changePassword(const QString& oldPassword, const QString& newPassword) {
+    return changePasswordWithResult(oldPassword, newPassword).success;
+}
+
+PasswordChangeResult AuthManager::changePasswordWithResult(const QString& oldPassword, const QString& newPassword) {
+    PasswordChangeResult result;
     if (!m_isAuthenticated) {
         qWarning() << "AuthManager: Cannot change password. User not authenticated.";
-        return false;
+        result.errorMessage = "You must be logged in to change your password.";
+        return result;
     }
     if (newPassword.isEmpty()) {
         qWarning() << "AuthManager: New password cannot be empty.";
-        return false;
+        result.errorMessage = "New password cannot be empty.";
+        return result;
     }
     if (oldPassword == newPassword) {
         qWarning() << "AuthManager: New password must differ from old password for user" << m_currentUser.id;
@@ -243,7 +252,8 @@ bool AuthManager::changePassword(const QString& oldPassword, const QString& newP
             Core::AuditAction::UserModified,
             QString("Password change rejected because the new password matched the old password for user: %1").arg(m_currentUser.email),
             m_currentUser.id);
-        return false;
+        result.errorMessage = "New password must be different from the current password.";
+        return result;
     }
 
     if (Core::SystemManager::instance().settings().requireStrongPassword) {
@@ -254,14 +264,16 @@ bool AuthManager::changePassword(const QString& oldPassword, const QString& newP
                 Core::AuditAction::UserModified,
                 QString("Password change rejected by strength policy for user: %1").arg(m_currentUser.email),
                 m_currentUser.id);
-            return false;
+            result.errorMessage = validationError;
+            return result;
         }
     }
 
     auto* storage = Core::SystemManager::instance().storage();
     if (!storage) {
         qCritical() << "AuthManager: Storage not available. Cannot change password.";
-        return false;
+        result.errorMessage = "Storage is unavailable. Please try again later.";
+        return result;
     }
 
     // Verify old password
@@ -269,7 +281,8 @@ bool AuthManager::changePassword(const QString& oldPassword, const QString& newP
     QByteArray hash = m_currentUser.passwordHashAndSalt.mid(16);
     if (!Security::HashProvider::verifyArgon2(oldPassword, hash, salt)) {
         qWarning() << "AuthManager: Old password verification failed for user" << m_currentUser.id;
-        return false;
+        result.errorMessage = "Current password is incorrect.";
+        return result;
     }
 
     // Generate new hash and salt for the new password
@@ -279,7 +292,8 @@ bool AuthManager::changePassword(const QString& oldPassword, const QString& newP
 
     if (!storage->updateUserPassword(m_currentUser.id, newPasswordHashAndSalt)) {
         qCritical() << "AuthManager: Failed to update password in storage for user" << m_currentUser.id;
-        return false;
+        result.errorMessage = "The password could not be updated.";
+        return result;
     }
 
     // Update current user's password hash in memory
@@ -290,7 +304,8 @@ bool AuthManager::changePassword(const QString& oldPassword, const QString& newP
         QString("User password changed for user: %1").arg(m_currentUser.email),
         m_currentUser.id);
     qInfo() << "AuthManager: Password changed successfully for user" << m_currentUser.email;
-    return true;
+    result.success = true;
+    return result;
 }
 
 // Removed IAuthProvider related methods as they are not currently implemented or used.
@@ -308,6 +323,72 @@ void AuthManager::resetSessionTimer() {
         m_sessionTimer->start(m_timeoutMinutes * 60 * 1000); // Restart timer
         qDebug() << "AuthManager: Session timer reset for" << m_timeoutMinutes << "minutes.";
     }
+}
+
+void AuthManager::loadLockoutState() {
+    m_failedLoginCounts.clear();
+    m_lockoutUntil.clear();
+
+    const auto settingsOpt = Core::SystemManager::instance().storage()->getSystemSettings();
+    if (!settingsOpt || settingsOpt->lockoutStateJson.trimmed().isEmpty()) {
+        return;
+    }
+
+    const QJsonDocument document = QJsonDocument::fromJson(settingsOpt->lockoutStateJson.toUtf8());
+    if (!document.isObject()) {
+        return;
+    }
+
+    const QJsonObject root = document.object();
+    for (auto it = root.begin(); it != root.end(); ++it) {
+        if (!it.value().isObject()) {
+            continue;
+        }
+        const QJsonObject state = it.value().toObject();
+        const int attempts = state.value("attempts").toInt(0);
+        const QDateTime until = QDateTime::fromString(state.value("until").toString(), Qt::ISODate);
+        if (attempts > 0) {
+            m_failedLoginCounts.insert(it.key(), attempts);
+        }
+        if (until.isValid()) {
+            m_lockoutUntil.insert(it.key(), until);
+        }
+    }
+}
+
+void AuthManager::persistLockoutState() const {
+    auto* storage = Core::SystemManager::instance().storage();
+    if (!storage) {
+        return;
+    }
+
+    auto settingsOpt = storage->getSystemSettings();
+    if (!settingsOpt) {
+        return;
+    }
+
+    QJsonObject root;
+    for (auto it = m_failedLoginCounts.begin(); it != m_failedLoginCounts.end(); ++it) {
+        QJsonObject state;
+        state["attempts"] = it.value();
+        const QDateTime until = m_lockoutUntil.value(it.key());
+        if (until.isValid()) {
+            state["until"] = until.toString(Qt::ISODate);
+        }
+        root[it.key()] = state;
+    }
+
+    Core::SystemSettings settings = *settingsOpt;
+    settings.lockoutStateJson = QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Compact));
+    if (!storage->updateSystemSettings(settings)) {
+        qWarning() << "AuthManager: Failed to persist lockout state.";
+    }
+}
+
+void AuthManager::clearLockoutState(const QString& normalizedUsername) {
+    m_failedLoginCounts.remove(normalizedUsername);
+    m_lockoutUntil.remove(normalizedUsername);
+    persistLockoutState();
 }
 
 } // namespace Ballot::Auth

@@ -9,6 +9,8 @@ QWidget {
 
 QLabel {
     color: #e0e0e0;
+    background: transparent;
+    border: none;
 }
 
 QPushButton {
@@ -134,6 +136,15 @@ QFrame:hover {
 
 QLabel {
     color: #e0e0e0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+QLabel:hover {
+    background: transparent;
+    border: none;
 }
 
 /* Placeholder for specific elements that might need adjustment */

@@ -1274,6 +1274,7 @@ std::optional<Core::SystemSettings> SQLiteStorageProvider::getSystemSettings() {
             else if (key == "accent_color") settings.accentColor = value;
             else if (key == "language") settings.language = value;
             else if (key == "storage_type") settings.storageType = value;
+            else if (key == "lockout_state_json") settings.lockoutStateJson = value;
         }
         return settings;
     } else {
@@ -1311,6 +1312,7 @@ bool SQLiteStorageProvider::updateSystemSettings(const Core::SystemSettings& set
     ok &= set("accent_color", settings.accentColor);
     ok &= set("language", settings.language);
     ok &= set("storage_type", settings.storageType);
+    ok &= set("lockout_state_json", settings.lockoutStateJson);
     return ok;
 }
 

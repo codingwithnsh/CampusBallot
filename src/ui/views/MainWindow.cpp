@@ -11,12 +11,9 @@
 #include "src/ui/viewmodels/AuthViewModel.h"
 #include "src/ui/viewmodels/ResultsViewModel.h"
 #include "src/core/SystemManager.h"
+#include "src/core/config/ApplicationBootstrap.h"
 #include "src/modules/auth/AuthManager.h"
 #include "src/modules/auth/RBACManager.h"
-#include "src/modules/audit/AuditManager.h"
-#include "src/core/Models.h"
-#include "src/core/Utils.h"
-#include "src/modules/security/HashProvider.h"
 #include "src/ui/components/ToastNotification.h" // For displaying messages
 #include <QHBoxLayout>
 #include <QApplication>
@@ -50,48 +47,6 @@ void MainWindow::setupUi() {
     setWindowIcon(QIcon(":/assets/brand/app-mark.svg"));
     resize(1400, 900);
     setMinimumSize(1024, 768);
-
-    // Apply global modern stylesheet
-    setStyleSheet(R"(
-        QMainWindow {
-            background-color: #1a1a2e; /* Dark background */
-            color: #e0e0e0; /* Light text color */
-            font-family: "Segoe UI Variable", "Segoe UI", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 14px;
-        }
-        /* General scroll area styling */
-        QScrollArea {
-            background: transparent;
-            border: none;
-        }
-        QScrollArea > QWidget > QWidget { /* Target the content widget inside scroll area */
-            background: transparent;
-        }
-        QScrollBar:vertical, QScrollBar:horizontal {
-            background-color: transparent;
-            width: 8px;
-            height: 8px;
-            margin: 0;
-        }
-        QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
-            background-color: #3d3d5c;
-            border-radius: 4px;
-            min-height: 30px;
-            min-width: 30px;
-        }
-        QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover {
-            background-color: #5a5a7a;
-        }
-        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical,
-        QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
-            height: 0;
-            width: 0;
-        }
-        QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical,
-        QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
-            background: none;
-        }
-    )");
 
     // Central widget with horizontal layout
     auto *centralWidget = new QWidget(this);
@@ -202,68 +157,14 @@ void MainWindow::connectSignals() {
 
     connect(m_setupWizard, &SetupWizard::setupCompleted, this, [this](const QVariantMap& config) {
         qInfo() << "MainWindow: SetupWizard completed. Processing configuration.";
-        // Initialize SystemManager with config (e.g., storage type and path)
-        if (!Core::SystemManager::instance().isInitialized()) {
-            if (!Core::SystemManager::instance().initialize(config)) {
-                ToastNotification::show(this, "Setup failed. The database could not be initialized.", ToastNotification::Error);
-                return;
-            }
+        const Core::BootstrapResult result = Core::ApplicationBootstrap::initializeRuntime(config);
+        if (!result.success) {
+            ToastNotification::show(this, result.errorMessage, ToastNotification::Error);
+            return;
         }
-        Auth::AuthManager::instance().initialize(config);
 
-        // Create admin user if details are present
-        if (config.contains("admin_email") && (config.contains("admin_password_hash") || config.contains("admin_password"))) {
-            auto* storage = Core::SystemManager::instance().storage();
-            if (!storage) {
-                ToastNotification::show(this, "Setup failed. Storage is unavailable.", ToastNotification::Error);
-                return;
-            }
-
-            const QString adminEmail = config.value("admin_email").toString().trimmed();
-            if (storage->getUserByEmail(adminEmail).has_value()) {
-                QSettings settings;
-                settings.setValue("first_run", false);
-                settings.setValue("storage_type", "sqlite");
-                settings.setValue("db_path", config.value("db_path", Core::Constants::DB_FILENAME).toString());
-                settings.sync();
-                switchToView("login");
-                return;
-            }
-
-            Core::User adminUser;
-            adminUser.id = Core::IdGenerator::generateId();
-            adminUser.name = config.value("admin_name").toString().trimmed();
-            adminUser.email = adminEmail;
-
-            if (config.contains("admin_password_hash")) {
-                adminUser.passwordHashAndSalt = QByteArray::fromHex(config.value("admin_password_hash").toString().toUtf8());
-            } else {
-                // Backward compatibility for older setup payloads.
-                QByteArray salt = Security::HashProvider::generateSalt();
-                QByteArray hashedPassword = Security::HashProvider::argon2Hash(config.value("admin_password").toString(), salt);
-                adminUser.passwordHashAndSalt = salt + hashedPassword;
-            }
-
-            adminUser.role = Core::UserRole::SuperAdministrator;
-            adminUser.isActive = true;
-            adminUser.createdAt = QDateTime::currentDateTime();
-            adminUser.lastLogin = QDateTime(); // Set to invalid initially
-
-            if (storage->createUser(adminUser)) {
-                qInfo() << "MainWindow: SuperAdministrator user created successfully.";
-                Audit::AuditManager::instance().log(Core::AuditAction::UserCreated, "SuperAdministrator user created during setup.", adminUser.id);
-                QSettings settings;
-                settings.setValue("first_run", false);
-                settings.setValue("storage_type", "sqlite");
-                settings.setValue("db_path", config.value("db_path", Core::Constants::DB_FILENAME).toString());
-                settings.sync();
-            } else {
-                qCritical() << "MainWindow: Failed to create SuperAdministrator user.";
-                Audit::AuditManager::instance().log(Core::AuditAction::UserCreated, "Failed to create SuperAdministrator user during setup.", "System");
-                ToastNotification::show(this, "Failed to create administrator. The email may already exist.", ToastNotification::Error);
-                return;
-            }
-        }
+        QSettings settings;
+        Core::ApplicationBootstrap::saveConfiguration(settings, result.sanitizedConfig);
         switchToView("login");
     });
 
