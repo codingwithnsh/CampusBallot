@@ -135,7 +135,6 @@ int main(int argc, char *argv[])
         }
 
         auto* mainWindow = new UI::MainWindow();
-        mainWindow->show();
         splash.finish(mainWindow);
     });
 

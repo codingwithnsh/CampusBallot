@@ -9,8 +9,7 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
   </component>
   <component name="BackgroundAgentGlobalSettings">
-    <option name="selectedModelId" value="gpt-5.4" />
-    <option name="selectedProviderName" value="Azure" />
+    <option name="selectedModelId" value="auto" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -32,13 +31,16 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="6th commit working as expected">
+    <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="7th commit working as expected">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/styles/dark.qss" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/styles/dark.qss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/MainWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/MainWindow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SplashScreen.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SplashScreen.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SplashScreen.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SplashScreen.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,23 +81,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.2136672771593442" />
-      <entry key="MS500" value="2.138917972419807" />
-      <entry key="S2" value="2.724687675654979" />
-      <entry key="S5" value="2.883837103569153" />
-      <entry key="S10" value="2.9432881133091113" />
-      <entry key="S30" value="4.101388598775244" />
-      <entry key="S60" value="8.957990434512055" />
-      <entry key="M2" value="22.66352656748123" />
-      <entry key="M5" value="67.5922826639375" />
-      <entry key="M10" value="121.72030856186664" />
-      <entry key="M15" value="159.12525847252178" />
-      <entry key="M30" value="226.00338823646368" />
-      <entry key="H1" value="326.6770625361239" />
-      <entry key="H2" value="524.9539332899836" />
-      <entry key="H4" value="866.6842136311641" />
-      <entry key="D1" value="2141.696821979348" />
-      <entry key="W1" value="2698.4316300734017" />
+      <entry key="MS100" value="1.384051839737599" />
+      <entry key="MS500" value="2.6992300162741065" />
+      <entry key="S2" value="3.5723569791379806" />
+      <entry key="S5" value="3.818230620872249" />
+      <entry key="S10" value="3.909616015646792" />
+      <entry key="S30" value="5.0856882018979235" />
+      <entry key="S60" value="9.940828093194739" />
+      <entry key="M2" value="23.64180597854502" />
+      <entry key="M5" value="68.56636319343103" />
+      <entry key="M10" value="122.69696840871113" />
+      <entry key="M15" value="160.1049160626555" />
+      <entry key="M30" value="226.98894175404587" />
+      <entry key="H1" value="327.6666215204024" />
+      <entry key="H2" value="525.9455441242061" />
+      <entry key="H4" value="867.6772884648475" />
+      <entry key="D1" value="2142.6939697955427" />
+      <entry key="W1" value="2699.4311167002597" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -117,23 +119,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.12733332954419" />
-      <entry key="MS500" value="2.109662813572969" />
-      <entry key="S2" value="2.715511424165757" />
-      <entry key="S5" value="2.879964409907819" />
-      <entry key="S10" value="2.9413134504685026" />
-      <entry key="S30" value="4.100399206125812" />
-      <entry key="S60" value="8.956790775528535" />
-      <entry key="M2" value="22.661895961104964" />
-      <entry key="M5" value="67.59019631020922" />
-      <entry key="M10" value="121.71842717726018" />
-      <entry key="M15" value="159.12363857153474" />
-      <entry key="M30" value="226.00225466538126" />
-      <entry key="H1" value="326.6762195116524" />
-      <entry key="H2" value="524.9532237667099" />
-      <entry key="H4" value="866.6836283892734" />
-      <entry key="D1" value="2141.696595721337" />
-      <entry key="W1" value="2698.4315899284275" />
+      <entry key="MS100" value="0.6731715473608274" />
+      <entry key="MS500" value="2.470423111802007" />
+      <entry key="S2" value="3.5077861688210397" />
+      <entry key="S5" value="3.791696311266541" />
+      <entry key="S10" value="3.8962236439959788" />
+      <entry key="S30" value="5.08087452811972" />
+      <entry key="S60" value="9.937714863027404" />
+      <entry key="M2" value="23.63921854088564" />
+      <entry key="M5" value="68.56389417185514" />
+      <entry key="M10" value="122.69489563253143" />
+      <entry key="M15" value="160.1031685297804" />
+      <entry key="M30" value="226.98774433389278" />
+      <entry key="H1" value="327.66574656159906" />
+      <entry key="H2" value="525.9448186315055" />
+      <entry key="H4" value="867.6766952372184" />
+      <entry key="D1" value="2142.693742206093" />
+      <entry key="W1" value="2699.431076365044" />
     </decayedShown>
   </component>
   <component name="ProjectApplicationVersion">
@@ -241,7 +243,7 @@
       <workItem from="1785952824231" duration="4321000" />
       <workItem from="1785993455618" duration="7666000" />
       <workItem from="1786088625945" duration="1512000" />
-      <workItem from="1786123131191" duration="1076000" />
+      <workItem from="1786123131191" duration="3507000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <option name="closed" value="true" />
@@ -331,7 +333,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786001633468</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="7th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786124839499</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1786124839499</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -350,7 +360,8 @@
     <MESSAGE value="4 th comit working" />
     <MESSAGE value="5 th comit working" />
     <MESSAGE value="6th commit working as expected" />
-    <option name="LAST_COMMIT_MESSAGE" value="6th commit working as expected" />
+    <MESSAGE value="7th commit working as expected" />
+    <option name="LAST_COMMIT_MESSAGE" value="7th commit working as expected" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

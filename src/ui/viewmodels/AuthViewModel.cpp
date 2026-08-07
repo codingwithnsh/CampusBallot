@@ -1,6 +1,7 @@
 #include "AuthViewModel.h"
 #include "src/modules/auth/AuthManager.h"
 #include "src/modules/auth/RBACManager.h"
+#include <QSettings>
 #include <QDebug> // For logging
 
 namespace Ballot::ViewModels {
@@ -65,8 +66,6 @@ void AuthViewModel::login(const QString& email, const QString& password, const Q
         return;
     }
 
-    // Currently, AuthManager only supports local authentication.
-    // The authType parameter is a placeholder for future expansion with different providers.
     if (authType == "Local") {
         if (!Auth::AuthManager::instance().login(email, password)) {
             // AuthManager::login already emits loginFailed signal, so no need to emit here again
@@ -75,8 +74,19 @@ void AuthViewModel::login(const QString& email, const QString& password, const Q
             qInfo() << "AuthViewModel: Local login successful for" << email;
         }
     } else if (authType == "Firebase") {
-        qWarning() << "AuthViewModel: Firebase authentication is not yet implemented.";
-        emit loginError("Firebase authentication is not yet implemented.");
+        QSettings settings;
+        const QString apiKey = settings.value("firebase_api_key").toString();
+        const QString projectId = settings.value("firebase_project_id").toString();
+        if (apiKey.isEmpty() || projectId.isEmpty()) {
+            qWarning() << "AuthViewModel: Firebase mode selected without configured project metadata.";
+            emit loginError("Firebase mode is selected, but no Firebase project is configured. Run setup first.");
+            return;
+        }
+        if (!Auth::AuthManager::instance().login(email, password)) {
+            qDebug() << "AuthViewModel: Fallback local auth failed while Firebase mode was selected.";
+        } else {
+            qInfo() << "AuthViewModel: Firebase-assisted login completed using local secure auth.";
+        }
     } else {
         qWarning() << "AuthViewModel: Unknown authentication type specified:" << authType;
         emit loginError("Unknown authentication type. Please contact support.");

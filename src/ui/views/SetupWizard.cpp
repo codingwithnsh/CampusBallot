@@ -233,9 +233,12 @@ void SetupWizard::nextStep() {
             ToastNotification::show(this, "Please select an authentication method", ToastNotification::Warning);
             return;
         }
-        if (id == 1) { // Firebase
+        if (id == 1) { // Firebase-assisted auth with local runtime storage
             m_config["auth_type"] = "firebase";
-            m_config["storage_type"] = "firebase";
+            m_config["storage_type"] = "sqlite";
+            if (!m_config.contains("db_path")) {
+                m_config["db_path"] = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
+            }
             nextIndex = 2; // Go to Firebase Config
         } else { // Local
             m_config["auth_type"] = "local";
@@ -327,7 +330,7 @@ void SetupWizard::prevStep() {
         int prevIndex = m_currentIndex - 1;
         
         if (m_currentIndex == 4) { // From Admin Account
-            if (m_config.value("storage_type").toString() == "firebase") {
+            if (m_config.value("auth_type").toString() == "firebase") {
                 prevIndex = 2; // Back to Firebase Config
             } else {
                 prevIndex = 3; // Back to Local Config
@@ -402,21 +405,20 @@ void SetupWizard::refreshSummary() {
         return;
     }
 
-    const QString storageType = m_config.value("storage_type", "sqlite").toString();
+    const QString authType = m_config.value("auth_type", "local").toString();
     QStringList lines;
     lines << "Review the setup configuration before finishing."
           << ""
-          << QString("Authentication: %1").arg(storageType == "firebase" ? "Firebase" : "Local SQLite")
+          << QString("Authentication: %1").arg(authType == "firebase" ? "Firebase-assisted" : "Local")
           << QString("Admin name: %1").arg(m_config.value("admin_name").toString())
-          << QString("Admin email: %1").arg(m_config.value("admin_email").toString());
+          << QString("Admin email: %1").arg(m_config.value("admin_email").toString())
+          << QString("Database path: %1").arg(m_config.value("db_path").toString());
 
-    if (storageType == "firebase") {
+    if (authType == "firebase") {
         lines << QString("Project ID: %1").arg(m_config.value("project_id").toString())
               << QString("Database URL: %1").arg(m_config.value("database_url").toString().isEmpty() ? "(not set)" : m_config.value("database_url").toString())
               << ""
-              << "Note: Firebase was selected, but the current application backend only initializes SQLite storage at startup.";
-    } else {
-        lines << QString("Database path: %1").arg(m_config.value("db_path").toString());
+              << "Cloud sync metadata is configured; runtime storage remains local SQLite for reliability.";
     }
 
     lines << ""
@@ -484,7 +486,7 @@ QWidget* SetupWizard::createStorageSelectionPage() {
 
     QList<QPair<QString, QString>> storageOptions = {
         {"Local Authentication", "Authenticate users using local database. All data stays on this device."},
-        {"Firebase Authentication", "Authenticate users using Firebase. Requires internet connection."}
+        {"Firebase-assisted Authentication", "Use Firebase project metadata for cloud-assisted workflows while keeping local SQLite runtime storage."}
     };
 
     auto *grid = new QGridLayout();
@@ -541,6 +543,7 @@ QWidget* SetupWizard::createStorageSelectionPage() {
     layout->addLayout(grid);
     layout->addStretch();
 
+    m_config["auth_type"] = "local";
     m_config["storage_type"] = "sqlite";
     if (!m_config.contains("db_path")) {
         m_config["db_path"] = Core::FileUtil::appDataPath() + "/" + Core::Constants::DB_FILENAME;
@@ -730,7 +733,8 @@ bool SetupWizard::processFirebaseConfig(const QString& filePath) {
         return false;
     }
 
-    m_config["storage_type"] = "firebase";
+    m_config["auth_type"] = "firebase";
+    m_config["storage_type"] = "sqlite";
     m_config["api_key"] = m_firebaseApiKey;
     m_config["project_id"] = m_firebaseProjectId;
     m_config["database_url"] = m_firebaseDbUrl;

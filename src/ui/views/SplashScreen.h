@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QPropertyAnimation>
+#include <QFrame>
 
 namespace Ballot::UI {
 
@@ -22,12 +23,15 @@ private:
     void setupUi();
     void simulateLoading();
 
+    QFrame *m_card;
     QLabel *m_logoLabel;
     QLabel *m_titleLabel;
     QLabel *m_subtitleLabel;
     QLabel *m_statusLabel;
     QProgressBar *m_progressBar;
     QTimer *m_timer;
+    QPropertyAnimation *m_introAnimation;
+    QPropertyAnimation *m_logoFloatAnimation;
     int m_progressValue = 0;
 };
 

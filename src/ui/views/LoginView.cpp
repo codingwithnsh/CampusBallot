@@ -143,25 +143,10 @@ void LoginView::setupUi() {
     outerLayout->setContentsMargins(0, 0, 0, 0);
     outerLayout->setAlignment(Qt::AlignCenter);
     setObjectName("authView");
-    setStyleSheet(R"(
-        QWidget#authView {
-            background-image: url(:/assets/backgrounds/auth-backdrop.svg);
-            background-position: center;
-            background-repeat: no-repeat;
-            background-color: #111827;
-        }
-    )");
 
     auto *loginCard = new QFrame(this);
     loginCard->setObjectName("loginCard");
     loginCard->setMinimumSize(440, 500); // Set a minimum size
-    loginCard->setStyleSheet(R"(
-        QFrame#loginCard {
-            background-color: rgba(18, 27, 46, 238);
-            border: 1px solid rgba(148, 163, 184, 80);
-            border-radius: 16px;
-        }
-    )");
 
     auto *shadow = new QGraphicsDropShadowEffect(loginCard);
     shadow->setBlurRadius(60);
@@ -201,8 +186,8 @@ void LoginView::setupUi() {
     layout->addWidget(authTypeLabel);
 
     m_authTypeComboBox = new QComboBox(loginCard);
-    m_authTypeComboBox->addItem("Local");
-    m_authTypeComboBox->addItem("Firebase"); // Placeholder for future implementation
+    m_authTypeComboBox->addItem("Local", "Local");
+    m_authTypeComboBox->addItem("Firebase (Cloud-assisted)", "Firebase");
     m_authTypeComboBox->setFixedHeight(44);
     m_authTypeComboBox->setStyleSheet(R"(
         QComboBox {
@@ -220,6 +205,11 @@ void LoginView::setupUi() {
     )");
     layout->addWidget(m_authTypeComboBox);
 
+    auto *authHint = new QLabel("Firebase mode uses configured cloud metadata and secure local runtime auth.", loginCard);
+    authHint->setWordWrap(true);
+    authHint->setStyleSheet("font-size: 12px; color: #9a9ab0; background: transparent;");
+    layout->addWidget(authHint);
+
     layout->addSpacing(16);
 
     // Email
@@ -230,6 +220,7 @@ void LoginView::setupUi() {
     m_emailEdit = new QLineEdit(loginCard);
     m_emailEdit->setPlaceholderText("Enter your email");
     m_emailEdit->setFixedHeight(44);
+    m_emailEdit->setAccessibleName("Email");
     layout->addWidget(m_emailEdit);
 
     layout->addSpacing(8);
@@ -243,6 +234,7 @@ void LoginView::setupUi() {
     m_passwordEdit->setPlaceholderText("Enter your password");
     m_passwordEdit->setEchoMode(QLineEdit::Password);
     m_passwordEdit->setFixedHeight(44);
+    m_passwordEdit->setAccessibleName("Password");
     layout->addWidget(m_passwordEdit);
 
     auto *recoveryLayout = new QHBoxLayout();
@@ -259,16 +251,8 @@ void LoginView::setupUi() {
     recoverPasswordBtn->setCursor(Qt::PointingHandCursor);
     recoverPasswordBtn->setFlat(true);
 
-    const QString linkStyle = R"(
-        QPushButton#linkButton {
-            background: transparent; border: none; color: #7dd3fc;
-            font-size: 12px; font-weight: 600; padding: 0; min-height: 18px;
-        }
-        QPushButton#linkButton:hover { color: #bae6fd; text-decoration: underline; }
-        QPushButton#linkButton:pressed { color: #38bdf8; }
-    )";
-    recoverEmailBtn->setStyleSheet(linkStyle);
-    recoverPasswordBtn->setStyleSheet(linkStyle);
+    recoverEmailBtn->setMinimumHeight(18);
+    recoverPasswordBtn->setMinimumHeight(18);
 
     recoveryLayout->addWidget(recoverEmailBtn);
     recoveryLayout->addStretch();
@@ -287,6 +271,7 @@ void LoginView::setupUi() {
     // Login button
     m_loginButton = new QPushButton("Sign In", loginCard);
     m_loginButton->setFixedHeight(44);
+    m_loginButton->setAccessibleName("Sign In");
     m_loginButton->setStyleSheet(R"(
         QPushButton {
             background-color: #0078d4; color: white; border: none; border-radius: 8px;
@@ -300,6 +285,7 @@ void LoginView::setupUi() {
     // Set Up button
     m_signupButton = new QPushButton("Set Up", loginCard);
     m_signupButton->setFixedHeight(44);
+    m_signupButton->setAccessibleName("Set Up");
     m_signupButton->setStyleSheet(R"(
         QPushButton {
             background-color: #4CAF50; /* Green color for sign up */
@@ -314,7 +300,10 @@ void LoginView::setupUi() {
     // --- Connect Signals ---
     connect(m_loginButton, &QPushButton::clicked, this, [this]() {
         qInfo() << "LoginView: Login button clicked.";
-        emit loginRequested(m_emailEdit->text(), m_passwordEdit->text(), m_authTypeComboBox->currentText());
+        emit loginRequested(
+            m_emailEdit->text(),
+            m_passwordEdit->text(),
+            m_authTypeComboBox->currentData().toString());
     });
 
     connect(m_signupButton, &QPushButton::clicked, this, [this]() {

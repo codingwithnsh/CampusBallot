@@ -61,7 +61,6 @@ void MainWindow::setupUi() {
 
     // Stacked widget for views
     m_stackedWidget = new QStackedWidget(centralWidget);
-    m_stackedWidget->setStyleSheet("background-color: #1a1a2e;"); // Ensure background for stacked widget
 
     hLayout->addWidget(m_stackedWidget, 1);
 

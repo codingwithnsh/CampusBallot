@@ -5,8 +5,8 @@
 
 /* ---------- GLOBAL ---------- */
 QMainWindow, QDialog, QWidget {
-    background-color: #1a1a2e;
-    color: #e0e0e0;
+    background-color: #0f172a;
+    color: #e2e8f0;
     font-family: "Segoe UI Variable", "Segoe UI", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
 }
@@ -22,10 +22,10 @@ QToolTip {
 
 /* ---------- PUSH BUTTON ---------- */
 QPushButton {
-    background-color: #0078d4;
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #22d3ee, stop:1 #a78bfa);
     color: #ffffff;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     padding: 10px 24px;
     font-size: 14px;
     font-weight: 500;
@@ -33,11 +33,11 @@ QPushButton {
 }
 
 QPushButton:hover {
-    background-color: #1a8ae8;
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #67e8f9, stop:1 #c4b5fd);
 }
 
 QPushButton:pressed {
-    background-color: #006cbd;
+    background-color: #4c1d95;
 }
 
 QPushButton:disabled {
@@ -91,7 +91,7 @@ QPushButton#iconButton:hover {
 
 /* ---------- LINE EDIT ---------- */
 QLineEdit {
-    background-color: #2b2b40;
+    background-color: #1e293b;
     border: none;
     border-radius: 8px;
     padding: 10px 14px;
@@ -132,7 +132,7 @@ QTextEdit:focus, QPlainTextEdit:focus {
 
 /* ---------- COMBO BOX ---------- */
 QComboBox {
-    background-color: #2b2b40;
+    background-color: #1e293b;
     border: none;
     border-radius: 8px;
     padding: 10px 14px;
@@ -312,7 +312,7 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
 
 /* ---------- GROUP BOX ---------- */
 QGroupBox {
-    background-color: #2b2b40;
+    background-color: #1e293b;
     border: none;
     border-top: 1px solid #3d3d5c;
     border-radius: 12px;
@@ -562,4 +562,30 @@ QStatusBar {
     border-top: 1px solid #3d3d5c;
     color: #9a9ab0;
     font-size: 13px;
+}
+
+/* ---------- AUTH + SPLASH ---------- */
+QWidget#authView {
+    background-image: url(:/assets/backgrounds/auth-backdrop.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #0b1222;
+}
+
+QFrame#loginCard {
+    background-color: rgba(15, 23, 42, 236);
+    border: 1px solid rgba(148, 163, 184, 88);
+    border-radius: 18px;
+}
+
+QPushButton#linkButton {
+    background: transparent;
+    border: none;
+    color: #7dd3fc;
+    padding: 0;
+}
+
+QPushButton#linkButton:hover {
+    color: #c4b5fd;
+    text-decoration: underline;
 }

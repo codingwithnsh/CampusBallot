@@ -20,6 +20,7 @@
 namespace Ballot::UI {
 
 SettingsView::SettingsView(QWidget *parent) : QWidget(parent) {
+    setObjectName("settingsView");
     setupUi();
     loadSettings();
     qDebug() << "SettingsView: Initialized.";
@@ -42,7 +43,6 @@ void SettingsView::setupUi() {
     // --- Title ---
     auto *title = new QLabel("Settings", this);
     title->setObjectName("title");
-    title->setStyleSheet("font-size: 32px; font-weight: 700; color: #e0e0e0;");
     mainLayout->addWidget(title);
 
     // --- Appearance Group ---
@@ -89,8 +89,7 @@ void SettingsView::setupUi() {
     storageLayout->setSpacing(12);
 
     m_storageCombo = new QComboBox(storageGroup);
-    m_storageCombo->addItems({"Local Device", "Firebase", "PostgreSQL", "MySQL", "SQL Server", "REST API", "Custom Server"});
-    m_storageCombo->setEnabled(true); 
+    m_storageCombo->addItems({"Local Device (SQLite)", "Firebase-assisted (Preview)"});
     m_storageCombo->setStyleSheet(R"(
         QComboBox { background-color: #1e1e34; color: #e0e0e0; border: none; border-radius: 4px; padding: 5px; }
         QComboBox::drop-down { border: 0px; }
@@ -98,6 +97,12 @@ void SettingsView::setupUi() {
         QComboBox QAbstractItemView { background-color: #1e1e34; color: #e0e0e0; selection-background-color: #0078d4; }
     )");
     storageLayout->addRow("Storage Provider:", m_storageCombo);
+    auto *storageHint = new QLabel(
+        "SQLite is always used for runtime reliability. Firebase-assisted mode stores cloud metadata for integrated workflows.",
+        storageGroup);
+    storageHint->setWordWrap(true);
+    storageHint->setStyleSheet("font-size: 12px; color: #9a9ab0; background: transparent;");
+    storageLayout->addRow("", storageHint);
 
     mainLayout->addWidget(storageGroup);
 
@@ -257,14 +262,10 @@ void SettingsView::loadSettings() {
     else m_languageCombo->setCurrentText("English"); // Default
 
     // Load storage type
-    auto* storage = Core::SystemManager::instance().storage();
-    if (storage) {
-        QString providerName = storage->providerName();
-        if (providerName == "SQLite") m_storageCombo->setCurrentText("Local Device");
-        else m_storageCombo->setCurrentText(providerName);
-    } else {
-        m_storageCombo->setCurrentText("Unknown");
-    }
+    QSettings appSettings;
+    const bool firebaseConfigured = !appSettings.value("firebase_project_id").toString().isEmpty();
+    const bool firebaseAuthMode = appSettings.value("auth_type", "local").toString().compare("firebase", Qt::CaseInsensitive) == 0;
+    m_storageCombo->setCurrentIndex((firebaseConfigured && firebaseAuthMode) ? 1 : 0);
 
     m_sessionTimeoutSpin->setValue(settings.sessionTimeoutMinutes);
     m_backupIntervalSpin->setValue(settings.backupIntervalHours);
@@ -300,12 +301,18 @@ void SettingsView::saveSettings() {
     settings.encryptionEnabled = m_encryptionCheck->isChecked();
     settings.tamperDetection = m_tamperCheck->isChecked();
 
-    if (m_storageCombo->currentText() == "Local Device") settings.storageType = "sqlite";
-    else if (m_storageCombo->currentText() == "Firebase") settings.storageType = "firebase";
-    // Add other providers as needed
+    const bool firebaseModeSelected = (m_storageCombo->currentIndex() == 1);
+    settings.storageType = "sqlite";
+
+    QSettings appSettings;
+    appSettings.setValue("auth_type", firebaseModeSelected ? "firebase" : "local");
+    appSettings.sync();
 
     if (Core::SystemManager::instance().updateSettings(settings)) {
-        ToastNotification::show(this, "Settings saved successfully", ToastNotification::Success);
+        const QString modeLabel = firebaseModeSelected
+            ? "Settings saved. Firebase-assisted mode is enabled."
+            : "Settings saved successfully.";
+        ToastNotification::show(this, modeLabel, ToastNotification::Success);
         Audit::AuditManager::instance().log(Core::AuditAction::SettingsChanged, "System settings updated.", Auth::AuthManager::instance().currentUserId());
         qInfo() << "SettingsView: Settings saved successfully.";
     } else {
