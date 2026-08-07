@@ -63,6 +63,8 @@ private:
     void loadLockoutState();
     void persistLockoutState() const;
     void clearLockoutState(const QString& normalizedUsername);
+    std::optional<Core::User> resolveUserForLogin(const QString& normalizedUsername);
+    bool syncRemoteUserToLocal(const Core::User& user);
 
     std::vector<std::unique_ptr<IAuthProvider>> m_providers;
     IAuthProvider* m_activeProvider = nullptr;

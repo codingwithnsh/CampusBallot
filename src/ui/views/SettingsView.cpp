@@ -263,7 +263,7 @@ void SettingsView::loadSettings() {
 
     // Load storage type
     QSettings appSettings;
-    const bool firebaseConfigured = !appSettings.value("firebase_project_id").toString().isEmpty();
+    const bool firebaseConfigured = !appSettings.value("firebase_database_url").toString().trimmed().isEmpty();
     const bool firebaseAuthMode = appSettings.value("auth_type", "local").toString().compare("firebase", Qt::CaseInsensitive) == 0;
     m_storageCombo->setCurrentIndex((firebaseConfigured && firebaseAuthMode) ? 1 : 0);
 
@@ -302,9 +302,16 @@ void SettingsView::saveSettings() {
     settings.tamperDetection = m_tamperCheck->isChecked();
 
     const bool firebaseModeSelected = (m_storageCombo->currentIndex() == 1);
+    QSettings appSettings; // Use application-level settings for Firebase metadata
+    if (firebaseModeSelected) {
+        const QString firebaseDbUrl = appSettings.value("firebase_database_url").toString().trimmed();
+        if (firebaseDbUrl.isEmpty()) {
+            ToastNotification::show(this, "Configure Firebase in Setup Wizard before enabling Firebase-assisted mode.", ToastNotification::Warning);
+            return;
+        }
+    }
     settings.storageType = "sqlite";
 
-    QSettings appSettings;
     appSettings.setValue("auth_type", firebaseModeSelected ? "firebase" : "local");
     appSettings.sync();
 

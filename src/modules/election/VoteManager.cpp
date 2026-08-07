@@ -1,6 +1,7 @@
 #include "VoteManager.h"
 #include "src/core/SystemManager.h"
 #include "src/modules/audit/AuditManager.h"
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 #include "src/modules/security/AES256Provider.h"
 #include "src/modules/security/HashProvider.h"
 #include "src/modules/security/DigitalSignature.h"
@@ -252,6 +253,12 @@ bool VoteManager::castVote(const QString& electionId, const QString& studentId, 
     }
 
     qInfo() << "VoteManager: Vote successfully cast for Student:" << studentId << "in Election:" << electionId;
+    if (Core::SystemManager::instance().firebaseSyncEnabled()) {
+        QString syncError;
+        if (!Integration::FirebaseRealtimeSyncManager::instance().syncVote(vote, &syncError)) {
+            qWarning() << "VoteManager: Vote stored locally but Firebase sync failed for vote" << vote.id << ":" << syncError;
+        }
+    }
     Audit::AuditManager::instance().log(
         Core::AuditAction::VoteCompleted,
         QString("Vote recorded successfully - Student: %1, Election: %2").arg(studentId, electionId),

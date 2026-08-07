@@ -3,16 +3,11 @@
 #include "src/ui/components/ToastNotification.h"
 #include "src/modules/security/HashProvider.h" // Include HashProvider
 #include "src/modules/auth/RBACManager.h" // Include RBACManager for roles
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 #include "src/core/Utils.h" // For FileUtil::appDataPath
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QNetworkAccessManager> // For Firebase config validation (if needed)
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QUrl>
 #include <QLineEdit>
 #include <QFileInfo>
 #include <QGroupBox>
@@ -20,7 +15,6 @@
 #include <QMouseEvent>
 #include <QGridLayout>
 #include <QFormLayout>
-#include <QFile>
 #include <QApplication>
 #include <QPixmap>
 #include <QStyle>
@@ -249,9 +243,9 @@ void SetupWizard::nextStep() {
             nextIndex = 3; // Go to Local Config
         }
     } else if (m_currentIndex == 2) { // Firebase Config Page
-        if (m_firebaseApiKey.isEmpty() || m_firebaseProjectId.isEmpty()) {
-            ToastNotification::show(this, "Please upload a valid Firebase configuration file", ToastNotification::Warning);
-            qWarning() << "SetupWizard: Firebase config incomplete.";
+        if (!processFirebaseConfig()) {
+            ToastNotification::show(this, "Enter Firebase credentials and verify the connection before continuing.", ToastNotification::Warning);
+            qWarning() << "SetupWizard: Firebase configuration is incomplete or invalid.";
             return;
         }
         nextIndex = 4; // Skip Local Config page
@@ -418,7 +412,7 @@ void SetupWizard::refreshSummary() {
         lines << QString("Project ID: %1").arg(m_config.value("project_id").toString())
               << QString("Database URL: %1").arg(m_config.value("database_url").toString().isEmpty() ? "(not set)" : m_config.value("database_url").toString())
               << ""
-              << "Cloud sync metadata is configured; runtime storage remains local SQLite for reliability.";
+              << "Firebase credentials are configured and validated. Votes/users/control state are synchronized with Realtime Database.";
     }
 
     lines << ""
@@ -599,8 +593,8 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
     title->setStyleSheet("font-size: 20px; font-weight: 600; color: #ffffff; background: transparent;");
     layout->addWidget(title);
 
-    auto *desc = new QLabel("Upload your Firebase service account JSON file.\n"
-                            "The system will automatically extract the required configuration.",
+    auto *desc = new QLabel("Enter Firebase Realtime Database credentials.\n"
+                            "The wizard validates the connection and seeds basic control data.",
                             page);
     desc->setStyleSheet("font-size: 14px; color: #9a9ab0; line-height: 1.5; background: transparent;");
     desc->setWordWrap(true);
@@ -608,37 +602,40 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
 
     layout->addSpacing(20);
 
-    auto *uploadFrame = new QFrame(page);
-    uploadFrame->setObjectName("uploadFrame");
-    uploadFrame->setFixedHeight(180);
-    uploadFrame->setStyleSheet(R"(
-        QFrame#uploadFrame {
-            background-color: #25253a; border: 2px dashed #3d3d5c; border-radius: 16px;
-        }
-        QFrame#uploadFrame:hover {
-            border-color: #0078d4; background-color: rgba(0, 120, 212, 0.05);
+    auto *configGroup = new QGroupBox("Required credentials", page);
+    configGroup->setStyleSheet(R"(
+        QGroupBox {
+            background-color: #1e1e34; border: 1px solid #3d3d5c; border-radius: 8px;
+            margin-top: 12px; padding: 16px; color: #e0e0e0; font-weight: 600;
         }
     )");
+    auto *form = new QFormLayout(configGroup);
+    form->setSpacing(12);
 
-    auto *uploadLayout = new QVBoxLayout(uploadFrame);
-    uploadLayout->setAlignment(Qt::AlignCenter);
-    auto *uploadIcon = new QLabel("JSON", uploadFrame);
-    uploadIcon->setStyleSheet("font-size: 18px; font-weight: 800; color: #5eead4; background: transparent;");
-    uploadLayout->addWidget(uploadIcon, 0, Qt::AlignCenter);
+    m_firebaseProjectIdEdit = new QLineEdit(configGroup);
+    m_firebaseProjectIdEdit->setPlaceholderText("your-firebase-project-id");
+    form->addRow("Project ID:", m_firebaseProjectIdEdit);
 
-    auto *uploadText = new QLabel("Click to upload Firebase JSON config", uploadFrame);
-    uploadText->setStyleSheet("font-size: 14px; color: #9a9ab0; background: transparent;");
-    uploadText->setAlignment(Qt::AlignCenter);
-    uploadLayout->addWidget(uploadText);
+    m_firebaseApiKeyEdit = new QLineEdit(configGroup);
+    m_firebaseApiKeyEdit->setPlaceholderText("Web API key (optional for open rules)");
+    form->addRow("API key:", m_firebaseApiKeyEdit);
 
-    auto *statusLabel = new QLabel("", uploadFrame);
-    statusLabel->setObjectName("firebaseStatus");
-    statusLabel->setStyleSheet("font-size: 13px; color: #4caf50; background: transparent;");
-    statusLabel->setAlignment(Qt::AlignCenter);
-    uploadLayout->addWidget(statusLabel);
+    m_firebaseDbUrlEdit = new QLineEdit(configGroup);
+    m_firebaseDbUrlEdit->setPlaceholderText("https://your-project-default-rtdb.firebaseio.com");
+    form->addRow("Realtime DB URL:", m_firebaseDbUrlEdit);
 
-    auto *uploadButton = new QPushButton("Upload JSON File", uploadFrame);
-    uploadButton->setStyleSheet(R"(
+    m_firebaseDatabaseSecretEdit = new QLineEdit(configGroup);
+    m_firebaseDatabaseSecretEdit->setPlaceholderText("Database secret or auth token (if rules require auth)");
+    m_firebaseDatabaseSecretEdit->setEchoMode(QLineEdit::PasswordEchoOnEdit);
+    form->addRow("Database secret:", m_firebaseDatabaseSecretEdit);
+
+    m_firebaseStatusLabel = new QLabel("Not tested yet.", configGroup);
+    m_firebaseStatusLabel->setObjectName("firebaseStatus");
+    m_firebaseStatusLabel->setStyleSheet("font-size: 13px; color: #9a9ab0; background: transparent;");
+    form->addRow("", m_firebaseStatusLabel);
+
+    auto *testConnectionButton = new QPushButton("Test & Save Firebase Connection", configGroup);
+    testConnectionButton->setStyleSheet(R"(
         QPushButton {
             background-color: #0078d4; color: white; border: none; border-radius: 8px;
             font-size: 15px; font-weight: 600; padding: 10px 24px;
@@ -646,51 +643,13 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
         QPushButton:hover { background-color: #1a8ae8; }
         QPushButton:pressed { background-color: #006cbd; }
     )");
-    uploadLayout->addWidget(uploadButton, 0, Qt::AlignCenter);
-
-
-    connect(uploadButton, &QPushButton::clicked, this, [this, statusLabel]() {
-        QString path = QFileDialog::getOpenFileName(this, "Select Firebase Config", "", "JSON Files (*.json)");
-        if (!path.isEmpty()) {
-            if (processFirebaseConfig(path)) {
-                statusLabel->setText("Configuration loaded successfully: " + QFileInfo(path).fileName());
-                statusLabel->setStyleSheet("font-size: 13px; color: #4caf50; background: transparent;");
-                qInfo() << "SetupWizard: Firebase config loaded from" << path;
-            } else {
-                statusLabel->setText("Invalid Firebase configuration file");
-                statusLabel->setStyleSheet("font-size: 13px; color: #f44336; background: transparent;");
-                qWarning() << "SetupWizard: Invalid Firebase config file:" << path;
-            }
-        } else {
-            qDebug() << "SetupWizard: Firebase config upload cancelled.";
+    form->addRow("", testConnectionButton);
+    connect(testConnectionButton, &QPushButton::clicked, this, [this]() {
+        if (processFirebaseConfig()) {
+            ToastNotification::show(this, "Firebase connection verified and seed data created.", ToastNotification::Success);
         }
     });
 
-    layout->addWidget(uploadFrame);
-
-    // Config display
-    auto *configGroup = new QGroupBox("Detected Configuration", page);
-    configGroup->setStyleSheet(R"(
-        QGroupBox {
-            background-color: #1e1e34; border: 1px solid #3d3d5c; border-radius: 8px;
-            margin-top: 12px; padding: 16px; color: #e0e0e0; font-weight: 600;
-        }
-    )");
-
-    auto *configLayout = new QVBoxLayout(configGroup);
-    auto *apiLabel = new QLabel("API Key: -", configGroup);
-    auto *projectLabel = new QLabel("Project ID: -", configGroup);
-    auto *dbLabel = new QLabel("Database URL: -", configGroup);
-    apiLabel->setObjectName("firebaseApiKey");
-    projectLabel->setObjectName("firebaseProjectId");
-    dbLabel->setObjectName("firebaseDbUrl");
-    QString style = "font-size: 13px; color: #9a9ab0; padding: 4px 0; background: transparent;";
-    apiLabel->setStyleSheet(style);
-    projectLabel->setStyleSheet(style);
-    dbLabel->setStyleSheet(style);
-    configLayout->addWidget(apiLabel);
-    configLayout->addWidget(projectLabel);
-    configLayout->addWidget(dbLabel);
     layout->addWidget(configGroup);
 
     layout->addStretch();
@@ -702,34 +661,31 @@ QWidget* SetupWizard::createFirebaseConfigPage() {
  * @param filePath The path to the Firebase JSON file.
  * @return True if the configuration was successfully parsed, false otherwise.
  */
-bool SetupWizard::processFirebaseConfig(const QString& filePath) {
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qCritical() << "SetupWizard: Failed to open Firebase config file:" << filePath << "-" << file.errorString();
+bool SetupWizard::processFirebaseConfig() {
+    if (!m_firebaseProjectIdEdit || !m_firebaseApiKeyEdit || !m_firebaseDbUrlEdit || !m_firebaseDatabaseSecretEdit) {
+        qCritical() << "SetupWizard: Firebase credential controls were not initialized.";
         return false;
     }
 
-    QJsonParseError parseError;
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
-    file.close();
+    m_firebaseProjectId = m_firebaseProjectIdEdit->text().trimmed();
+    m_firebaseApiKey = m_firebaseApiKeyEdit->text().trimmed();
+    m_firebaseDbUrl = m_firebaseDbUrlEdit->text().trimmed();
+    m_firebaseDatabaseSecret = m_firebaseDatabaseSecretEdit->text().trimmed();
 
-    if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
-        qCritical() << "SetupWizard: Invalid JSON in Firebase config file:" << filePath << "-" << parseError.errorString();
+    if (m_firebaseProjectId.isEmpty() || m_firebaseDbUrl.isEmpty()) {
+        if (m_firebaseStatusLabel) {
+            m_firebaseStatusLabel->setText("Project ID and Realtime DB URL are required.");
+            m_firebaseStatusLabel->setStyleSheet("font-size: 13px; color: #f87171; background: transparent;");
+        }
         return false;
     }
 
-    m_firebaseConfig = doc.object();
-    // Extract relevant fields (these might vary based on Firebase project setup)
-    m_firebaseApiKey = m_firebaseConfig["api_key"].toString(); // Assuming 'api_key' or 'apiKey'
-    if (m_firebaseApiKey.isEmpty()) m_firebaseApiKey = m_firebaseConfig["apiKey"].toString();
-
-    m_firebaseProjectId = m_firebaseConfig["project_id"].toString();
-    if (m_firebaseProjectId.isEmpty()) m_firebaseProjectId = m_firebaseConfig["projectId"].toString();
-
-    m_firebaseDbUrl = m_firebaseConfig["databaseURL"].toString();
-
-    if (m_firebaseApiKey.isEmpty() || m_firebaseProjectId.isEmpty()) {
-        qWarning() << "SetupWizard: Missing API Key or Project ID in Firebase config.";
+    if (!m_firebaseDbUrl.startsWith("http://", Qt::CaseInsensitive) &&
+        !m_firebaseDbUrl.startsWith("https://", Qt::CaseInsensitive)) {
+        if (m_firebaseStatusLabel) {
+            m_firebaseStatusLabel->setText("Realtime DB URL must start with http:// or https://.");
+            m_firebaseStatusLabel->setStyleSheet("font-size: 13px; color: #f87171; background: transparent;");
+        }
         return false;
     }
 
@@ -738,21 +694,26 @@ bool SetupWizard::processFirebaseConfig(const QString& filePath) {
     m_config["api_key"] = m_firebaseApiKey;
     m_config["project_id"] = m_firebaseProjectId;
     m_config["database_url"] = m_firebaseDbUrl;
-    // Add other Firebase specific configs if needed
-    m_config["auth_domain"] = m_firebaseConfig["authDomain"].toString();
-    m_config["storage_bucket"] = m_firebaseConfig["storageBucket"].toString();
-    m_config["messaging_sender_id"] = m_firebaseConfig["messagingSenderId"].toString();
-    m_config["app_id"] = m_firebaseConfig["appId"].toString();
+    m_config["database_secret"] = m_firebaseDatabaseSecret;
 
-    // Update UI labels
-    auto* apiLabel = findChild<QLabel*>("firebaseApiKey");
-    auto* projectLabel = findChild<QLabel*>("firebaseProjectId");
-    auto* dbLabel = findChild<QLabel*>("firebaseDbUrl");
-    if (apiLabel) apiLabel->setText("API Key: " + m_firebaseApiKey.left(5) + "..." + m_firebaseApiKey.right(5)); // Show partial key
-    if (projectLabel) projectLabel->setText("Project ID: " + m_firebaseProjectId);
-    if (dbLabel) dbLabel->setText("Database URL: " + (m_firebaseDbUrl.isEmpty() ? "(not set)" : m_firebaseDbUrl));
+    Integration::FirebaseRealtimeSyncManager::instance().configure(m_config);
+    QString error;
+    if (!Integration::FirebaseRealtimeSyncManager::instance().testConnectionAndSeed(&error)) {
+        m_firebaseValidated = false;
+        if (m_firebaseStatusLabel) {
+            m_firebaseStatusLabel->setText("Connection failed: " + error);
+            m_firebaseStatusLabel->setStyleSheet("font-size: 13px; color: #f87171; background: transparent;");
+        }
+        qWarning() << "SetupWizard: Firebase connection test failed:" << error;
+        return false;
+    }
 
-    qInfo() << "SetupWizard: Firebase configuration processed successfully.";
+    m_firebaseValidated = true;
+    if (m_firebaseStatusLabel) {
+        m_firebaseStatusLabel->setText("Connection verified. Seed data written successfully.");
+        m_firebaseStatusLabel->setStyleSheet("font-size: 13px; color: #4ade80; background: transparent;");
+    }
+    qInfo() << "SetupWizard: Firebase credentials validated successfully.";
     return true;
 }
 

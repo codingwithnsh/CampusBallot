@@ -1,6 +1,7 @@
 #include "AuthViewModel.h"
 #include "src/modules/auth/AuthManager.h"
 #include "src/modules/auth/RBACManager.h"
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 #include <QSettings>
 #include <QDebug> // For logging
 
@@ -75,9 +76,13 @@ void AuthViewModel::login(const QString& email, const QString& password, const Q
         }
     } else if (authType == "Firebase") {
         QSettings settings;
-        const QString apiKey = settings.value("firebase_api_key").toString();
-        const QString projectId = settings.value("firebase_project_id").toString();
-        if (apiKey.isEmpty() || projectId.isEmpty()) {
+        QVariantMap firebaseConfig;
+        firebaseConfig["api_key"] = settings.value("firebase_api_key").toString();
+        firebaseConfig["project_id"] = settings.value("firebase_project_id").toString();
+        firebaseConfig["database_url"] = settings.value("firebase_database_url").toString();
+        firebaseConfig["database_secret"] = settings.value("firebase_database_secret").toString();
+        Integration::FirebaseRealtimeSyncManager::instance().configure(firebaseConfig);
+        if (!Integration::FirebaseRealtimeSyncManager::instance().isConfigured()) {
             qWarning() << "AuthViewModel: Firebase mode selected without configured project metadata.";
             emit loginError("Firebase mode is selected, but no Firebase project is configured. Run setup first.");
             return;

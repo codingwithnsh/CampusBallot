@@ -9,6 +9,7 @@
 
 #include "src\core\Constants.h"
 #include "src\core\SystemManager.h"
+#include "src\modules\integration\FirebaseRealtimeSyncManager.h"
 #include "src\modules\auth\AuthManager.h"
 #include "src\modules\security\HashProvider.h"
 
@@ -46,6 +47,7 @@ QVariantMap ApplicationBootstrap::loadStoredConfiguration(QSettings& settings)
     config["api_key"] = settings.value("firebase_api_key").toString();
     config["project_id"] = settings.value("firebase_project_id").toString();
     config["database_url"] = settings.value("firebase_database_url").toString();
+    config["database_secret"] = settings.value("firebase_database_secret").toString();
     return config;
 }
 
@@ -58,6 +60,7 @@ void ApplicationBootstrap::saveConfiguration(QSettings& settings, const QVariant
     settings.setValue("firebase_api_key", config.value("api_key").toString());
     settings.setValue("firebase_project_id", config.value("project_id").toString());
     settings.setValue("firebase_database_url", config.value("database_url").toString());
+    settings.setValue("firebase_database_secret", config.value("database_secret").toString());
     settings.sync();
 }
 
@@ -93,6 +96,10 @@ BootstrapResult ApplicationBootstrap::initializeRuntime(const QVariantMap& confi
     }
     result.sanitizedConfig["db_path"] = normalizeDbPath(config.value("db_path", Constants::DB_FILENAME));
     result.sanitizedConfig["auth_type"] = config.value("auth_type", "local").toString();
+    result.sanitizedConfig["api_key"] = config.value("api_key").toString();
+    result.sanitizedConfig["project_id"] = config.value("project_id").toString();
+    result.sanitizedConfig["database_url"] = config.value("database_url").toString();
+    result.sanitizedConfig["database_secret"] = config.value("database_secret").toString();
 
     if (!SystemManager::instance().initialize(result.sanitizedConfig)) {
         result.errorMessage = "The local database could not be initialized. Check the selected path and try again.";
@@ -104,6 +111,7 @@ BootstrapResult ApplicationBootstrap::initializeRuntime(const QVariantMap& confi
     }
 
     Auth::AuthManager::instance().initialize(result.sanitizedConfig);
+    Integration::FirebaseRealtimeSyncManager::instance().configure(result.sanitizedConfig);
     result.sanitizedConfig.remove("admin_password");
     result.success = true;
     return result;
@@ -154,6 +162,17 @@ bool ApplicationBootstrap::createInitialAdministrator(const QVariantMap& config,
             *errorMessage = "The administrator account could not be created.";
         }
         return false;
+    }
+
+    if (config.value("auth_type").toString().trimmed().compare("firebase", Qt::CaseInsensitive) == 0) {
+        Integration::FirebaseRealtimeSyncManager::instance().configure(config);
+        QString syncError;
+        if (!Integration::FirebaseRealtimeSyncManager::instance().syncUser(admin, &syncError)) {
+            if (errorMessage) {
+                *errorMessage = QString("The administrator was created locally, but Firebase sync failed: %1").arg(syncError);
+            }
+            return false;
+        }
     }
 
     return true;

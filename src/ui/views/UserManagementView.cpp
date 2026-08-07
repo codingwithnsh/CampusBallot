@@ -3,6 +3,7 @@
 #include "src/modules/auth/AuthManager.h"
 #include "src/modules/auth/RBACManager.h"
 #include "src/modules/audit/AuditManager.h" // For audit logging
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 #include "src/modules/security/HashProvider.h" // Include HashProvider for password hashing
 #include "src/ui/components/ToastNotification.h" // Include ToastNotification
 #include "src/core/Utils.h" // For IdGenerator
@@ -26,6 +27,20 @@
 namespace Ballot::UI {
 
 namespace {
+
+bool syncUserToFirebase(const Core::User& user, QString* error = nullptr) {
+    if (!Core::SystemManager::instance().firebaseSyncEnabled()) {
+        return true;
+    }
+    return Integration::FirebaseRealtimeSyncManager::instance().syncUser(user, error);
+}
+
+bool removeUserFromFirebase(const Core::User& user, QString* error = nullptr) {
+    if (!Core::SystemManager::instance().firebaseSyncEnabled()) {
+        return true;
+    }
+    return Integration::FirebaseRealtimeSyncManager::instance().removeUser(user.id, user.email, error);
+}
 
 struct UserFormResult {
     QString name;
@@ -363,6 +378,11 @@ void UserManagementView::setupUi() {
         newUser.passwordHashAndSalt = salt + hashedPassword; // Store combined salt and hash
 
         if (storage->createUser(newUser)) {
+            QString firebaseError;
+            if (!syncUserToFirebase(newUser, &firebaseError)) {
+                ToastNotification::show(this, "User added locally, but Firebase sync failed.", ToastNotification::Warning);
+                qWarning() << "UserManagementView: Firebase sync failed for added user" << newUser.email << ":" << firebaseError;
+            }
             ToastNotification::show(this, "User '" + newUser.name + "' added successfully.", ToastNotification::Success);
             refreshData();
             Audit::AuditManager::instance().log(Core::AuditAction::UserCreated, QString("User '%1' added.").arg(newUser.name), Auth::AuthManager::instance().currentUserId());
@@ -439,7 +459,17 @@ void UserManagementView::setupUi() {
             qInfo() << "UserManagementView: Password change requested for user" << user.id;
         }
 
-        if (storage->updateUser(user)) {
+        bool updated = storage->updateUser(user);
+        if (updated && form->passwordChanged) {
+            updated = storage->updateUserPassword(user.id, user.passwordHashAndSalt);
+        }
+
+        if (updated) {
+            QString firebaseError;
+            if (!syncUserToFirebase(user, &firebaseError)) {
+                ToastNotification::show(this, "User updated locally, but Firebase sync failed.", ToastNotification::Warning);
+                qWarning() << "UserManagementView: Firebase sync failed for updated user" << user.email << ":" << firebaseError;
+            }
             ToastNotification::show(this, "User '" + user.name + "' updated successfully.", ToastNotification::Success);
             refreshData();
             Audit::AuditManager::instance().log(Core::AuditAction::UserModified, QString("User '%1' updated.").arg(user.name), Auth::AuthManager::instance().currentUserId());
@@ -496,6 +526,11 @@ void UserManagementView::setupUi() {
                                       QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             if (storage->deleteUser(userId)) {
+                QString firebaseError;
+                if (!removeUserFromFirebase(*userOpt, &firebaseError)) {
+                    ToastNotification::show(this, "User deleted locally, but Firebase removal failed.", ToastNotification::Warning);
+                    qWarning() << "UserManagementView: Firebase delete failed for user" << userOpt->email << ":" << firebaseError;
+                }
                 ToastNotification::show(this, "User '" + userName + "' deleted successfully.", ToastNotification::Success);
                 refreshData();
                 Audit::AuditManager::instance().log(Core::AuditAction::UserDeleted, QString("User '%1' deleted.").arg(userName), Auth::AuthManager::instance().currentUserId());

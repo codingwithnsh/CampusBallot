@@ -4,6 +4,7 @@
 #include "src/core/SystemManager.h"
 #include "src/core/Utils.h" // Include for Core::SystemInfo and Core::IdGenerator
 #include "src/modules/audit/AuditManager.h" // For AuditManager::instance().log
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -109,7 +110,7 @@ bool AuthManager::login(const QString& username, const QString& password) {
         persistLockoutState();
     };
 
-    std::optional<Core::User> userOpt = storage->getUserByEmail(normalizedUsername);
+    std::optional<Core::User> userOpt = resolveUserForLogin(normalizedUsername);
     if (!userOpt) {
         qWarning() << "AuthManager: Login failed. User not found for email:" << username;
         recordFailedLogin();
@@ -177,6 +178,63 @@ bool AuthManager::login(const QString& username, const QString& password) {
     emit authStateChanged();
     qInfo() << "AuthManager: User" << username << "logged in successfully.";
     return true;
+}
+
+std::optional<Core::User> AuthManager::resolveUserForLogin(const QString& normalizedUsername) {
+    auto* storage = Core::SystemManager::instance().storage();
+    if (!storage) {
+        return std::nullopt;
+    }
+
+    std::optional<Core::User> localUser = storage->getUserByEmail(normalizedUsername);
+    if (localUser || !Core::SystemManager::instance().firebaseSyncEnabled()) {
+        return localUser;
+    }
+
+    QString error;
+    const auto remoteUser = Integration::FirebaseRealtimeSyncManager::instance().fetchUserByEmail(normalizedUsername, &error);
+    if (!remoteUser) {
+        if (!error.isEmpty()) {
+            qWarning() << "AuthManager: Firebase lookup failed for" << normalizedUsername << ":" << error;
+        }
+        return std::nullopt;
+    }
+
+    Core::User hydratedUser;
+    hydratedUser.id = remoteUser->id;
+    hydratedUser.name = remoteUser->name;
+    hydratedUser.email = remoteUser->email;
+    hydratedUser.role = remoteUser->role;
+    hydratedUser.isActive = remoteUser->isActive;
+    hydratedUser.passwordHashAndSalt = remoteUser->passwordHashAndSalt;
+    hydratedUser.createdAt = QDateTime::currentDateTime();
+
+    if (!syncRemoteUserToLocal(hydratedUser)) {
+        qWarning() << "AuthManager: Failed to mirror Firebase user locally for" << normalizedUsername;
+    }
+
+    return hydratedUser;
+}
+
+bool AuthManager::syncRemoteUserToLocal(const Core::User& user) {
+    auto* storage = Core::SystemManager::instance().storage();
+    if (!storage) {
+        return false;
+    }
+
+    const auto existingUser = storage->getUserByEmail(user.email);
+    if (existingUser) {
+        Core::User updated = *existingUser;
+        updated.id = user.id;
+        updated.name = user.name;
+        updated.email = user.email;
+        updated.role = user.role;
+        updated.isActive = user.isActive;
+        updated.passwordHashAndSalt = user.passwordHashAndSalt;
+        return storage->updateUser(updated) && storage->updateUserPassword(updated.id, updated.passwordHashAndSalt);
+    }
+
+    return storage->createUser(user);
 }
 
 bool AuthManager::loginByToken(const QString& token) {
@@ -294,6 +352,17 @@ PasswordChangeResult AuthManager::changePasswordWithResult(const QString& oldPas
         qCritical() << "AuthManager: Failed to update password in storage for user" << m_currentUser.id;
         result.errorMessage = "The password could not be updated.";
         return result;
+    }
+
+    if (Core::SystemManager::instance().firebaseSyncEnabled()) {
+        Core::User syncedUser = m_currentUser;
+        syncedUser.passwordHashAndSalt = newPasswordHashAndSalt;
+        QString syncError;
+        if (!Integration::FirebaseRealtimeSyncManager::instance().syncUser(syncedUser, &syncError)) {
+            qWarning() << "AuthManager: Firebase password sync failed for user" << m_currentUser.id << ":" << syncError;
+            result.errorMessage = QString("Password updated locally, but Firebase sync failed: %1").arg(syncError);
+            return result;
+        }
     }
 
     // Update current user's password hash in memory

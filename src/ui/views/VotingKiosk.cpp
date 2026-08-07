@@ -3,6 +3,7 @@
 #include "src/ui/components/ToastNotification.h" // For error messages
 #include "src/modules/election/ElectionManager.h" // For election state
 #include "src/modules/election/VoteManager.h"     // For casting votes
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 #include "src/modules/storage/TestAdmissionStorage.h" // For test mode
 #include "src/core/Utils.h" // For IdGenerator
 #include <QVBoxLayout>
@@ -131,6 +132,21 @@ void VotingKiosk::updateVotingState() {
     }
 
     m_activeElection = Election::ElectionManager::instance().getActiveElection();
+
+    if (Core::SystemManager::instance().firebaseSyncEnabled()) {
+        QString firebaseError;
+        const auto controlState = Integration::FirebaseRealtimeSyncManager::instance().fetchControlState(&firebaseError);
+        if (controlState && controlState->valid && !controlState->electionId.isEmpty()) {
+            auto controlledElection = Election::ElectionManager::instance().getElection(controlState->electionId);
+            if (controlledElection) {
+                controlledElection->state = controlState->state;
+                controlledElection->isActive = controlState->state == Core::VotingState::Voting;
+                m_activeElection = controlledElection;
+            }
+        } else if (!firebaseError.isEmpty()) {
+            qWarning() << "VotingKiosk: Firebase control polling failed:" << firebaseError;
+        }
+    }
 
     if (m_activeElection && m_activeElection->state == Core::VotingState::Voting) {
         // Update Step 1 page UI based on verification setting

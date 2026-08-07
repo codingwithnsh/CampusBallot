@@ -9,7 +9,8 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
   </component>
   <component name="BackgroundAgentGlobalSettings">
-    <option name="selectedModelId" value="auto" />
+    <option name="selectedModelId" value="gpt-5-mini" />
+    <option name="selectedProviderName" value="Azure" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -31,16 +32,22 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="7th commit working as expected">
+    <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="8th commit working as expected">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/SystemManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/SystemManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/SystemManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/SystemManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/config/ApplicationBootstrap.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/config/ApplicationBootstrap.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/auth/AuthManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/AuthManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/election/ElectionManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/election/ElectionManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/election/VoteManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/election/VoteManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/LoginView.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/MainWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/MainWindow.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SplashScreen.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SplashScreen.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SplashScreen.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SplashScreen.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/UserManagementView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/UserManagementView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,23 +88,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.384051839737599" />
-      <entry key="MS500" value="2.6992300162741065" />
-      <entry key="S2" value="3.5723569791379806" />
-      <entry key="S5" value="3.818230620872249" />
-      <entry key="S10" value="3.909616015646792" />
-      <entry key="S30" value="5.0856882018979235" />
-      <entry key="S60" value="9.940828093194739" />
-      <entry key="M2" value="23.64180597854502" />
-      <entry key="M5" value="68.56636319343103" />
-      <entry key="M10" value="122.69696840871113" />
-      <entry key="M15" value="160.1049160626555" />
-      <entry key="M30" value="226.98894175404587" />
-      <entry key="H1" value="327.6666215204024" />
-      <entry key="H2" value="525.9455441242061" />
-      <entry key="H4" value="867.6772884648475" />
-      <entry key="D1" value="2142.6939697955427" />
-      <entry key="W1" value="2699.4311167002597" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0000000000205802" />
+      <entry key="M2" value="1.0000340168719302" />
+      <entry key="M5" value="1.3157305493374936" />
+      <entry key="M10" value="9.326003278157904" />
+      <entry key="M15" value="27.636255008186826" />
+      <entry key="M30" value="93.5846413457665" />
+      <entry key="H1" value="210.26631531455382" />
+      <entry key="H2" value="421.3144705990261" />
+      <entry key="H4" value="776.6664566015568" />
+      <entry key="D1" value="2104.033920176503" />
+      <entry key="W1" value="2693.2359890870207" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -119,23 +126,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.6731715473608274" />
-      <entry key="MS500" value="2.470423111802007" />
-      <entry key="S2" value="3.5077861688210397" />
-      <entry key="S5" value="3.791696311266541" />
-      <entry key="S10" value="3.8962236439959788" />
-      <entry key="S30" value="5.08087452811972" />
-      <entry key="S60" value="9.937714863027404" />
-      <entry key="M2" value="23.63921854088564" />
-      <entry key="M5" value="68.56389417185514" />
-      <entry key="M10" value="122.69489563253143" />
-      <entry key="M15" value="160.1031685297804" />
-      <entry key="M30" value="226.98774433389278" />
-      <entry key="H1" value="327.66574656159906" />
-      <entry key="H2" value="525.9448186315055" />
-      <entry key="H4" value="867.6766952372184" />
-      <entry key="D1" value="2142.693742206093" />
-      <entry key="W1" value="2699.431076365044" />
+      <entry key="MS100" value="0.9330329915368074" />
+      <entry key="MS500" value="0.9862327044933592" />
+      <entry key="S2" value="0.9965402628278678" />
+      <entry key="S5" value="0.9986146661010289" />
+      <entry key="S10" value="0.9993070929904525" />
+      <entry key="S30" value="0.9997689776295918" />
+      <entry key="S60" value="0.9998844821631822" />
+      <entry key="M2" value="0.9999762525521717" />
+      <entry key="M5" value="1.3156960754861102" />
+      <entry key="M10" value="9.325851070778345" />
+      <entry key="M15" value="27.635956573901343" />
+      <entry key="M30" value="93.58414908915745" />
+      <entry key="H1" value="210.2657545912932" />
+      <entry key="H2" value="421.31388985181064" />
+      <entry key="H4" value="776.6659258000278" />
+      <entry key="D1" value="2104.03369671938" />
+      <entry key="W1" value="2693.235948847855" />
     </decayedShown>
   </component>
   <component name="ProjectApplicationVersion">
@@ -243,7 +250,7 @@
       <workItem from="1785952824231" duration="4321000" />
       <workItem from="1785993455618" duration="7666000" />
       <workItem from="1786088625945" duration="1512000" />
-      <workItem from="1786123131191" duration="3507000" />
+      <workItem from="1786123131191" duration="6857000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <option name="closed" value="true" />
@@ -341,7 +348,23 @@
       <option name="project" value="LOCAL" />
       <updated>1786124839499</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="8th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786127168263</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1786127168263</updated>
+    </task>
+    <task id="LOCAL-00014" summary="8th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786127181484</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1786127181484</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -361,7 +384,8 @@
     <MESSAGE value="5 th comit working" />
     <MESSAGE value="6th commit working as expected" />
     <MESSAGE value="7th commit working as expected" />
-    <option name="LAST_COMMIT_MESSAGE" value="7th commit working as expected" />
+    <MESSAGE value="8th commit working as expected" />
+    <option name="LAST_COMMIT_MESSAGE" value="8th commit working as expected" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

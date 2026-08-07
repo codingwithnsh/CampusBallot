@@ -35,7 +35,7 @@ private:
     QWidget* createAdminAccountPage();
     QWidget* createSummaryPage();
 
-    bool processFirebaseConfig(const QString& filePath);
+    bool processFirebaseConfig();
     bool validateLocalConfiguration();
     void refreshSummary();
 
@@ -51,7 +51,13 @@ private:
     QString m_firebaseApiKey;
     QString m_firebaseProjectId;
     QString m_firebaseDbUrl;
-    QJsonObject m_firebaseConfig;
+    QString m_firebaseDatabaseSecret;
+    QLineEdit *m_firebaseApiKeyEdit = nullptr;
+    QLineEdit *m_firebaseProjectIdEdit = nullptr;
+    QLineEdit *m_firebaseDbUrlEdit = nullptr;
+    QLineEdit *m_firebaseDatabaseSecretEdit = nullptr;
+    QLabel *m_firebaseStatusLabel = nullptr;
+    bool m_firebaseValidated = false;
 
     // Admin Account fields
     QLineEdit *m_adminNameEdit = nullptr;

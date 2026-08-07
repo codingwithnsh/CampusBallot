@@ -6,6 +6,7 @@
 #include "src/core/Utils.h" // For SystemInfo namespace
 #include "src/modules/audit/AuditManager.h" // Dependency for audit logging
 #include "src/modules/backup/BackupManager.h" // Dependency for backup management
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 
 #include <QDateTime>
 #include <QDir>
@@ -35,6 +36,7 @@ bool SystemManager::initialize(const QVariantMap& config) {
     }
 
     qDebug() << "SystemManager: Starting initialization...";
+    m_firebaseSyncEnabled = config.value("auth_type").toString().trimmed().compare("firebase", Qt::CaseInsensitive) == 0;
 
     // Initialize security components
     m_crypto = std::make_unique<Security::AES256Provider>();
@@ -201,6 +203,9 @@ void SystemManager::applyTheme(const QString& themeName) {
 
 QString SystemManager::accentColor() const { return m_settings.accentColor; }
 QString SystemManager::theme() const { return m_settings.theme; }
+bool SystemManager::firebaseSyncEnabled() const {
+    return m_firebaseSyncEnabled && Integration::FirebaseRealtimeSyncManager::instance().isConfigured();
+}
 
 void SystemManager::registerCurrentMachine() {
     if (!m_storage) {

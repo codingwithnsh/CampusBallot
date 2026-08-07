@@ -9,6 +9,8 @@
 #include "src/modules/auth/IAuthProvider.h" // Dependency on authentication provider interface
 #include "src/modules/plugin/IPlugin.h" // Dependency on plugin interface
 
+namespace Ballot::Integration { class FirebaseRealtimeSyncManager; }
+
 namespace Ballot::Security { class AES256Provider; class TamperDetector; } // Forward declarations for security components
 
 namespace Ballot::Core {
@@ -130,6 +132,7 @@ public:
      * @return The current theme name string.
      */
     QString theme() const;
+    bool firebaseSyncEnabled() const;
 
     /**
      * @brief Checks if the SystemManager has been successfully initialized.
@@ -189,6 +192,7 @@ private:
     QString m_machineId; ///< Unique identifier for the current machine.
     QString m_machineName; ///< Name of the current machine.
     bool m_initialized = false; ///< Flag indicating if the manager is initialized.
+    bool m_firebaseSyncEnabled = false;
 
     // Private copy constructor and assignment operator to prevent copying
     SystemManager(const SystemManager&) = delete;

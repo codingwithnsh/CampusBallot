@@ -1,12 +1,30 @@
 #include "ElectionManager.h"
 #include "src/core/SystemManager.h"
 #include "src/modules/audit/AuditManager.h"
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
 #include "src/core/Utils.h" // Include for Core::SystemInfo and Core::IdGenerator
 #include "src/modules/election/VoteManager.h" // Include VoteManager for voting operations
 #include <QDateTime>
 #include <QDebug> // For debugging
 
 namespace Ballot::Election {
+
+namespace {
+
+bool publishFirebaseElectionState(const QString& electionId, Core::VotingState state) {
+    if (!Core::SystemManager::instance().firebaseSyncEnabled()) {
+        return true;
+    }
+
+    QString error;
+    if (!Integration::FirebaseRealtimeSyncManager::instance().publishElectionState(electionId, state, &error)) {
+        qWarning() << "ElectionManager: Failed to publish election state to Firebase:" << error;
+        return false;
+    }
+    return true;
+}
+
+} // namespace
 
 ElectionManager& ElectionManager::instance() {
     static ElectionManager inst;
@@ -152,6 +170,8 @@ bool ElectionManager::startElection(const QString& id) {
         return false;
     }
 
+    publishFirebaseElectionState(id, Core::VotingState::Voting);
+
     Audit::AuditManager::instance().log(
         Core::AuditAction::ElectionStarted,
         "Election started: " + election.title,
@@ -189,6 +209,8 @@ bool ElectionManager::endElection(const QString& id) {
         qCritical() << "ElectionManager: Failed to update election state to Ended for" << election.title << ". Storage error.";
         return false;
     }
+
+    publishFirebaseElectionState(id, Core::VotingState::Ended);
 
     Audit::AuditManager::instance().log(
         Core::AuditAction::ElectionEnded,
@@ -229,6 +251,8 @@ bool ElectionManager::pauseElection(const QString& id) {
         qCritical() << "ElectionManager: Failed to update election state to Paused for" << election.title << ". Storage error.";
         return false;
     }
+
+    publishFirebaseElectionState(id, Core::VotingState::Paused);
 
     Audit::AuditManager::instance().log(
         Core::AuditAction::ElectionPaused,

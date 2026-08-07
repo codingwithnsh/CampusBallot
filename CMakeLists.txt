@@ -34,6 +34,7 @@ qt_add_executable(TheRealCampusBallot
     src/modules/election/ElectionManager.cpp
     src/modules/election/VoteManager.cpp
     src/modules/plugin/PluginManager.cpp
+    src/modules/integration/FirebaseRealtimeSyncManager.cpp
     # UI components
     src/ui/components/AcrylicWidget.cpp
     src/ui/components/AnimatedButton.cpp
