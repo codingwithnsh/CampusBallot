@@ -55,32 +55,6 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel
 
-      - name: Deploy Windows app
-        if: matrix.os == 'windows-latest'
-        run: cmake --build build --config Release --target deploy_windows_app --parallel || echo "deploy target may require windeployqt"
-
       - name: Test
         working-directory: build
         run: ctest --output-on-failure --build-config Release
-
-      - name: Package Windows artifact
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "Prepare artifact"
-          mkdir -p builds/windows || true
-          # The executable and Qt DLLs should be in windows-app/Release after deploy
-          if [ -d windows-app/Release ]; then
-            cp -r windows-app/Release/* builds/windows/ || true
-          elif [ -d windows-app ]; then
-            cp -r windows-app/* builds/windows/ || true
-          else
-            echo "Warning: windows-app/Release not found; attempting to copy build output"
-            cp -r build/Release/* builds/windows/ || true
-          fi
-
-      - name: Upload artifact
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-build
-          path: builds/windows/
