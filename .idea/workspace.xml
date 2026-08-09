@@ -9,7 +9,7 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
   </component>
   <component name="BackgroundAgentGlobalSettings">
-    <option name="selectedModelId" value="gpt-5-mini" />
+    <option name="selectedModelId" value="gpt-5.4" />
     <option name="selectedProviderName" value="Azure" />
   </component>
   <component name="CMakePresetLoader">{
@@ -33,7 +33,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="9th commit working as expected">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/cmake-multi-platform.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/cmake-multi-platform.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -241,7 +242,7 @@
       <workItem from="1785993455618" duration="7666000" />
       <workItem from="1786088625945" duration="1512000" />
       <workItem from="1786123131191" duration="8548000" />
-      <workItem from="1786252086447" duration="3271000" />
+      <workItem from="1786252086447" duration="4165000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <option name="closed" value="true" />
@@ -387,7 +388,23 @@
       <option name="project" value="LOCAL" />
       <updated>1786255285379</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="9th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786255451914</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1786255451914</updated>
+    </task>
+    <task id="LOCAL-00020" summary="9th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786255815671</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1786255815671</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

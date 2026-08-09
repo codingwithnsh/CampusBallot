@@ -67,6 +67,15 @@ set_target_properties(TheRealCampusBallot PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${APP_DEPLOY_DIR}"
 )
 
+if(WIN32)
+    set_target_properties(TheRealCampusBallot PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG "${APP_DEPLOY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${APP_DEPLOY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${APP_DEPLOY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${APP_DEPLOY_DIR}"
+    )
+endif()
+
 target_include_directories(TheRealCampusBallot PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -123,6 +132,7 @@ if(WIN32)
             COMMAND "${CMAKE_COMMAND}" -E env "PATH=${QT_BIN_DIR};$ENV{PATH}"
                 "${WINDEPLOYQT_EXECUTABLE}"
                 --dir "${APP_DEPLOY_DIR}"
+                --force
                 --verbose 1
                 "$<TARGET_FILE:TheRealCampusBallot>"
             DEPENDS TheRealCampusBallot
