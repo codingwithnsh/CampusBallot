@@ -100,6 +100,10 @@ target_link_libraries(TheRealCampusBallot PRIVATE
     Qt6::PrintSupport
 )
 
+if(APPLE)
+    target_link_options(TheRealCampusBallot PRIVATE "LINKER:-framework,Cocoa")
+endif()
+
 include(GNUInstallDirs)
 
 install(TARGETS TheRealCampusBallot

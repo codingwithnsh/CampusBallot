@@ -33,7 +33,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="10th commit working as expected with  1st release">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/cmake-multi-platform.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/cmake-multi-platform.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,23 +78,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0004163444919907" />
-      <entry key="MS500" value="1.240482547884543" />
-      <entry key="S2" value="2.426069529072776" />
-      <entry key="S5" value="3.782709024790174" />
-      <entry key="S10" value="4.673754299406276" />
-      <entry key="S30" value="5.496493800761682" />
-      <entry key="S60" value="5.739561713297538" />
-      <entry key="M2" value="5.867525474947321" />
-      <entry key="M5" value="5.946610477665244" />
-      <entry key="M10" value="6.073616337306493" />
-      <entry key="M15" value="7.330214923162039" />
-      <entry key="M30" value="26.660683108212424" />
-      <entry key="H1" value="104.81305590852503" />
-      <entry key="H2" value="294.8252643957899" />
-      <entry key="H4" value="649.0576079953638" />
-      <entry key="D1" value="2044.866133967983" />
-      <entry key="W1" value="2687.1579964400626" />
+      <entry key="MS100" value="1.0671008414494392" />
+      <entry key="MS500" value="2.3421149649214024" />
+      <entry key="S2" value="4.666560025626859" />
+      <entry key="S5" value="5.869215304931157" />
+      <entry key="S10" value="6.394309885169502" />
+      <entry key="S30" value="6.788398251399698" />
+      <entry key="S60" value="6.91437251379638" />
+      <entry key="M2" value="7.305153483697245" />
+      <entry key="M5" value="8.92347287697671" />
+      <entry key="M10" value="10.46280520951278" />
+      <entry key="M15" value="12.043357004095862" />
+      <entry key="M30" value="29.12649425346771" />
+      <entry key="H1" value="102.49118554614543" />
+      <entry key="H2" value="288.4111893446942" />
+      <entry key="H4" value="641.1207507547008" />
+      <entry key="D1" value="2043.9468852917084" />
+      <entry key="W1" value="2692.6688575225407" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -115,23 +116,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8126355115368906" />
-      <entry key="MS500" value="1.1958087171452798" />
-      <entry key="S2" value="2.4042858700610004" />
-      <entry key="S5" value="3.763511132026878" />
-      <entry key="S10" value="4.659909239848587" />
-      <entry key="S30" value="5.49046485546391" />
-      <entry key="S60" value="5.736330937278731" />
-      <entry key="M2" value="5.865852562533151" />
-      <entry key="M5" value="5.945927038696904" />
-      <entry key="M10" value="6.073270561908547" />
-      <entry key="M15" value="7.32997040105231" />
-      <entry key="M30" value="26.66045913261934" />
-      <entry key="H1" value="104.81273469461242" />
-      <entry key="H2" value="294.82483740677486" />
-      <entry key="H4" value="649.0571540697983" />
-      <entry key="D1" value="2044.8659150252854" />
-      <entry key="W1" value="2687.1579560375308" />
+      <entry key="MS100" value="1.005851988916644" />
+      <entry key="MS500" value="2.223328360389301" />
+      <entry key="S2" value="4.6008861558879675" />
+      <entry key="S5" value="5.837007759289833" />
+      <entry key="S10" value="6.376977175671559" />
+      <entry key="S30" value="6.782319610696961" />
+      <entry key="S60" value="6.9112816002283495" />
+      <entry key="M2" value="7.303501673817091" />
+      <entry key="M5" value="8.922627122238046" />
+      <entry key="M10" value="10.46229594391559" />
+      <entry key="M15" value="12.042980763187257" />
+      <entry key="M30" value="29.126204412301735" />
+      <entry key="H1" value="102.49084092012068" />
+      <entry key="H2" value="288.41075579149464" />
+      <entry key="H4" value="641.1202942792723" />
+      <entry key="D1" value="2043.946665030847" />
+      <entry key="W1" value="2692.6688168329574" />
     </decayedShown>
   </component>
   <component name="ProjectApplicationVersion">
@@ -241,7 +242,7 @@
       <workItem from="1785993455618" duration="7666000" />
       <workItem from="1786088625945" duration="1512000" />
       <workItem from="1786123131191" duration="8548000" />
-      <workItem from="1786252086447" duration="4617000" />
+      <workItem from="1786252086447" duration="5259000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <option name="closed" value="true" />
@@ -411,7 +412,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786256461753</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="10th commit working as expected with  1st release">
+      <option name="closed" value="true" />
+      <created>1786256900468</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1786256900468</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
