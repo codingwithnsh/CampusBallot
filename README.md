@@ -2,7 +2,7 @@
 
 A desktop application for running secure, offline-first campus elections — student council, class reps, club leadership, and similar votes. Built with **C++17** and **Qt 6**, using a local SQLite database by default (with optional Firebase sync).
 
-> **Status:** Pre-release / preview build (v1.0.0). See [RELEASE_NOTES.md](./RELEASE_NOTES.md) for what's new and current limitations.
+> **Status:** Pre-release / preview build (v1.0-Beta). See [RELEASE_NOTES.md](.releases/tag/v.1.0-Beta) for what's new and current limitations.
 
 ---
 
