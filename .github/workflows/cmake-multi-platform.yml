@@ -103,6 +103,9 @@ jobs:
         run: |
           mkdir -p builds/windows
 
+          # Deploy Qt runtime DLLs into builds/windows
+          windeployqt build/Release/TheRealCampusBallot.exe --release --dir builds/windows
+
           cp build/Release/TheRealCampusBallot.exe \
              builds/windows/TheRealCampusBallot.exe
 
