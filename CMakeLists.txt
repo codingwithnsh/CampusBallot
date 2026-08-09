@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(TheRealCampusBallot VERSION 1.0.0 LANGUAGES CXX)
 
+set(APP_DEPLOY_DIR "${CMAKE_SOURCE_DIR}/windows-app")
+
 # Disable moc_predefs.h generation to avoid AutoMoc subprocess errors on some systems
 set(CMAKE_CXX_COMPILER_PREDEFINES_COMMAND "")
 
@@ -61,6 +63,10 @@ qt_add_executable(TheRealCampusBallot
     resources.qrc
 )
 
+set_target_properties(TheRealCampusBallot PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${APP_DEPLOY_DIR}"
+)
+
 target_include_directories(TheRealCampusBallot PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_features(TheRealCampusBallot PRIVATE cxx_std_20)
@@ -85,7 +91,7 @@ target_link_libraries(TheRealCampusBallot PRIVATE
 include(GNUInstallDirs)
 
 install(TARGETS TheRealCampusBallot
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    RUNTIME DESTINATION "."
 )
 
 if(WIN32)
@@ -94,6 +100,15 @@ if(WIN32)
     )
 
     if(QT_VERSION_MAJOR EQUAL 6)
+        get_target_property(QT_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
+        get_filename_component(QT_BIN_DIR "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
+
+        find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
+
+        if(NOT WINDEPLOYQT_EXECUTABLE)
+            message(FATAL_ERROR "windeployqt was not found. Ensure your Qt installation includes it and CMAKE_PREFIX_PATH points to that Qt installation.")
+        endif()
+
         qt_generate_deploy_app_script(
             TARGET TheRealCampusBallot
             OUTPUT_SCRIPT qt_deploy_script
@@ -101,5 +116,15 @@ if(WIN32)
         )
 
         install(SCRIPT ${qt_deploy_script})
+
+        add_custom_command(TARGET TheRealCampusBallot POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "${APP_DEPLOY_DIR}"
+            COMMAND "${CMAKE_COMMAND}" -E env "PATH=${QT_BIN_DIR};$ENV{PATH}"
+                "${WINDEPLOYQT_EXECUTABLE}"
+                --dir "${APP_DEPLOY_DIR}"
+                --verbose 1
+                "$<TARGET_FILE:TheRealCampusBallot>"
+            COMMENT "Deploying Qt runtime to ${APP_DEPLOY_DIR}"
+        )
     endif()
 endif()

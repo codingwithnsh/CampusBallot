@@ -9,7 +9,7 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
   </component>
   <component name="BackgroundAgentGlobalSettings">
-    <option name="selectedModelId" value="gpt-5-mini" />
+    <option name="selectedModelId" value="gpt-5.4" />
     <option name="selectedProviderName" value="Azure" />
   </component>
   <component name="CMakePresetLoader">{
@@ -32,21 +32,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="8th commit working as expected">
+    <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="9th commit working as expected">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/SystemManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/SystemManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/SystemManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/SystemManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/config/ApplicationBootstrap.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/config/ApplicationBootstrap.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/auth/AuthManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/AuthManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/election/ElectionManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/election/ElectionManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/election/VoteManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/election/VoteManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/viewmodels/AuthViewModel.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SettingsView.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/SetupWizard.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/SetupWizard.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/UserManagementView.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/UserManagementView.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,7 +53,7 @@
     </persistenceIdMap>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="110" />
+    <option name="cachedIndexableFilesCount" value="114" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
@@ -79,6 +69,9 @@
     &quot;accountId&quot;: &quot;a24d042e-35bc-45bc-93bb-340844021b56&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/CMakeLists.txt" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="DMPhXw0z" />
   </component>
@@ -94,17 +87,17 @@
       <entry key="S5" value="1.0" />
       <entry key="S10" value="1.0" />
       <entry key="S30" value="1.0" />
-      <entry key="S60" value="1.0000000000205802" />
-      <entry key="M2" value="1.0000340168719302" />
-      <entry key="M5" value="1.3157305493374936" />
-      <entry key="M10" value="9.326003278157904" />
-      <entry key="M15" value="27.636255008186826" />
-      <entry key="M30" value="93.5846413457665" />
-      <entry key="H1" value="210.26631531455382" />
-      <entry key="H2" value="421.3144705990261" />
-      <entry key="H4" value="776.6664566015568" />
-      <entry key="D1" value="2104.033920176503" />
-      <entry key="W1" value="2693.2359890870207" />
+      <entry key="S60" value="1.0" />
+      <entry key="M2" value="1.0000000001515985" />
+      <entry key="M5" value="1.000155395685338" />
+      <entry key="M10" value="1.1013518225156913" />
+      <entry key="M15" value="2.355927671931674" />
+      <entry key="M30" value="21.729233642734965" />
+      <entry key="H1" value="99.95985206094215" />
+      <entry key="H2" value="290.0354036946798" />
+      <entry key="H4" value="644.2901211955626" />
+      <entry key="D1" value="2039.9885761565433" />
+      <entry key="W1" value="2682.1809894841936" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -126,23 +119,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9330329915368074" />
-      <entry key="MS500" value="0.9862327044933592" />
-      <entry key="S2" value="0.9965402628278678" />
-      <entry key="S5" value="0.9986146661010289" />
-      <entry key="S10" value="0.9993070929904525" />
-      <entry key="S30" value="0.9997689776295918" />
-      <entry key="S60" value="0.9998844821631822" />
-      <entry key="M2" value="0.9999762525521717" />
-      <entry key="M5" value="1.3156960754861102" />
-      <entry key="M10" value="9.325851070778345" />
-      <entry key="M15" value="27.635956573901343" />
-      <entry key="M30" value="93.58414908915745" />
-      <entry key="H1" value="210.2657545912932" />
-      <entry key="H2" value="421.31388985181064" />
-      <entry key="H4" value="776.6659258000278" />
-      <entry key="D1" value="2104.03369671938" />
-      <entry key="W1" value="2693.235948847855" />
+      <entry key="MS100" value="0.9460576467255959" />
+      <entry key="MS500" value="0.9889709163809315" />
+      <entry key="S2" value="0.9972312513520695" />
+      <entry key="S5" value="0.9988915792636801" />
+      <entry key="S10" value="0.9994456359721023" />
+      <entry key="S30" value="0.999815177833572" />
+      <entry key="S60" value="0.9999075846464872" />
+      <entry key="M2" value="0.9999537914072093" />
+      <entry key="M5" value="1.0001369078597806" />
+      <entry key="M10" value="1.1013409264581075" />
+      <entry key="M15" value="2.35590686845205" />
+      <entry key="M30" value="21.72912152600749" />
+      <entry key="H1" value="99.95958662151843" />
+      <entry key="H2" value="290.03500451307434" />
+      <entry key="H4" value="644.2896811630918" />
+      <entry key="D1" value="2039.9883595433246" />
+      <entry key="W1" value="2682.180949415971" />
     </decayedShown>
   </component>
   <component name="ProjectApplicationVersion">
@@ -162,8 +155,9 @@
         <option name="modeId" value="Agent" />
         <option name="model">
           <model>
-            <option name="modelType" value="builtin_id" />
-            <option name="modelValue" value="auto" />
+            <option name="modelProviderName" value="Azure" />
+            <option name="modelType" value="byok_id" />
+            <option name="modelValue" value="gpt-5.4" />
           </model>
         </option>
         <option name="targetType" value="BACKGROUND" />
@@ -175,47 +169,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "CMake Application.TheRealCampusBallot.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "RunOnceActivity.west.config.association.type.startup.service": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "copilot.chat.legacySessionMetadata.migrated": "true",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
-    "junie.plugin.stays.banner.dismissed": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "onboarding.tips.debug.path": "D:/CLion Projects/TheRealCampusBallot/main.cpp",
-    "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "ml.llm.LLMThirdPartyAiProvidersConfigurable",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;CMake Application.TheRealCampusBallot.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.west.config.association.type.startup.service&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;junie.plugin.stays.banner.dismissed&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;D:/CLion Projects/TheRealCampusBallot/main.cpp&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMThirdPartyAiProvidersConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="TheRealCampusBallot" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="TheRealCampusBallot" TARGET_NAME="TheRealCampusBallot" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TheRealCampusBallot" RUN_TARGET_NAME="TheRealCampusBallot">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TheRealCampusBallot" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="TheRealCampusBallot" TARGET_NAME="TheRealCampusBallot" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TheRealCampusBallot" RUN_TARGET_NAME="TheRealCampusBallot">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -250,7 +244,8 @@
       <workItem from="1785952824231" duration="4321000" />
       <workItem from="1785993455618" duration="7666000" />
       <workItem from="1786088625945" duration="1512000" />
-      <workItem from="1786123131191" duration="6857000" />
+      <workItem from="1786123131191" duration="8548000" />
+      <workItem from="1786252086447" duration="1943000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <option name="closed" value="true" />
@@ -364,7 +359,23 @@
       <option name="project" value="LOCAL" />
       <updated>1786127181484</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="9th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786131083814</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1786131083814</updated>
+    </task>
+    <task id="LOCAL-00016" summary="9th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786131096721</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1786131096721</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -385,7 +396,8 @@
     <MESSAGE value="6th commit working as expected" />
     <MESSAGE value="7th commit working as expected" />
     <MESSAGE value="8th commit working as expected" />
-    <option name="LAST_COMMIT_MESSAGE" value="8th commit working as expected" />
+    <MESSAGE value="9th commit working as expected" />
+    <option name="LAST_COMMIT_MESSAGE" value="9th commit working as expected" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

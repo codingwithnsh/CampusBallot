@@ -215,7 +215,6 @@ void VotingKiosk::nextStep() {
             auto* idLabel = page->findChild<QLabel*>("voterId");
             auto* classLabel = page->findChild<QLabel*>("voterClass");
             auto* cameraFrame = page->findChild<QFrame*>("cameraFrame");
-            auto* descLabel = page->findChild<QLabel*>("descLabel"); // Wait, I didn't name the desc label
 
             if (nameLabel) nameLabel->setText("Name: " + m_currentVoter->name);
             if (idLabel) idLabel->setText("Admission: " + m_currentVoter->admissionNumber);

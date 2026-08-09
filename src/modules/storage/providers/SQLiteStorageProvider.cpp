@@ -259,19 +259,11 @@ bool SQLiteStorageProvider::initSchema() {
     } else {
         bool hasOldDigitalSignature = false;
         bool hasPasswordHashAndSalt = false;
-        bool hasNewDigitalSignature = false;
-        bool hasIdCardNumber = false;
-        bool hasQrCode = false;
-        bool hasPhotoData = false;
 
         while (checkUsersQuery.next()) {
             QString colName = checkUsersQuery.value("name").toString();
             if (colName == "digital_signature") hasOldDigitalSignature = true;
             if (colName == "password_hash_and_salt") hasPasswordHashAndSalt = true;
-            if (colName == "new_digital_signature") hasNewDigitalSignature = true; // Placeholder for new column name
-            if (colName == "id_card_number") hasIdCardNumber = true;
-            if (colName == "qr_code") hasQrCode = true;
-            if (colName == "photo_data") hasPhotoData = true;
         }
 
         if (hasOldDigitalSignature && !hasPasswordHashAndSalt) {
@@ -935,7 +927,7 @@ bool SQLiteStorageProvider::castVote(const Core::Vote& vote) {
     query.addBindValue(vote.id);
     query.addBindValue(vote.electionId);
     if (vote.studentId.isEmpty()) {
-        query.addBindValue(QVariant(QVariant::String)); // Bind NULL
+        query.addBindValue(QVariant(QMetaType::fromType<QString>())); // Bind NULL
     } else {
         query.addBindValue(vote.studentId);
     }
@@ -1547,3 +1539,4 @@ static Core::BackupEntry parseBackupEntry(const QSqlQuery& query) {
 }
 
 } // namespace Ballot::Storage
+

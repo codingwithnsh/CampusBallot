@@ -51,6 +51,7 @@ AuthManager::AuthManager() : QObject(nullptr) {
 }
 
 bool AuthManager::initialize(const QVariantMap& config) {
+    Q_UNUSED(config);
     // Retrieve session timeout from SystemManager settings for centralized configuration
     // Never allow a malformed/legacy setting to disable session expiry or create
     // an immediately-expiring session.
@@ -238,12 +239,14 @@ bool AuthManager::syncRemoteUserToLocal(const Core::User& user) {
 }
 
 bool AuthManager::loginByToken(const QString& token) {
+    Q_UNUSED(token);
     qWarning() << "AuthManager: loginByToken is not yet implemented.";
     emit loginFailed("Login by token not implemented");
     return false;
 }
 
 bool AuthManager::loginByQR(const QByteArray& qrData) {
+    Q_UNUSED(qrData);
     qWarning() << "AuthManager: loginByQR is not yet implemented.";
     emit loginFailed("Login by QR not implemented");
     return false;
@@ -461,3 +464,5 @@ void AuthManager::clearLockoutState(const QString& normalizedUsername) {
 }
 
 } // namespace Ballot::Auth
+
+
