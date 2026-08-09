@@ -27,6 +27,7 @@ jobs:
             name: Linux-GCC
             c_compiler: gcc
             cpp_compiler: g++
+            build_output: windows-app/TheRealCampusBallot
 
           # =========================
           # Windows
@@ -36,6 +37,7 @@ jobs:
             name: Windows
             c_compiler: cl
             cpp_compiler: cl
+            build_output: windows-app/TheRealCampusBallot.exe
 
           # =========================
           # macOS
@@ -45,6 +47,7 @@ jobs:
             name: macOS
             c_compiler: clang
             cpp_compiler: clang++
+            build_output: windows-app/TheRealCampusBallot
 
     steps:
 
@@ -104,9 +107,9 @@ jobs:
           mkdir -p builds/windows
 
           # Deploy Qt runtime DLLs into builds/windows
-          windeployqt build/Release/TheRealCampusBallot.exe --release --dir builds/windows
+          windeployqt "${{ matrix.build_output }}" --release --dir builds/windows
 
-          cp build/Release/TheRealCampusBallot.exe \
+          cp "${{ matrix.build_output }}" \
              builds/windows/TheRealCampusBallot.exe
 
 
@@ -119,7 +122,7 @@ jobs:
         run: |
           mkdir -p builds/linux
 
-          cp build/TheRealCampusBallot \
+          cp "${{ matrix.build_output }}" \
              builds/linux/TheRealCampusBallot
 
 
@@ -130,19 +133,19 @@ jobs:
       - name: Deploy Qt on macOS
         if: matrix.platform == 'macos'
         run: |
+          mkdir -p builds/macos/TheRealCampusBallot.app/Contents/MacOS
+          cp "${{ matrix.build_output }}" \
+             builds/macos/TheRealCampusBallot.app/Contents/MacOS/TheRealCampusBallot
+
           macdeployqt \
-            build/TheRealCampusBallot.app \
+            builds/macos/TheRealCampusBallot.app \
             -verbose 2
 
 
       - name: Prepare macOS output
         if: matrix.platform == 'macos'
         run: |
-          mkdir -p builds/macos
-
-          cp -R \
-            build/TheRealCampusBallot.app \
-            builds/macos/TheRealCampusBallot.app
+          test -f builds/macos/TheRealCampusBallot.app/Contents/MacOS/TheRealCampusBallot
 
 
       # =====================================================
