@@ -1,9 +1,10 @@
-name: CMake Qt Build
+name: Campus Ballot Multi-Platform Build
 
 on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
@@ -14,35 +15,59 @@ jobs:
 
     strategy:
       fail-fast: false
+
       matrix:
         include:
+
+          # =========================
+          # Linux
+          # =========================
           - os: ubuntu-latest
+            platform: linux
+            name: Linux-GCC
             c_compiler: gcc
             cpp_compiler: g++
 
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
-
+          # =========================
+          # Windows
+          # =========================
           - os: windows-latest
+            platform: windows
+            name: Windows
             c_compiler: cl
             cpp_compiler: cl
 
+          # =========================
+          # macOS
+          # =========================
+          - os: macos-latest
+            platform: macos
+            name: macOS
+            c_compiler: clang
+            cpp_compiler: clang++
+
     steps:
+
+      # -------------------------
+      # Checkout
+      # -------------------------
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: "6.8.2"
-          
+
+      # -------------------------
+      # Install Qt
+      # -------------------------
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
           version: "6.8.2"
           modules: "qtcharts"
 
+
+      # -------------------------
+      # Configure
+      # -------------------------
       - name: Configure CMake
         run: >
           cmake
@@ -52,9 +77,94 @@ jobs:
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
 
+
+      # -------------------------
+      # Build
+      # -------------------------
       - name: Build
         run: cmake --build build --config Release --parallel
 
+
+      # -------------------------
+      # Test
+      # -------------------------
       - name: Test
         working-directory: build
         run: ctest --output-on-failure --build-config Release
+
+
+      # =====================================================
+      # Windows
+      # =====================================================
+
+      - name: Prepare Windows output
+        if: matrix.platform == 'windows'
+        shell: bash
+        run: |
+          mkdir -p builds/windows
+
+          cp build/Release/TheRealCampusBallot.exe \
+             builds/windows/TheRealCampusBallot.exe
+
+
+      # =====================================================
+      # Linux
+      # =====================================================
+
+      - name: Prepare Linux output
+        if: matrix.platform == 'linux'
+        run: |
+          mkdir -p builds/linux
+
+          cp build/TheRealCampusBallot \
+             builds/linux/TheRealCampusBallot
+
+
+      # =====================================================
+      # macOS
+      # =====================================================
+
+      - name: Deploy Qt on macOS
+        if: matrix.platform == 'macos'
+        run: |
+          macdeployqt \
+            build/TheRealCampusBallot.app \
+            -verbose 2
+
+
+      - name: Prepare macOS output
+        if: matrix.platform == 'macos'
+        run: |
+          mkdir -p builds/macos
+
+          cp -R \
+            build/TheRealCampusBallot.app \
+            builds/macos/TheRealCampusBallot.app
+
+
+      # =====================================================
+      # Upload artifact
+      # =====================================================
+
+      - name: Upload Windows build
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CampusBallot-Windows
+          path: builds/windows/
+
+
+      - name: Upload Linux build
+        if: matrix.platform == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CampusBallot-Linux
+          path: builds/linux/
+
+
+      - name: Upload macOS build
+        if: matrix.platform == 'macos'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CampusBallot-macOS
+          path: builds/macos/
