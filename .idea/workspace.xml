@@ -9,7 +9,7 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
   </component>
   <component name="BackgroundAgentGlobalSettings">
-    <option name="selectedModelId" value="gpt-5.4" />
+    <option name="selectedModelId" value="gpt-5-mini" />
     <option name="selectedProviderName" value="Azure" />
   </component>
   <component name="CMakePresetLoader">{
@@ -35,9 +35,7 @@
     <list default="true" id="f6e1ceea-ea2e-4ae8-b03d-f49cf14b8dd4" name="Changes" comment="9th commit working as expected">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/auth/AuthManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/storage/providers/SQLiteStorageProvider.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/views/VotingKiosk.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/config/ApplicationBootstrap.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/config/ApplicationBootstrap.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +243,7 @@
       <workItem from="1785993455618" duration="7666000" />
       <workItem from="1786088625945" duration="1512000" />
       <workItem from="1786123131191" duration="8548000" />
-      <workItem from="1786252086447" duration="1943000" />
+      <workItem from="1786252086447" duration="2931000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <option name="closed" value="true" />
@@ -375,7 +373,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786131096721</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="9th commit working as expected">
+      <option name="closed" value="true" />
+      <created>1786254223715</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1786254223717</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

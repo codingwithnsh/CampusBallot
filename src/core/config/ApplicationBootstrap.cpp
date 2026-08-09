@@ -7,11 +7,11 @@
 #include <QStandardPaths>
 #include <QUuid>
 
-#include "src\core\Constants.h"
-#include "src\core\SystemManager.h"
-#include "src\modules\integration\FirebaseRealtimeSyncManager.h"
-#include "src\modules\auth\AuthManager.h"
-#include "src\modules\security\HashProvider.h"
+#include "src/core/Constants.h"
+#include "src/core/SystemManager.h"
+#include "src/modules/integration/FirebaseRealtimeSyncManager.h"
+#include "src/modules/auth/AuthManager.h"
+#include "src/modules/security/HashProvider.h"
 
 namespace Ballot::Core {
 

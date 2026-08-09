@@ -67,7 +67,10 @@ set_target_properties(TheRealCampusBallot PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${APP_DEPLOY_DIR}"
 )
 
-target_include_directories(TheRealCampusBallot PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(TheRealCampusBallot PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 target_compile_features(TheRealCampusBallot PRIVATE cxx_std_20)
 
@@ -115,16 +118,17 @@ if(WIN32)
             NO_UNSUPPORTED_PLATFORM_ERROR
         )
 
-        install(SCRIPT ${qt_deploy_script})
-
-        add_custom_command(TARGET TheRealCampusBallot POST_BUILD
+        add_custom_target(deploy_windows_app ALL
             COMMAND "${CMAKE_COMMAND}" -E make_directory "${APP_DEPLOY_DIR}"
             COMMAND "${CMAKE_COMMAND}" -E env "PATH=${QT_BIN_DIR};$ENV{PATH}"
                 "${WINDEPLOYQT_EXECUTABLE}"
                 --dir "${APP_DEPLOY_DIR}"
                 --verbose 1
                 "$<TARGET_FILE:TheRealCampusBallot>"
-            COMMENT "Deploying Qt runtime to ${APP_DEPLOY_DIR}"
+            DEPENDS TheRealCampusBallot
+            COMMENT "Deploying Windows app to ${APP_DEPLOY_DIR}"
         )
+
+        install(SCRIPT ${qt_deploy_script})
     endif()
 endif()
