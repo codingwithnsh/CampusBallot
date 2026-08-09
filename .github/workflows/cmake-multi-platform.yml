@@ -39,16 +39,6 @@ jobs:
             cpp_compiler: cl
             build_output: windows-app/TheRealCampusBallot.exe
 
-          # =========================
-          # macOS
-          # =========================
-          - os: macos-latest
-            platform: macos
-            name: macOS
-            c_compiler: clang
-            cpp_compiler: clang++
-            build_output: windows-app/TheRealCampusBallot
-
     steps:
 
       # -------------------------
@@ -127,28 +117,6 @@ jobs:
 
 
       # =====================================================
-      # macOS
-      # =====================================================
-
-      - name: Deploy Qt on macOS
-        if: matrix.platform == 'macos'
-        run: |
-          mkdir -p builds/macos/TheRealCampusBallot.app/Contents/MacOS
-          cp "${{ matrix.build_output }}" \
-             builds/macos/TheRealCampusBallot.app/Contents/MacOS/TheRealCampusBallot
-
-          macdeployqt \
-            builds/macos/TheRealCampusBallot.app \
-            -verbose 2
-
-
-      - name: Prepare macOS output
-        if: matrix.platform == 'macos'
-        run: |
-          test -f builds/macos/TheRealCampusBallot.app/Contents/MacOS/TheRealCampusBallot
-
-
-      # =====================================================
       # Upload artifact
       # =====================================================
 
@@ -166,11 +134,3 @@ jobs:
         with:
           name: CampusBallot-Linux
           path: builds/linux/
-
-
-      - name: Upload macOS build
-        if: matrix.platform == 'macos'
-        uses: actions/upload-artifact@v4
-        with:
-          name: CampusBallot-macOS
-          path: builds/macos/
