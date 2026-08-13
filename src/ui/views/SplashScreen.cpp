@@ -47,7 +47,7 @@ void SplashScreen::setupUi() {
     cardLayout->addSpacing(4);
 
     // --- Title ---
-    m_titleLabel = new QLabel(Core::Constants::APP_NAME, m_card); // Use constant for app name
+    m_titleLabel = new QLabel(QStringLiteral("CampusBallot"), m_card);
     m_titleLabel->setStyleSheet("font-size: 30px; font-weight: 700; color: #ffffff; background: transparent;");
     m_titleLabel->setAlignment(Qt::AlignCenter);
     cardLayout->addWidget(m_titleLabel);
